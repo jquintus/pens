@@ -1,7 +1,14 @@
 name: Build CAD on Release
 
 on:
-  release
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      tag_name:
+        description: "Release tag to attach build artifacts to"
+        type: string
+        required: true
 
 jobs:
   build:
@@ -31,7 +38,15 @@ jobs:
       - name: Run build
         run: python scripts/build.py
 
-      - name: Upload to GitHub Release
+      - name: Upload assets (published release from GitHub UI/API)
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
+          files: outputs/*
+
+      - name: Upload assets (after Create Release workflow)
+        if: github.event_name == 'workflow_call'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag_name }}
           files: outputs/*

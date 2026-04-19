@@ -12,6 +12,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    outputs:
+      tag_name: ${{ steps.version.outputs.new }}
+
     permissions:
       contents: write
 
@@ -52,3 +55,10 @@ jobs:
           tag_name: ${{ steps.version.outputs.new }}
           name: ${{ steps.version.outputs.new }}
           body: ${{ github.event.inputs.description }}
+
+  build:
+    needs: release
+    uses: ./.github/workflows/build.yml
+    with:
+      tag_name: ${{ needs.release.outputs.tag_name }}
+    secrets: inherit
