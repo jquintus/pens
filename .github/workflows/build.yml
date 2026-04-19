@@ -1,4 +1,4 @@
-name: build-cad
+name: Build CAD on Release
 
 on:
   release:
@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -27,11 +30,9 @@ jobs:
           pip install cadquery pyyaml
 
       - name: Run build
-        run: |
-          python scripts/build.py
+        run: python scripts/build.py
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: cad-outputs
-          path: outputs/
+          files: outputs/*
