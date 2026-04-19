@@ -1,0 +1,10 @@
+name: pen_v1
+
+geometry:
+  outer_diameter: 12.5
+  inner_diameter: 8.0
+  length: 140
+  fillet: 0.6
+
+output:
+  name: pen_v1
