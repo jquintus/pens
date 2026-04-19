@@ -1,0 +1,37 @@
+name: build-cad
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1
+
+      - name: Install Python deps
+        run: |
+          pip install cadquery pyyaml
+
+      - name: Run build
+        run: |
+          python scripts/build.py
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cad-outputs
+          path: outputs/
