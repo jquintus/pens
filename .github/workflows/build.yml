@@ -1,8 +1,7 @@
 name: Build CAD on Release
 
 on:
-  release:
-    types: [published]
+  release
 
 jobs:
   build:
