@@ -14,7 +14,5 @@ def build_pen(geometry):
         .extrude(length)
     )
 
-    if fillet > 0:
-        result = result.edges("|Z").fillet(fillet)
 
     return result

@@ -1,5 +1,9 @@
 import os
 import yaml
+import sys
+
+sys.path.append(os.path.abspath("."))
+
 import importlib.util
 import cadquery as cq
 
