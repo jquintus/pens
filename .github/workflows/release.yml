@@ -9,11 +9,8 @@ on:
         default: ""
 
 jobs:
-  release:
+  release-and-build:
     runs-on: ubuntu-latest
-
-    outputs:
-      tag_name: ${{ steps.version.outputs.new }}
 
     permissions:
       contents: write
@@ -49,18 +46,27 @@ jobs:
           git tag ${{ steps.version.outputs.new }}
           git push origin ${{ steps.version.outputs.new }}
 
-      - name: Create GitHub release
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1
+
+      - name: Install Python deps
+        run: |
+          pip install cadquery pyyaml
+
+      - name: Run build
+        run: python scripts/build.py
+
+      - name: Create GitHub release with artifacts
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.new }}
           name: ${{ steps.version.outputs.new }}
           body: ${{ github.event.inputs.description }}
-
-  build:
-    needs: release
-    permissions:
-      contents: write
-    uses: ./.github/workflows/build.yml
-    with:
-      tag_name: ${{ needs.release.outputs.tag_name }}
-    secrets: inherit
+          files: outputs/*
