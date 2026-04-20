@@ -1,0 +1,11 @@
+id: test
+title: "Testy "
+nose_cone:
+  cylinder_height: 10
+  cylinder_outside_diameter: 7.45
+  frustum_height: 20
+  frustum_top_diameter: 4
+  frustum_bottom_diameter: 9
+  top_hole_diameter: 1
+  bottom_hole_diameter: 6
+  top_hole_height: 22
