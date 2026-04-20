@@ -6,5 +6,5 @@ output:
 metrics:
   outer_diameter: 7.48
   inner_diameter: 5.5
-  length: 14
+  length: 50
   fillet: 1
