@@ -37,7 +37,7 @@ def build(config):
             f"top_hole_height must be between 0 and total height ({total_height}), got {top_hole_height}"
         )
 
-    result = cq.Workplane("XY").circle(cylinder_outside_diameter / 2).extrude(cylinder_height)
+    result = cq.Workplane("XZ").circle(cylinder_outside_diameter / 2).extrude(cylinder_height)
 
     if frustum_height > 0:
         frustum = (
