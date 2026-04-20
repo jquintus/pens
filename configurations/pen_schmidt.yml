@@ -3,14 +3,13 @@ title: Schmidt-style body
 description: Slightly slimmer profile with a cooler accent for contrast in the grid.
 
 nose_cone:
-  cylinder_height: 96
-  cylinder_outside_diameter: 11.0
-  frustum_height: 39
-  frustum_top_diameter: 9.2
-  frustum_bottom_diameter: 11.0
-  top_hole_diameter: 3.5
-  bottom_hole_diameter: 7.5
-  top_hole_height: 16
-
+  cylinder_height: 9
+  cylinder_outside_diameter: 7.45
+  frustum_height: 7
+  frustum_top_diameter: 3
+  frustum_bottom_diameter: 10.5
+  top_hole_diameter: 2
+  bottom_hole_diameter: 5
+  top_hole_height: 8
 gallery:
-  - assets/default-pen.svg
+  - /assets/pen2.jpg
