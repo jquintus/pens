@@ -4,10 +4,10 @@ This repo generates parametric CAD models from YAML configs.
 
 ## Structure
 
-- `projects/` – individual models + configs
-- `cad/` – shared CadQuery logic
-- `scripts/` – build orchestration
-- `outputs/` – generated files
+- `configurations/` – one YAML file per variant (metrics + output naming); add a file here to generate a new STEP without code changes
+- `cad/` – shared CadQuery model (`engine.build(config)` reads `config["metrics"]`)
+- `scripts/` – build orchestration (`build.py` loads every `*.yml` / `*.yaml` in `configurations/`)
+- `outputs/` – generated `.step` files
 
 ## Getting started (Dev Container)
 
@@ -24,25 +24,20 @@ python scripts/build.py
 ```
 repo/
 │
-├── projects/
-│   ├── pen_v1/
-│   │   ├── config.json
-│   │   └── model.py
-│   │
-│   ├── pen_v2/
-│   │   ├── config.json
-│   │   └── model.py
+├── configurations/
+│   ├── pen_pilot.yml
+│   ├── pen_schmidt.yml
 │
 ├── cad/
-│   ├── engine.py            # shared CadQuery helpers
+│   ├── engine.py            # the model. This should be renamed to model.py
 │   └── utils.py
 │
 ├── slicer/
 │   ├── prusaslicer.ini     # locked print profile
 │
 ├── outputs/                # generated files (optional commit)
-│   ├── pen_v1.stl
-│   ├── pen_v1.gcode
+│   ├── pen_pilot_v1_0_8.step
+│   ├── pen_schmidt_v1_0_8.step
 │
 ├── site/
 │   ├── index.html          # optional gallery UI
@@ -58,3 +53,18 @@ repo/
 │
 └── README.md
 ```
+
+## Configuration format
+
+Each file under `configurations/` is a standalone variant.
+
+- **`metrics`** (required) — numbers consumed by `cad/engine.py` (e.g. `outer_diameter`, `inner_diameter`, `length`). Extend the model to use new keys; YAML may include extra keys for your own notes.
+- **`output.name`** (optional) — product basename only (no version). The generated file is `{name}_{release_version}.step`, where `release_version` comes from the Git tag in CI, not from YAML. If `output.name` is omitted, the YAML filename stem is used as the basename.
+
+**Version / filenames:** GitHub Actions sets `PENS_RELEASE_VERSION` to the release tag (e.g. `v1.0.8`) before `scripts/build.py` runs. Locally, the script uses the latest `git describe --tags` tag if available, otherwise `dev` → e.g. `pen_pilot_dev.step`.
+
+Optional fields such as `id` are for your own documentation unless you use them elsewhere.
+
+## Future layout (not in repo yet)
+
+Slicer profiles (`slicer/`), gallery site (`site/`), and `cad/utils.py` can land alongside the layout above when you add them.

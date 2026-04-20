@@ -1,0 +1,10 @@
+id: pen_schmidt
+
+metrics:
+  outer_diameter: 11.0
+  inner_diameter: 7.5
+  length: 135
+  fillet: 0.5
+
+output:
+  name: pen_schmidt

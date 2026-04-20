@@ -30,6 +30,8 @@ jobs:
           pip install cadquery pyyaml
 
       - name: Run build
+        env:
+          PENS_RELEASE_VERSION: ${{ github.event.release.tag_name }}
         run: python scripts/build.py
 
       - name: Upload assets to release

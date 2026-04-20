@@ -61,6 +61,8 @@ jobs:
           pip install cadquery pyyaml
 
       - name: Run build
+        env:
+          PENS_RELEASE_VERSION: ${{ steps.version.outputs.new }}
         run: python scripts/build.py
 
       - name: Create GitHub release with artifacts
