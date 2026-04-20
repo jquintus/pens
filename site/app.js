@@ -42,6 +42,7 @@ function noseConeChips(noseCone, limit = 6) {
 }
 
 function clearChildren(node) {
+  if (!node) return;
   while (node.firstChild) node.removeChild(node.firstChild);
 }
 
