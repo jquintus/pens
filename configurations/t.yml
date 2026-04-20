@@ -6,3 +6,6 @@ metrics:
   outer_diameter: 12
   inner_diameter: 8
   length: 12
+gallery:
+  - /assets/pen2.jpg
+  - /assets/pen1.jpg
