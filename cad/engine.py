@@ -41,7 +41,7 @@ def build(config):
 
     if frustum_height > 0:
         frustum = (
-            cq.Workplane("Yz")
+            cq.Workplane("YZ")
             .workplane(offset=cylinder_height)
             .circle(frustum_bottom_diameter / 2)
             .workplane(offset=frustum_height)
