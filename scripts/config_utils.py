@@ -22,13 +22,11 @@ def load_config(path: Path) -> dict:
     return data
 
 
-def get_dimensions(config: dict) -> dict:
-    dims = config.get("dimensions")
-    if dims is None:
-        dims = config.get("metrics")
-    if not isinstance(dims, dict):
-        raise KeyError("missing required key 'dimensions'")
-    return dims
+def get_nose_cone(config: dict) -> dict:
+    nose_cone = config.get("nose_cone")
+    if not isinstance(nose_cone, dict):
+        raise KeyError("missing required key 'nose_cone'")
+    return nose_cone
 
 
 def normalize_version_for_filename(version: str) -> str:

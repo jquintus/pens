@@ -7,7 +7,7 @@ from config_utils import (
     CONFIG_DIR,
     OUTPUT_DIR,
     REPO_ROOT,
-    get_dimensions,
+    get_nose_cone,
     load_config,
     output_stem,
 )
@@ -25,7 +25,7 @@ def export_result(result, output_file: Path) -> None:
 
 def build_one(config_path: Path) -> Path:
     config = load_config(config_path)
-    get_dimensions(config)
+    get_nose_cone(config)
 
     result = build_model(config)
     stem = output_stem(config_path, config)

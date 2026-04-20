@@ -9,21 +9,21 @@ def _require_positive(name, value):
 def build(config):
     """Build a vertical cylinder with a tapered top and stepped center bore."""
 
-    dimensions = config.get("dimensions") or config.get("metrics")
-    if not isinstance(dimensions, dict):
-        raise KeyError("missing required key 'dimensions'")
+    nose_cone = config.get("nose_cone")
+    if not isinstance(nose_cone, dict):
+        raise KeyError("missing required key 'nose_cone'")
 
-    cylinder_height = float(dimensions["cylinder_height"])
-    cylinder_diameter = float(dimensions["cylinder_diameter"])
-    frustum_height = float(dimensions["frustum_height"])
-    frustum_top_diameter = float(dimensions["frustum_top_diameter"])
-    frustum_bottom_diameter = float(dimensions["frustum_bottom_diameter"])
-    top_hole_diameter = float(dimensions["top_hole_diameter"])
-    bottom_hole_diameter = float(dimensions["bottom_hole_diameter"])
-    top_hole_height = float(dimensions["top_hole_height"])
+    cylinder_height = float(nose_cone["cylinder_height"])
+    cylinder_outside_diameter = float(nose_cone["cylinder_outside_diameter"])
+    frustum_height = float(nose_cone["frustum_height"])
+    frustum_top_diameter = float(nose_cone["frustum_top_diameter"])
+    frustum_bottom_diameter = float(nose_cone["frustum_bottom_diameter"])
+    top_hole_diameter = float(nose_cone["top_hole_diameter"])
+    bottom_hole_diameter = float(nose_cone["bottom_hole_diameter"])
+    top_hole_height = float(nose_cone["top_hole_height"])
 
     _require_positive("cylinder_height", cylinder_height)
-    _require_positive("cylinder_diameter", cylinder_diameter)
+    _require_positive("cylinder_outside_diameter", cylinder_outside_diameter)
     if frustum_height < 0:
         raise ValueError(f"frustum_height must be >= 0, got {frustum_height}")
     _require_positive("frustum_top_diameter", frustum_top_diameter)
@@ -37,7 +37,7 @@ def build(config):
             f"top_hole_height must be between 0 and total height ({total_height}), got {top_hole_height}"
         )
 
-    result = cq.Workplane("XY").circle(cylinder_diameter / 2).extrude(cylinder_height)
+    result = cq.Workplane("XY").circle(cylinder_outside_diameter / 2).extrude(cylinder_height)
 
     if frustum_height > 0:
         frustum = (

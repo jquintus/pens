@@ -8,7 +8,7 @@ const previewTitle = document.getElementById("preview-title");
 const previewMeta = document.getElementById("preview-meta");
 const previewDescription = document.getElementById("preview-description");
 const previewImages = document.getElementById("preview-images");
-const previewDimensions = document.getElementById("preview-dimensions");
+const previewNoseCone = document.getElementById("preview-nose-cone");
 const previewDownloads = document.getElementById("preview-downloads");
 const viewer = document.getElementById("viewer");
 const viewerStatus = document.getElementById("viewer-status");
@@ -33,9 +33,9 @@ function formatDimension(key, value) {
   return `${k}: ${value}`;
 }
 
-function dimensionChips(dimensions, limit = 6) {
-  if (!dimensions || typeof dimensions !== "object") return [];
-  const lines = Object.entries(dimensions)
+function noseConeChips(noseCone, limit = 6) {
+  if (!noseCone || typeof noseCone !== "object") return [];
+  const lines = Object.entries(noseCone)
     .map(([k, v]) => formatDimension(k, v))
     .filter(Boolean);
   return Number.isFinite(limit) ? lines.slice(0, limit) : lines;
@@ -136,11 +136,11 @@ function openPreview(pen) {
   previewDescription.textContent = pen.description || "No description yet.";
   renderPreviewImages(pen);
 
-  clearChildren(previewDimensions);
-  for (const line of dimensionChips(pen.dimensions, Number.POSITIVE_INFINITY)) {
+  clearChildren(previewNoseCone);
+  for (const line of noseConeChips(pen.nose_cone, Number.POSITIVE_INFINITY)) {
     const li = document.createElement("li");
     li.textContent = line;
-    previewDimensions.appendChild(li);
+    previewNoseCone.appendChild(li);
   }
 
   renderDownloads(previewDownloads, pen.downloads);
@@ -324,7 +324,7 @@ function renderCard(pen) {
 
   const ul = document.createElement("ul");
   ul.className = "metrics";
-  for (const line of dimensionChips(pen.dimensions)) {
+  for (const line of noseConeChips(pen.nose_cone)) {
     const li = document.createElement("li");
     li.textContent = line;
     ul.appendChild(li);

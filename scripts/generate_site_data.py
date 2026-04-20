@@ -14,7 +14,7 @@ from config_utils import (
     OUTPUT_DIR,
     REPO_ROOT,
     SITE_DIR,
-    get_dimensions,
+    get_nose_cone,
     load_config,
     output_base_name,
     output_stem,
@@ -109,7 +109,7 @@ def main():
                 "slug": path.stem,
                 "title": title,
                 "description": description,
-                "dimensions": get_dimensions(config),
+                "nose_cone": get_nose_cone(config),
                 "images": normalize_gallery_paths(config),
                 "downloads": collect_downloads(base_name, stem),
             }

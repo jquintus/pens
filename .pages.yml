@@ -5,14 +5,14 @@ media:
   extensions: [svg, png, jpg, jpeg, webp, avif]
 
 components:
-  dimensions:
+  nose_cone:
     type: object
-    label: Dimensions (mm)
+    label: Nose Cone (mm)
     fields:
       - name: cylinder_height
         type: number
         required: true
-      - name: cylinder_diameter
+      - name: cylinder_outside_diameter
         type: number
         required: true
       - name: frustum_height
@@ -58,8 +58,8 @@ content:
       - name: description
         type: text
         label: Short description
-      - name: dimensions
-        component: dimensions
+      - name: nose_cone
+        component: nose_cone
       - name: gallery
         label: Gallery images
         type: image

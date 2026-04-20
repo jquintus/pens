@@ -2,9 +2,9 @@ id: pen_pilot
 title: Pilot body
 description: Reference shell used for layout and sizing experiments in the gallery.
 
-dimensions:
+nose_cone:
   cylinder_height: 100
-  cylinder_diameter: 12.5
+  cylinder_outside_diameter: 12.5
   frustum_height: 40
   frustum_top_diameter: 10.5
   frustum_bottom_diameter: 12.5

@@ -6,9 +6,9 @@ Live site: https://quintussential.com/pens/
 
 ## Structure
 
-- `configurations/` - one YAML file per pen variant (dimensions, gallery paths, copy for the site)
+- `configurations/` - one YAML file per pen variant (`nose_cone`, gallery paths, copy for the site)
 - `assets/` - images used by the gallery (referenced from each config's `gallery` list)
-- `cad/` - CadQuery model (`engine.build(config)` reads `config["dimensions"]`)
+- `cad/` - CadQuery model (`engine.build(config)` reads `config["nose_cone"]`)
 - `scripts/` - `build.py` (STEP + STL export), `generate_site_data.py` (writes `site/data.json`)
 - `site/` - static gallery (`index.html`, `styles.css`, `app.js`)
 - `outputs/` - generated `.step`, `.stl`, and later `.gcode` files
@@ -40,14 +40,14 @@ Each file under `configurations/` drives both the CAD build and the gallery.
 | `id` | yes | Stable slug and default output basename. |
 | `title` | yes | Heading on the gallery card. |
 | `description` | no | Short blurb on the card. |
-| `dimensions` | yes | Cylinder, frustum, and stepped-bore dimensions passed into `cad/engine.py`. |
+| `nose_cone` | yes | Cylinder, frustum, and stepped-bore values passed into `cad/engine.py`. |
 | `output.name` | no | Optional STEP basename override; defaults to `id`. |
 | `gallery` | no | List of image paths (repo-relative, usually under `assets/...`). |
 
-The current model expects these `dimensions` keys:
+The current model expects these `nose_cone` keys:
 
 - `cylinder_height`
-- `cylinder_diameter`
+- `cylinder_outside_diameter`
 - `frustum_height`
 - `frustum_top_diameter`
 - `frustum_bottom_diameter`
