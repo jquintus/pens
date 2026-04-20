@@ -2,6 +2,8 @@
 
 This repo generates parametric CAD models from YAML configs and publishes a small GitHub Pages gallery from the same files.
 
+Live site: https://quintussential.com/pens/
+
 ## Structure
 
 - `configurations/` - one YAML file per pen variant (metrics, gallery paths, copy for the site)
