@@ -172,8 +172,8 @@ body.is-modal-open {
   top: calc(100% + 0.55rem);
   right: 0;
   min-width: 12rem;
-  display: grid;
-  gap: 0.35rem;
+  display: flex;
+  flex-direction: column;
   padding: 0.5rem;
   border-radius: 16px;
   border: 1px solid rgba(122, 162, 255, 0.2);
@@ -189,6 +189,10 @@ body.is-modal-open {
   text-decoration: none;
   font-family: var(--mono);
   font-size: 0.74rem;
+}
+
+.quick-links__item + .quick-links__item {
+  margin-top: 0.35rem;
 }
 
 .quick-links__item:hover {
