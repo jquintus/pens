@@ -1,4 +1,8 @@
-media: assets
+media:
+  input: assets
+  output: /assets
+  rename: safe
+  extensions: [svg, png, jpg, jpeg, webp, avif]
 
 components:
   metrics:
@@ -56,4 +60,7 @@ content:
       - name: gallery
         label: Gallery images
         type: image
-        list: true
+        options:
+          multiple:
+            max: 8
+          extensions: [svg, png, jpg, jpeg, webp, avif]

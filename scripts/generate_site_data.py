@@ -19,6 +19,8 @@ from config_utils import (
     output_stem,
 )
 
+DEFAULT_IMAGE = ASSETS_DIR / "default-pen.svg"
+
 
 def repo_relative(path: Path) -> str:
     return path.relative_to(REPO_ROOT).as_posix()
@@ -72,7 +74,7 @@ def resolve_gallery_image_path(raw: str) -> Path | None:
 def normalize_gallery_paths(config: dict) -> list[str]:
     raw = config.get("gallery") or []
     if not isinstance(raw, list):
-        return []
+        raw = []
     urls = []
     for item in raw:
         if not item:
@@ -82,6 +84,8 @@ def normalize_gallery_paths(config: dict) -> list[str]:
         resolved = resolve_gallery_image_path(str(item))
         if resolved:
             urls.append(repo_relative(resolved))
+    if not urls and DEFAULT_IMAGE.is_file():
+        urls.append(repo_relative(DEFAULT_IMAGE))
     return urls
 
 

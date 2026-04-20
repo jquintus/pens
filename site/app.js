@@ -7,6 +7,7 @@ const previewDismiss = document.getElementById("preview-dismiss");
 const previewTitle = document.getElementById("preview-title");
 const previewMeta = document.getElementById("preview-meta");
 const previewDescription = document.getElementById("preview-description");
+const previewImages = document.getElementById("preview-images");
 const previewMetrics = document.getElementById("preview-metrics");
 const previewDownloads = document.getElementById("preview-downloads");
 const viewer = document.getElementById("viewer");
@@ -14,6 +15,7 @@ const viewerStatus = document.getElementById("viewer-status");
 
 let viewerModulesPromise;
 
+const DEFAULT_PEN_IMAGE = "assets/default-pen.svg";
 const THREE_MODULE_URL = "https://esm.sh/three@0.164.1";
 const ORBIT_CONTROLS_MODULE_URL =
   "https://esm.sh/three@0.164.1/examples/jsm/controls/OrbitControls.js";
@@ -41,6 +43,29 @@ function metricsChips(metrics, limit = 6) {
 
 function clearChildren(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function assetUrl(path) {
+  return `./${path}`;
+}
+
+function resolveImages(pen) {
+  if (Array.isArray(pen.images) && pen.images.length) return pen.images;
+  return [DEFAULT_PEN_IMAGE];
+}
+
+function createImage(path, alt) {
+  const img = document.createElement("img");
+  img.src = assetUrl(path);
+  img.alt = alt;
+  img.loading = "lazy";
+  img.addEventListener("error", () => {
+    if (!img.dataset.fallbackApplied) {
+      img.dataset.fallbackApplied = "true";
+      img.src = assetUrl(DEFAULT_PEN_IMAGE);
+    }
+  });
+  return img;
 }
 
 function downloadButton(label, href, disabled) {
@@ -73,6 +98,18 @@ function renderDownloads(container, downloads) {
   container.appendChild(downloadButton("G-code", d.gcode ? `./${d.gcode}` : "#", !d.gcode));
 }
 
+function renderPreviewImages(pen) {
+  clearChildren(previewImages);
+  const images = resolveImages(pen);
+  for (const [index, path] of images.entries()) {
+    const item = document.createElement("div");
+    item.className = "preview-images__item";
+    item.appendChild(createImage(path, `${pen.title} reference ${index + 1}`));
+    previewImages.appendChild(item);
+  }
+  previewImages.hidden = images.length === 0;
+}
+
 function setViewerStatus(message) {
   viewerStatus.textContent = message;
   viewerStatus.hidden = false;
@@ -97,6 +134,7 @@ function openPreview(pen) {
   previewTitle.textContent = pen.title;
   previewMeta.textContent = `${pen.id} | ${pen.slug}`;
   previewDescription.textContent = pen.description || "No description yet.";
+  renderPreviewImages(pen);
 
   clearChildren(previewMetrics);
   for (const line of metricsChips(pen.metrics, Number.POSITIVE_INFINITY)) {
@@ -263,17 +301,7 @@ function renderCard(pen) {
 
   const visual = document.createElement("div");
   visual.className = "card__visual";
-
-  if (pen.images && pen.images.length) {
-    const img = document.createElement("img");
-    img.src = `./${pen.images[0]}`;
-    img.alt = `${pen.title} preview`;
-    img.loading = "lazy";
-    visual.appendChild(img);
-  } else {
-    visual.classList.add("card__visual--empty");
-    visual.textContent = "Add images in assets/ + gallery in config";
-  }
+  visual.appendChild(createImage(resolveImages(pen)[0], `${pen.title} preview`));
 
   const previewTrigger = previewButton(!pen.downloads?.stl);
   previewTrigger.addEventListener("click", () => openPreview(pen));
