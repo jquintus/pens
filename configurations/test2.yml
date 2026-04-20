@@ -1,9 +1,0 @@
-id: test2
-title: This is a test
-output:
-  name: test2
-metrics:
-  outer_diameter: 12
-  inner_diameter: 9
-  length: 16
-  fillet: 0.2
