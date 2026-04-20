@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pens — gallery</title>
+    <title>Pens Gallery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,6 +11,14 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -20,20 +28,59 @@
           <span class="brand__mark" aria-hidden="true"></span>
           <div>
             <h1 class="brand__title">Pens</h1>
-            <p class="brand__tag">Parametric configs → CAD downloads</p>
+            <p class="brand__tag">Parametric configs to CAD downloads</p>
           </div>
         </div>
         <p class="site-header__hint">
-          New variants live in <code>configurations/</code> — edited via Pages CMS or locally.
+          New variants live in <code>configurations/</code> and can be edited via Pages CMS or locally.
         </p>
       </div>
     </header>
 
     <main class="main">
-      <div id="loading" class="state state--loading">Loading gallery…</div>
+      <div id="loading" class="state state--loading">Loading gallery...</div>
       <div id="error" class="state state--error" hidden></div>
       <section id="grid" class="grid" hidden></section>
     </main>
+
+    <div id="preview" class="preview" hidden>
+      <button
+        id="preview-dismiss"
+        class="preview__backdrop"
+        type="button"
+        aria-label="Close preview"
+      ></button>
+      <section
+        class="preview__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="preview-title"
+      >
+        <div class="preview__header">
+          <div>
+            <p class="preview__eyebrow">Interactive preview</p>
+            <h2 id="preview-title" class="preview__title"></h2>
+            <p id="preview-meta" class="preview__meta"></p>
+          </div>
+          <button id="preview-close" class="preview__close" type="button">
+            Close
+          </button>
+        </div>
+
+        <div class="preview__layout">
+          <div class="preview__viewer-shell">
+            <div id="viewer" class="viewer" aria-live="polite"></div>
+            <div id="viewer-status" class="viewer__status">Loading preview...</div>
+          </div>
+
+          <aside class="preview__sidebar">
+            <p id="preview-description" class="preview__description"></p>
+            <ul id="preview-metrics" class="metrics metrics--stack"></ul>
+            <div id="preview-downloads" class="downloads downloads--stack"></div>
+          </aside>
+        </div>
+      </section>
+    </div>
 
     <footer class="site-footer">
       <span>Built from YAML metrics + CadQuery</span>

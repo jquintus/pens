@@ -15,6 +15,7 @@ from config_utils import (
     REPO_ROOT,
     SITE_DIR,
     load_config,
+    output_base_name,
     output_stem,
 )
 
@@ -23,12 +24,27 @@ def repo_relative(path: Path) -> str:
     return path.relative_to(REPO_ROOT).as_posix()
 
 
-def collect_downloads(stem: str) -> dict:
-    base = OUTPUT_DIR / stem
+def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
+    exact = (OUTPUT_DIR / stem).with_suffix(ext)
+    if exact.is_file():
+        return exact
+
+    matches = sorted(OUTPUT_DIR.glob(f"{base_name}_*{ext}"))
+    if matches:
+        return matches[-1]
+
+    legacy = (OUTPUT_DIR / base_name).with_suffix(ext)
+    if legacy.is_file():
+        return legacy
+
+    return None
+
+
+def collect_downloads(base_name: str, stem: str) -> dict:
     out = {}
     for ext, key in ((".step", "step"), (".stl", "stl"), (".gcode", "gcode")):
-        p = base.with_suffix(ext)
-        out[key] = f"outputs/{p.name}" if p.is_file() else None
+        p = resolve_output_path(base_name, stem, ext)
+        out[key] = f"outputs/{p.name}" if p else None
     return out
 
 
@@ -76,6 +92,7 @@ def main():
         if path.name.startswith("."):
             continue
         config = load_config(path)
+        base_name = output_base_name(path, config)
         stem = output_stem(path, config)
         cid = str(config.get("id") or path.stem)
         title = str(config.get("title") or cid.replace("_", " ").title())
@@ -89,7 +106,7 @@ def main():
                 "description": description,
                 "metrics": config.get("metrics") or {},
                 "images": normalize_gallery_paths(config),
-                "downloads": collect_downloads(stem),
+                "downloads": collect_downloads(base_name, stem),
             }
         )
 

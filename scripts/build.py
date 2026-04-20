@@ -17,6 +17,11 @@ if str(REPO_ROOT) not in sys.path:
 from cad.engine import build as build_model
 
 
+def export_result(result, output_file: Path) -> None:
+    cq.exporters.export(result, str(output_file))
+    print(f"Built: {output_file}")
+
+
 def build_one(config_path: Path) -> Path:
     config = load_config(config_path)
     if "metrics" not in config:
@@ -24,10 +29,11 @@ def build_one(config_path: Path) -> Path:
 
     result = build_model(config)
     stem = output_stem(config_path, config)
-    output_file = OUTPUT_DIR / f"{stem}.step"
-    cq.exporters.export(result, str(output_file))
-    print(f"Built: {output_file}")
-    return output_file
+    step_file = OUTPUT_DIR / f"{stem}.step"
+    stl_file = OUTPUT_DIR / f"{stem}.stl"
+    export_result(result, step_file)
+    export_result(result, stl_file)
+    return step_file
 
 
 def main():

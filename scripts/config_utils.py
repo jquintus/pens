@@ -55,11 +55,15 @@ def resolve_release_version() -> str:
     return "dev"
 
 
-def output_stem(config_path: Path, config: dict) -> str:
+def output_base_name(config_path: Path, config: dict) -> str:
     out = config.get("output") or {}
     base = out.get("name")
     if not base:
         base = config_path.stem
-    base = str(base)
+    return str(base)
+
+
+def output_stem(config_path: Path, config: dict) -> str:
+    base = output_base_name(config_path, config)
     ver = normalize_version_for_filename(resolve_release_version())
     return f"{base}_{ver}"
