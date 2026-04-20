@@ -340,6 +340,10 @@ body.is-modal-open {
   padding: 1.2rem;
 }
 
+.preview[hidden] {
+  display: none;
+}
+
 .preview__backdrop {
   position: absolute;
   inset: 0;

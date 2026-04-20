@@ -14,6 +14,12 @@ const viewerStatus = document.getElementById("viewer-status");
 
 let viewerModulesPromise;
 
+const THREE_MODULE_URL = "https://esm.sh/three@0.164.1";
+const ORBIT_CONTROLS_MODULE_URL =
+  "https://esm.sh/three@0.164.1/examples/jsm/controls/OrbitControls.js";
+const STL_LOADER_MODULE_URL =
+  "https://esm.sh/three@0.164.1/examples/jsm/loaders/STLLoader.js";
+
 const viewerState = {
   cleanup: null,
   token: 0,
@@ -118,9 +124,9 @@ function openPreview(pen) {
 async function ensureViewerModules() {
   if (!viewerModulesPromise) {
     viewerModulesPromise = Promise.all([
-      import("three"),
-      import("three/addons/controls/OrbitControls.js"),
-      import("three/addons/loaders/STLLoader.js"),
+      import(THREE_MODULE_URL),
+      import(ORBIT_CONTROLS_MODULE_URL),
+      import(STL_LOADER_MODULE_URL),
     ]).then(([THREE, controls, loaders]) => ({
       THREE,
       OrbitControls: controls.OrbitControls,
