@@ -1,0 +1,84 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1
+
+      - name: Install Python deps
+        run: pip install cadquery pyyaml
+
+      - name: Resolve version label for outputs
+        id: ver
+        run: |
+          git fetch --tags 2>/dev/null || true
+          v=$(git describe --tags --abbrev=0 2>/dev/null || echo dev)
+          echo "version=$v" >> $GITHUB_OUTPUT
+
+      - name: Build STEP files
+        env:
+          PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
+        run: python scripts/build.py
+
+      - name: Generate site data
+        env:
+          PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
+        run: python scripts/generate_site_data.py
+
+      - name: Assemble site for Pages
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site/outputs
+          cp site/index.html site/styles.css site/app.js _site/
+          cp site/data.json _site/
+          cp site/.nojekyll _site/
+          if [ -d assets ]; then cp -r assets _site/assets; fi
+          shopt -s nullglob
+          for f in outputs/*.step outputs/*.stl outputs/*.gcode; do
+            cp "$f" _site/outputs/
+          done
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

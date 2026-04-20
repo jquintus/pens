@@ -151,8 +151,8 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
+# Gallery: generated JSON (HTML/CSS/JS under site/ are committed)
+/site/data.json
 
 # mypy
 .mypy_cache/

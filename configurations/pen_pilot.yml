@@ -1,10 +1,15 @@
 id: pen_pilot
+title: Pilot body
+description: Reference shell used for layout and sizing experiments in the gallery.
+
+output:
+  name: pen_pilot
 
 metrics:
   outer_diameter: 12.5
   inner_diameter: 8.0
-  length: 14
+  length: 140
   fillet: 0.6
 
-output:
-  name: pen_pilot
+gallery:
+  - assets/pen_pilot/hero.svg

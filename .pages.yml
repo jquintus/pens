@@ -1,0 +1,59 @@
+media: assets
+
+components:
+  metrics:
+    type: object
+    label: Metrics (mm)
+    fields:
+      - name: outer_diameter
+        type: number
+        required: true
+      - name: inner_diameter
+        type: number
+        required: true
+      - name: length
+        type: number
+        required: true
+      - name: fillet
+        type: number
+        label: Fillet
+
+content:
+  - name: configurations
+    label: Pen configurations
+    type: collection
+    path: configurations
+    format: yaml
+    exclude:
+      - README.md
+    view:
+      primary: id
+      sort: id
+    filename: "{primary}.yml"
+    fields:
+      - name: id
+        type: string
+        required: true
+        label: ID (slug; use same value as output.name)
+        pattern: "^[a-z0-9_-]+$"
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: text
+        label: Short description
+      - name: output
+        type: object
+        label: Build output
+        fields:
+          - name: name
+            type: string
+            required: true
+            label: Output basename (must match ID)
+            pattern: "^[a-z0-9_-]+$"
+      - name: metrics
+        component: metrics
+      - name: gallery
+        label: Gallery images
+        type: image
+        list: true

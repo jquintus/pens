@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pens — gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <div class="brand">
+          <span class="brand__mark" aria-hidden="true"></span>
+          <div>
+            <h1 class="brand__title">Pens</h1>
+            <p class="brand__tag">Parametric configs → CAD downloads</p>
+          </div>
+        </div>
+        <p class="site-header__hint">
+          New variants live in <code>configurations/</code> — edited via Pages CMS or locally.
+        </p>
+      </div>
+    </header>
+
+    <main class="main">
+      <div id="loading" class="state state--loading">Loading gallery…</div>
+      <div id="error" class="state state--error" hidden></div>
+      <section id="grid" class="grid" hidden></section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Built from YAML metrics + CadQuery</span>
+    </footer>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
