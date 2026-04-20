@@ -1,0 +1,8 @@
+id: t
+title: test
+output:
+  name: t
+metrics:
+  outer_diameter: 12
+  inner_diameter: 8
+  length: 12
