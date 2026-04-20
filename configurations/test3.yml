@@ -1,0 +1,10 @@
+id: test3
+title: This is what I'm showing Ksenia
+description: A short descriptions about grapes.
+output:
+  name: test3
+metrics:
+  outer_diameter: 7.48
+  inner_diameter: 5.5
+  length: 14
+  fillet: 1
