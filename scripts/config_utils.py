@@ -22,6 +22,15 @@ def load_config(path: Path) -> dict:
     return data
 
 
+def get_dimensions(config: dict) -> dict:
+    dims = config.get("dimensions")
+    if dims is None:
+        dims = config.get("metrics")
+    if not isinstance(dims, dict):
+        raise KeyError("missing required key 'dimensions'")
+    return dims
+
+
 def normalize_version_for_filename(version: str) -> str:
     s = version.strip()
     if not s:
@@ -59,7 +68,7 @@ def output_base_name(config_path: Path, config: dict) -> str:
     out = config.get("output") or {}
     base = out.get("name")
     if not base:
-        base = config_path.stem
+        base = config.get("id") or config_path.stem
     return str(base)
 
 

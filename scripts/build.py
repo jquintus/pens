@@ -7,6 +7,7 @@ from config_utils import (
     CONFIG_DIR,
     OUTPUT_DIR,
     REPO_ROOT,
+    get_dimensions,
     load_config,
     output_stem,
 )
@@ -24,8 +25,7 @@ def export_result(result, output_file: Path) -> None:
 
 def build_one(config_path: Path) -> Path:
     config = load_config(config_path)
-    if "metrics" not in config:
-        raise KeyError(f"{config_path}: missing required key 'metrics'")
+    get_dimensions(config)
 
     result = build_model(config)
     stem = output_stem(config_path, config)

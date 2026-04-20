@@ -1,11 +1,13 @@
 id: t
 title: test
-output:
-  name: t
-metrics:
-  outer_diameter: 12
-  inner_diameter: 8
-  length: 12
-gallery:
-  - /assets/pen2.jpg
-  - /assets/pen1.jpg
+
+dimensions:
+  cylinder_height: 12
+  cylinder_diameter: 12
+  frustum_height: 6
+  frustum_top_diameter: 10
+  frustum_bottom_diameter: 12
+  top_hole_diameter: 4
+  bottom_hole_diameter: 8
+  top_hole_height: 4
+

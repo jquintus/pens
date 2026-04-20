@@ -6,9 +6,9 @@ Live site: https://quintussential.com/pens/
 
 ## Structure
 
-- `configurations/` - one YAML file per pen variant (metrics, gallery paths, copy for the site)
+- `configurations/` - one YAML file per pen variant (dimensions, gallery paths, copy for the site)
 - `assets/` - images used by the gallery (referenced from each config's `gallery` list)
-- `cad/` - CadQuery model (`engine.build(config)` reads `config["metrics"]`)
+- `cad/` - CadQuery model (`engine.build(config)` reads `config["dimensions"]`)
 - `scripts/` - `build.py` (STEP + STL export), `generate_site_data.py` (writes `site/data.json`)
 - `site/` - static gallery (`index.html`, `styles.css`, `app.js`)
 - `outputs/` - generated `.step`, `.stl`, and later `.gcode` files
@@ -37,12 +37,23 @@ Each file under `configurations/` drives both the CAD build and the gallery.
 
 | Field | Required | Purpose |
 | --- | --- | --- |
-| `id` | yes | Stable slug (should match `output.name` and the config filename stem). |
+| `id` | yes | Stable slug and default output basename. |
 | `title` | yes | Heading on the gallery card. |
 | `description` | no | Short blurb on the card. |
-| `metrics` | yes | Numbers passed into `cad/engine.py`. |
-| `output.name` | no | STEP basename without version; defaults to the YAML filename stem. |
+| `dimensions` | yes | Cylinder, frustum, and stepped-bore dimensions passed into `cad/engine.py`. |
+| `output.name` | no | Optional STEP basename override; defaults to `id`. |
 | `gallery` | no | List of image paths (repo-relative, usually under `assets/...`). |
+
+The current model expects these `dimensions` keys:
+
+- `cylinder_height`
+- `cylinder_diameter`
+- `frustum_height`
+- `frustum_top_diameter`
+- `frustum_bottom_diameter`
+- `top_hole_diameter`
+- `bottom_hole_diameter`
+- `top_hole_height`
 
 Release versions for filenames still come from the Git tag in CI (`PENS_RELEASE_VERSION`), or from `git describe` / `dev` locally, not from YAML.
 
@@ -60,7 +71,7 @@ Download buttons on the site link to `outputs/*.step` (and `*.stl` / `*.gcode` w
 
 This repo includes [`.pages.yml`](.pages.yml) so you can use [Pages CMS](https://pagescms.org) against the same GitHub repository: connect the repo in Pages CMS, edit the Pen configurations collection, upload gallery images into `assets/`, and commit changes from the UI with no code edits required to add a new variant.
 
-Use the same `id` for the entry, `output.name`, and the saved filename stem, for example `pen_acme.yml` with `id: pen_acme` and `output.name: pen_acme`.
+By default the saved filename stem and output basename come from `id`, so `pen_acme.yml` with `id: pen_acme` is enough. Only set `output.name` if you explicitly want a different basename.
 
 ## Future Work
 

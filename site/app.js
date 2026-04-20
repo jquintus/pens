@@ -8,7 +8,7 @@ const previewTitle = document.getElementById("preview-title");
 const previewMeta = document.getElementById("preview-meta");
 const previewDescription = document.getElementById("preview-description");
 const previewImages = document.getElementById("preview-images");
-const previewMetrics = document.getElementById("preview-metrics");
+const previewDimensions = document.getElementById("preview-dimensions");
 const previewDownloads = document.getElementById("preview-downloads");
 const viewer = document.getElementById("viewer");
 const viewerStatus = document.getElementById("viewer-status");
@@ -27,16 +27,16 @@ const viewerState = {
   token: 0,
 };
 
-function formatMetric(key, value) {
+function formatDimension(key, value) {
   if (value === null || value === undefined) return null;
   const k = key.replace(/_/g, " ");
   return `${k}: ${value}`;
 }
 
-function metricsChips(metrics, limit = 6) {
-  if (!metrics || typeof metrics !== "object") return [];
-  const lines = Object.entries(metrics)
-    .map(([k, v]) => formatMetric(k, v))
+function dimensionChips(dimensions, limit = 6) {
+  if (!dimensions || typeof dimensions !== "object") return [];
+  const lines = Object.entries(dimensions)
+    .map(([k, v]) => formatDimension(k, v))
     .filter(Boolean);
   return Number.isFinite(limit) ? lines.slice(0, limit) : lines;
 }
@@ -136,11 +136,11 @@ function openPreview(pen) {
   previewDescription.textContent = pen.description || "No description yet.";
   renderPreviewImages(pen);
 
-  clearChildren(previewMetrics);
-  for (const line of metricsChips(pen.metrics, Number.POSITIVE_INFINITY)) {
+  clearChildren(previewDimensions);
+  for (const line of dimensionChips(pen.dimensions, Number.POSITIVE_INFINITY)) {
     const li = document.createElement("li");
     li.textContent = line;
-    previewMetrics.appendChild(li);
+    previewDimensions.appendChild(li);
   }
 
   renderDownloads(previewDownloads, pen.downloads);
@@ -324,7 +324,7 @@ function renderCard(pen) {
 
   const ul = document.createElement("ul");
   ul.className = "metrics";
-  for (const line of metricsChips(pen.metrics)) {
+  for (const line of dimensionChips(pen.dimensions)) {
     const li = document.createElement("li");
     li.textContent = line;
     ul.appendChild(li);

@@ -2,14 +2,15 @@ id: pen_schmidt
 title: Schmidt-style body
 description: Slightly slimmer profile with a cooler accent for contrast in the grid.
 
-output:
-  name: pen_schmidt
-
-metrics:
-  outer_diameter: 11.0
-  inner_diameter: 7.5
-  length: 135
-  fillet: 0.5
+dimensions:
+  cylinder_height: 96
+  cylinder_diameter: 11.0
+  frustum_height: 39
+  frustum_top_diameter: 9.2
+  frustum_bottom_diameter: 11.0
+  top_hole_diameter: 3.5
+  bottom_hole_diameter: 7.5
+  top_hole_height: 16
 
 gallery:
   - assets/default-pen.svg
