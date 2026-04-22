@@ -4,8 +4,8 @@ nose_cone:
   cylinder_height: 6
   cylinder_outside_diameter: 7.46
   frustum_height: 20
-  frustum_top_diameter: 7
+  frustum_top_diameter: 6
   frustum_bottom_diameter: 10.2
   top_hole_diameter: 4.75
-  bottom_hole_diameter: 6.2
+  bottom_hole_diameter: 4
   top_hole_height: 21.25
