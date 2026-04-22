@@ -1,9 +1,9 @@
 id: pilot_precise_v5rt
 title: Pilot Precise V5RT
 nose_cone:
-  cylinder_height: 6
+  cylinder_height: 10
   cylinder_outside_diameter: 7.46
-  frustum_height: 20
+  frustum_height: 16
   frustum_top_diameter: 6
   frustum_bottom_diameter: 10.2
   top_hole_diameter: 4.75
