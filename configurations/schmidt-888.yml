@@ -2,7 +2,7 @@ id: schmidt-888
 title: Schmidt 888
 nose_cone:
   cylinder_height: 10
-  cylinder_outside_diameter: 745
+  cylinder_outside_diameter: 7.45
   frustum_height: 11
   frustum_top_diameter: 4.75
   frustum_bottom_diameter: 10.2
