@@ -8,4 +8,4 @@ nose_cone:
   frustum_bottom_diameter: 10.2
   top_hole_diameter: 3.5
   bottom_hole_diameter: 4.75
-  top_hole_height: 4
+  top_hole_height: 17
