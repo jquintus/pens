@@ -9,3 +9,5 @@ nose_cone:
   top_hole_diameter: 3.5
   bottom_hole_diameter: 4.75
   top_hole_height: 17
+gallery:
+  - /assets/1000012828.jpg
