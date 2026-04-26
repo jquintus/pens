@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import importlib.util
 from pathlib import Path
 
 import cadquery as cq
@@ -16,7 +17,8 @@ from config_utils import (
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from cad.engine import build as build_model
+# Models directory for arbitrary models
+MODELS_DIR = REPO_ROOT / "models"
 
 # To disable PrusaSlicer integration, comment out the line below:
 ENABLE_SLICING = True
@@ -38,8 +40,6 @@ def slice_stl(stl_path: Path, config_name: str) -> None:
     
     print(f"Slicing {stl_path.name} with {config_name}...")
     try:
-        # We use prusa-slicer CLI. 
-        # Note: In CI/GitHub Actions, this needs to be installed.
         subprocess.run([
             "prusa-slicer",
             "--export-gcode",
@@ -51,41 +51,75 @@ def slice_stl(stl_path: Path, config_name: str) -> None:
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         print(f"Slicing failed for {config_name}: {e}")
 
-def build_one(config_path: Path) -> Path:
+def build_pen(config_path: Path):
+    from cad.engine import build as build_model
     config = load_config(config_path)
+    # Validate pen config
     get_nose_cone(config)
-
     result = build_model(config)
-    stem = output_stem(config_path, config)
-    step_file = OUTPUT_DIR / f"{stem}.step"
-    stl_file = OUTPUT_DIR / f"{stem}.stl"
-    export_result(result, step_file)
-    export_result(result, stl_file)
+    return result, config
 
-    if ENABLE_SLICING:
-        slice_stl(stl_file, "fast")
-        slice_stl(stl_file, "quality")
+def build_custom_model(config_path: Path):
+    model_dir = config_path.parent
+    module_path = model_dir / "model.py"
+    
+    if not module_path.exists():
+        raise FileNotFoundError(f"model.py not found in {model_dir}")
+        
+    config = load_config(config_path)
+    
+    # Dynamic import of model.py
+    spec = importlib.util.spec_from_file_location("custom_model", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    
+    if not hasattr(module, 'build'):
+        raise AttributeError(f"{module_path} must have a 'build' function")
+        
+    result = module.build(config.get("model", {}))
+    return result, config
 
-    return step_file
+def build_all_in_dir(directory: Path, build_func, pattern="*.yml"):
+    configs = sorted(directory.glob(pattern)) + sorted(directory.glob(pattern.replace(".yml", ".yaml")))
+    for path in configs:
+        if path.name.startswith("."): continue
+        
+        try:
+            print(f"Processing {path}...")
+            result, config = build_func(path)
+            stem = output_stem(path, config)
+            
+            step_file = OUTPUT_DIR / f"{stem}.step"
+            stl_file = OUTPUT_DIR / f"{stem}.stl"
+            
+            export_result(result, step_file)
+            export_result(result, stl_file)
+
+            if ENABLE_SLICING:
+                slice_stl(stl_file, "fast")
+                slice_stl(stl_file, "quality")
+        except Exception as e:
+            print(f"Failed to build {path}: {e}")
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    if not CONFIG_DIR.is_dir():
-        raise FileNotFoundError(
-            f"Configuration directory not found: {CONFIG_DIR}\n"
-            "Add one or more *.yml files under configurations/."
-        )
+    # Build Pens
+    if CONFIG_DIR.is_dir():
+        print("--- Building Pens ---")
+        build_all_in_dir(CONFIG_DIR, build_pen)
 
-    configs = sorted(CONFIG_DIR.glob("*.yml")) + sorted(CONFIG_DIR.glob("*.yaml"))
-    if not configs:
-        raise FileNotFoundError(
-            f"No *.yml or *.yaml files in {CONFIG_DIR}\n"
-            "Add configuration files to generate STEP outputs."
-        )
-
-    for path in configs:
-        build_one(path)
+    # Build Custom Models
+    if MODELS_DIR.is_dir():
+        print("--- Building Custom Models ---")
+        for subfolder in sorted(MODELS_DIR.iterdir()):
+            if subfolder.is_dir():
+                config_path = subfolder / "config.yml"
+                if not config_path.exists():
+                    config_path = subfolder / "config.yaml"
+                
+                if config_path.exists():
+                    build_all_in_dir(subfolder, build_custom_model, pattern=config_path.name)
 
 if __name__ == "__main__":
     main()

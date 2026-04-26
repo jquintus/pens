@@ -7,7 +7,10 @@ Live site: https://quintussential.com/pens/
 ## Structure
 
 - `configurations/` - one YAML file per pen variant (`nose_cone`, gallery paths, copy for the site)
-- `assets/` - images used by the gallery (referenced from each config's `gallery` list)
+- `models/` - arbitrary CadQuery models. Each subfolder (e.g., `models/c_bracket/`) contains:
+    - `config.yml`: Metadata (`id`, `title`, `description`) and a `model` section for parameters.
+    - `model.py`: A Python script with a `build(model_config)` function that returns a CadQuery object.
+- `assets/` - images used by the gallery
 - `cad/` - CadQuery model (`engine.build(config)` reads `config["nose_cone"]`)
 - `scripts/` - `build.py` (STEP + STL export), `generate_site_data.py` (writes `site/data.json`)
 - `site/` - static gallery (`index.html`, `styles.css`, `app.js`)

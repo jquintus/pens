@@ -68,6 +68,7 @@ jobs:
           cp site/data.json _site/
           cp site/.nojekyll _site/
           if [ -d site/pens ]; then cp -r site/pens _site/pens; fi
+          if [ -d models ]; then cp -r models _site/models; fi
           if [ -d assets ]; then cp -r assets _site/assets; fi
           shopt -s nullglob
           for f in outputs/*.step outputs/*.stl outputs/*.gcode; do

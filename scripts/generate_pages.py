@@ -24,7 +24,7 @@ def generate_pages():
     PENS_DIR.mkdir(parents=True, exist_ok=True)
 
     for pen in data["pens"]:
-        slug = pen["slug"]
+        slug = pen.get("actual_slug", pen["slug"])
         title = pen["title"]
         description = pen.get("description", "No description yet.")
         pen_id = pen["id"]

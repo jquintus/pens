@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write site/data.json from configurations/ and existing build outputs."""
+"""Write site/data.json from configurations/, models/ and existing build outputs."""
 
 import json
 import sys
@@ -21,11 +21,10 @@ from config_utils import (
 )
 
 DEFAULT_IMAGE = ASSETS_DIR / "default-pen.svg"
-
+MODELS_DIR = REPO_ROOT / "models"
 
 def repo_relative(path: Path) -> str:
     return path.relative_to(REPO_ROOT).as_posix()
-
 
 def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
     exact = (OUTPUT_DIR / stem).with_suffix(ext)
@@ -42,7 +41,6 @@ def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
 
     return None
 
-
 def collect_downloads(base_name: str, stem: str) -> dict:
     out = {}
     for ext, key in ((".step", "step"), (".stl", "stl")):
@@ -55,7 +53,6 @@ def collect_downloads(base_name: str, stem: str) -> dict:
         out[f"gcode_{variant}"] = f"outputs/{p.name}" if p else None
         
     return out
-
 
 def resolve_gallery_image_path(raw: str) -> Path | None:
     """Resolve CMS paths (often under assets/) or repo-relative paths."""
@@ -77,7 +74,6 @@ def resolve_gallery_image_path(raw: str) -> Path | None:
             return pr
     return None
 
-
 def normalize_gallery_paths(config: dict) -> list[str]:
     raw = config.get("gallery") or []
     if not isinstance(raw, list):
@@ -95,39 +91,57 @@ def normalize_gallery_paths(config: dict) -> list[str]:
         urls.append(repo_relative(DEFAULT_IMAGE))
     return urls
 
+def process_config(path: Path, is_pen=True):
+    config = load_config(path)
+    base_name = output_base_name(path, config)
+    stem = output_stem(path, config)
+    cid = str(config.get("id") or path.stem)
+    title = str(config.get("title") or cid.replace("_", " ").title())
+    description = str(config.get("description") or "").strip()
+
+    if is_pen:
+        params = get_nose_cone(config)
+    else:
+        params = config.get("model", {})
+
+    return {
+        "id": cid,
+        "slug": path.stem if is_pen else f"{path.parent.name}_{path.stem}",
+        "actual_slug": path.stem if is_pen else path.parent.name,
+        "title": title,
+        "description": description,
+        "nose_cone": params, # we keep the key for compatibility with detail_template.html
+        "images": normalize_gallery_paths(config),
+        "downloads": collect_downloads(base_name, stem),
+    }
 
 def main():
     entries = []
-    configs = sorted(CONFIG_DIR.glob("*.yml")) + sorted(CONFIG_DIR.glob("*.yaml"))
-    for path in configs:
-        if path.name.startswith("."):
-            continue
-        config = load_config(path)
-        base_name = output_base_name(path, config)
-        stem = output_stem(path, config)
-        cid = str(config.get("id") or path.stem)
-        title = str(config.get("title") or cid.replace("_", " ").title())
-        description = str(config.get("description") or "").strip()
+    
+    # Pens
+    if CONFIG_DIR.is_dir():
+        configs = sorted(CONFIG_DIR.glob("*.yml")) + sorted(CONFIG_DIR.glob("*.yaml"))
+        for path in configs:
+            if path.name.startswith("."): continue
+            entries.append(process_config(path, is_pen=True))
 
-        entries.append(
-            {
-                "id": cid,
-                "slug": path.stem,
-                "title": title,
-                "description": description,
-                "nose_cone": get_nose_cone(config),
-                "images": normalize_gallery_paths(config),
-                "downloads": collect_downloads(base_name, stem),
-            }
-        )
+    # Custom Models
+    if MODELS_DIR.is_dir():
+        for subfolder in sorted(MODELS_DIR.iterdir()):
+            if subfolder.is_dir():
+                config_path = subfolder / "config.yml"
+                if not config_path.exists():
+                    config_path = subfolder / "config.yaml"
+                
+                if config_path.exists():
+                    entries.append(process_config(config_path, is_pen=False))
 
     entries.sort(key=lambda e: e["slug"])
 
     SITE_DIR.mkdir(parents=True, exist_ok=True)
     data_path = SITE_DIR / "data.json"
     data_path.write_text(json.dumps({"pens": entries}, indent=2) + "\n", encoding="utf-8")
-    print(f"Wrote {data_path} ({len(entries)} pens)")
-
+    print(f"Wrote {data_path} ({len(entries)} items)")
 
 if __name__ == "__main__":
     main()

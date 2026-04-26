@@ -1,0 +1,10 @@
+id: c_bracket
+title: C-Bracket
+description: A C-shaped bracket designed for hanging pictures, featuring a countersunk hole for a #8 wood screw.
+model:
+  width_in: 0.5
+  length_in: 1.0
+  back_height_in: 2.0
+  thickness_in: 0.125
+  lip_height_in: 0.5
+gallery: []

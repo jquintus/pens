@@ -42,6 +42,7 @@ function createImage(path, alt) {
 }
 
 function renderCard(pen) {
+  const actualSlug = pen.actual_slug || pen.slug;
   const article = document.createElement("article");
   article.className = "card";
 
@@ -51,7 +52,7 @@ function renderCard(pen) {
   visual.appendChild(createImage(mainImage, `${pen.title} preview`));
 
   const link = document.createElement("a");
-  link.href = `./pens/${pen.slug}.html`;
+  link.href = `./pens/${actualSlug}.html`;
   link.className = "card__preview-trigger";
   link.textContent = "View Details & 3D Preview";
   visual.appendChild(link);
@@ -62,7 +63,7 @@ function renderCard(pen) {
   const title = document.createElement("h2");
   title.className = "card__title";
   const titleLink = document.createElement("a");
-  titleLink.href = `./pens/${pen.slug}.html`;
+  titleLink.href = `./pens/${actualSlug}.html`;
   titleLink.textContent = pen.title;
   titleLink.style.textDecoration = "none";
   titleLink.style.color = "inherit";
