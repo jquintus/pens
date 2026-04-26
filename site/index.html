@@ -53,46 +53,6 @@
       <section id="grid" class="grid" hidden></section>
     </main>
 
-    <div id="preview" class="preview" hidden>
-      <button
-        id="preview-dismiss"
-        class="preview__backdrop"
-        type="button"
-        aria-label="Close preview"
-      ></button>
-      <section
-        class="preview__panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="preview-title"
-      >
-        <div class="preview__header">
-          <div>
-            <p class="preview__eyebrow">Interactive preview</p>
-            <h2 id="preview-title" class="preview__title"></h2>
-            <p id="preview-meta" class="preview__meta"></p>
-          </div>
-          <button id="preview-close" class="preview__close" type="button">
-            Close
-          </button>
-        </div>
-
-        <div class="preview__layout">
-          <div class="preview__viewer-shell">
-            <div id="viewer" class="viewer" aria-live="polite"></div>
-            <div id="viewer-status" class="viewer__status">Loading preview...</div>
-          </div>
-
-          <aside class="preview__sidebar">
-            <p id="preview-description" class="preview__description"></p>
-            <div id="preview-images" class="preview-images" hidden></div>
-            <ul id="preview-nose-cone" class="metrics metrics--stack"></ul>
-            <div id="preview-downloads" class="downloads downloads--stack"></div>
-          </aside>
-        </div>
-      </section>
-    </div>
-
     <footer class="site-footer">
       <span>Built from YAML nose_cone + CadQuery</span>
     </footer>

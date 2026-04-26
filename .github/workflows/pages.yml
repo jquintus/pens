@@ -52,19 +52,22 @@ jobs:
           PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
         run: python scripts/build.py
 
-      - name: Generate site data
+      - name: Generate site data and pages
         env:
           PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
-        run: python scripts/generate_site_data.py
+        run: |
+          python scripts/generate_site_data.py
+          python scripts/generate_pages.py
 
       - name: Assemble site for Pages
         run: |
           set -euo pipefail
           rm -rf _site
           mkdir -p _site/outputs
-          cp site/index.html site/styles.css site/app.js _site/
+          cp site/index.html site/styles.css site/app.js site/viewer.js _site/
           cp site/data.json _site/
           cp site/.nojekyll _site/
+          if [ -d site/pens ]; then cp -r site/pens _site/pens; fi
           if [ -d assets ]; then cp -r assets _site/assets; fi
           shopt -s nullglob
           for f in outputs/*.step outputs/*.stl outputs/*.gcode; do

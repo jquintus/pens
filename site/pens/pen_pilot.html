@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pilot body - Pens Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        /* Detail page specific overrides to make it feel like a page, not a modal */
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem clamp(1.25rem, 4vw, 3rem);
+        }
+        .preview__panel {
+            width: 100%;
+            max-height: none;
+            position: static;
+            box-shadow: none;
+            border-color: var(--stroke);
+            background: transparent;
+        }
+        .preview__layout {
+            padding: 1.5rem 0;
+        }
+        .preview__header {
+            padding: 0;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .gallery-item {
+            aspect-ratio: 4/3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--stroke);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+            border-color: var(--accent);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .main-image-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--bg1);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--stroke);
+            margin-bottom: 2rem;
+            display: none; /* Hidden by default, shown if no 3D preview */
+        }
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" style="text-decoration: none; color: inherit;">
+            <div class="brand">
+            <span class="brand__mark" aria-hidden="true"></span>
+            <div>
+                <h1 class="brand__title">Pens</h1>
+                <p class="brand__tag">Parametric configs to CAD downloads</p>
+            </div>
+            </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="detail-container">
+      <a href="../index.html" class="back-link">← Back to Gallery</a>
+
+      <section class="preview__panel">
+        <div class="preview__header">
+          <div>
+            <p class="preview__eyebrow">Interactive preview</p>
+            <h2 class="preview__title">Pilot body</h2>
+            <p class="preview__meta">pen_pilot | pen_pilot</p>
+          </div>
+        </div>
+
+        <div class="preview__layout">
+          <div class="preview__viewer-shell">
+            <div id="viewer" class="viewer" aria-live="polite"></div>
+            <div id="viewer-status" class="viewer__status">Loading preview...</div>
+            <div id="main-image" class="main-image-container">
+                <img src="../assets/default-pen.svg" alt="Pilot body">
+            </div>
+          </div>
+
+          <aside class="preview__sidebar">
+            <p class="preview__description">Reference shell used for layout and sizing experiments in the gallery.</p>
+            
+            <h3 style="margin-top: 2rem; font-size: 1rem; color: var(--accent);">Downloads</h3>
+            <div class="downloads downloads--stack">
+                <a href="#" class="btn btn--ghost" aria-disabled="true">STEP</a>
+<a href="#" class="btn btn--ghost" aria-disabled="true">STL</a>
+<a href="#" class="btn btn--ghost" aria-disabled="true">G-code</a>
+
+            </div>
+
+            <h3 style="margin-top: 2rem; font-size: 1rem; color: var(--accent);">Parameters</h3>
+            <ul class="metrics metrics--stack">
+                <li>cylinder height: 100</li>
+<li>cylinder outside diameter: 12.5</li>
+<li>frustum height: 40</li>
+<li>frustum top diameter: 10.5</li>
+<li>frustum bottom diameter: 12.5</li>
+<li>top hole diameter: 4.0</li>
+<li>bottom hole diameter: 8.0</li>
+<li>top hole height: 18</li>
+
+            </ul>
+          </aside>
+        </div>
+
+        <h3 style="margin-top: 3rem; font-size: 1.25rem;">Gallery</h3>
+        <div class="gallery-grid">
+            
+            <div class="gallery-item" onclick="setMainImage('../assets/default-pen.svg')">
+                <img src="../assets/default-pen.svg" alt="Pilot body reference">
+            </div>
+            
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Built from YAML nose_cone + CadQuery</span>
+    </footer>
+
+    <script type="module">
+        import { mountViewer } from '../viewer.js';
+
+        const stlUrl = 'null';
+        const viewerContainer = document.getElementById('viewer');
+        const viewerStatus = document.getElementById('viewer-status');
+        const mainImage = document.getElementById('main-image');
+
+        if (stlUrl && stlUrl !== 'null') {
+            const state = {
+                token: 1,
+                currentToken: 1,
+                cleanup: null
+            };
+            mountViewer(viewerContainer, viewerStatus, '../' + stlUrl, state);
+        } else {
+            viewerContainer.style.display = 'none';
+            viewerStatus.style.display = 'none';
+            mainImage.style.display = 'block';
+        }
+
+        // Simple gallery logic
+        window.setMainImage = (src) => {
+            const img = mainImage.querySelector('img');
+            img.src = src;
+            viewerContainer.style.display = 'none';
+            viewerStatus.style.display = 'none';
+            mainImage.style.display = 'block';
+        };
+    </script>
+  </body>
+</html>
