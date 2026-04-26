@@ -32,11 +32,20 @@ def generate_pages():
         # Downloads HTML
         downloads_html = ""
         d = pen.get("downloads", {})
-        for label, path in [("STEP", d.get("step")), ("STL", d.get("stl")), ("G-code", d.get("gcode"))]:
+        # Standard downloads
+        for label, key in [("STEP", "step"), ("STL", "stl")]:
+            path = d.get(key)
             if path:
                 downloads_html += f'<a href="../{path}" class="btn" download>{label}</a>\n'
             else:
                 downloads_html += f'<a href="#" class="btn btn--ghost" aria-disabled="true">{label}</a>\n'
+        
+        # G-code variants
+        for label, key in [("G-code (Fast)", "gcode_fast"), ("G-code (Quality)", "gcode_quality")]:
+            path = d.get(key)
+            if path:
+                downloads_html += f'<a href="../{path}" class="btn" download>{label}</a>\n'
+            # We don't show ghost buttons for G-code if slicing is disabled
 
         # Metrics HTML
         metrics_html = ""

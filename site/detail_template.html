@@ -58,6 +58,7 @@
             border: 1px solid var(--stroke);
             cursor: pointer;
             transition: transform 0.2s;
+            position: relative;
         }
         .gallery-item:hover {
             transform: scale(1.02);
@@ -67,6 +68,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        .gallery-item--viewer {
+            background: var(--bg1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            border: 1px dashed var(--accent);
         }
         .main-image-container {
             width: 100%;
@@ -139,6 +152,10 @@
 
         <h3 style="margin-top: 3rem; font-size: 1.25rem;">Gallery</h3>
         <div class="gallery-grid">
+            <div class="gallery-item gallery-item--viewer" onclick="showViewer()">
+                <span style="font-size: 1.5rem;">📦</span>
+                <span>3D Viewer</span>
+            </div>
             {{GALLERY}}
         </div>
       </section>
@@ -155,13 +172,25 @@
         const viewerContainer = document.getElementById('viewer');
         const viewerStatus = document.getElementById('viewer-status');
         const mainImage = document.getElementById('main-image');
+        
+        const state = {
+            token: 1,
+            currentToken: 1,
+            cleanup: null
+        };
+
+        window.showViewer = () => {
+            if (stlUrl && stlUrl !== 'null') {
+                mainImage.style.display = 'none';
+                viewerContainer.style.display = 'block';
+                viewerStatus.style.display = 'block';
+                state.currentToken++;
+                state.token = state.currentToken;
+                mountViewer(viewerContainer, viewerStatus, '../' + stlUrl, state);
+            }
+        };
 
         if (stlUrl && stlUrl !== 'null') {
-            const state = {
-                token: 1,
-                currentToken: 1,
-                cleanup: null
-            };
             mountViewer(viewerContainer, viewerStatus, '../' + stlUrl, state);
         } else {
             viewerContainer.style.display = 'none';

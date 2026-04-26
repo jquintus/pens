@@ -76,7 +76,8 @@ export async function mountViewer(container, statusEl, url, state) {
     scene.add(gridHelper);
 
     const loader = new STLLoader();
-    const geometry = await loadStl(loader, url);
+    const cacheBustedUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const geometry = await loadStl(loader, cacheBustedUrl);
     if (state.token !== state.currentToken) {
       geometry.dispose();
       renderer.dispose();

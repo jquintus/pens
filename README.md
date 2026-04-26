@@ -57,6 +57,28 @@ The current model expects these `nose_cone` keys:
 
 Release versions for filenames still come from the Git tag in CI (`PENS_RELEASE_VERSION`), or from `git describe` / `dev` locally, not from YAML.
 
+## Slicing & G-code
+
+This project integrates PrusaSlicer to automatically generate printable G-code for each pen variant. By default, it generates two profiles:
+- **Fast**: 0.15mm layer height, 10% grid infill (optimized for speed).
+- **Quality**: 0.10mm layer height, 15% gyroid infill (optimized for detail).
+
+Both profiles are configured for a **0.2mm nozzle**.
+
+### Disabling Slicing
+
+If you want to skip G-code generation (e.g., to speed up the build or if you don't have PrusaSlicer installed), you can disable it with a single line change:
+
+1. Open `scripts/build.py`.
+2. Comment out the `ENABLE_SLICING = True` line:
+   ```python
+   # ENABLE_SLICING = True
+   ```
+
+### Slicer Configurations
+
+Custom slicer settings are stored as `.ini` files in the `slicer_configs/` directory.
+
 ## GitHub Pages
 
 1. Repo Settings -> Pages

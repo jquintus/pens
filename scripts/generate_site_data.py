@@ -45,9 +45,15 @@ def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
 
 def collect_downloads(base_name: str, stem: str) -> dict:
     out = {}
-    for ext, key in ((".step", "step"), (".stl", "stl"), (".gcode", "gcode")):
+    for ext, key in ((".step", "step"), (".stl", "stl")):
         p = resolve_output_path(base_name, stem, ext)
         out[key] = f"outputs/{p.name}" if p else None
+    
+    # Handle G-code variants
+    for variant in ["fast", "quality"]:
+        p = resolve_output_path(base_name, f"{stem}_{variant}", ".gcode")
+        out[f"gcode_{variant}"] = f"outputs/{p.name}" if p else None
+        
     return out
 
 
