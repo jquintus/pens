@@ -60,6 +60,56 @@ content:
         label: Short description
       - name: nose_cone
         component: nose_cone
+      - name: slicing_profiles
+        label: Slicing Profiles
+        type: select
+        options:
+          multiple: true
+          values:
+            - 0.2_fast
+            - 0.2_quality
+            - 0.4_fast
+            - 0.4_quality
+            - 0.6_fast
+            - 0.6_quality
+      - name: gallery
+        label: Gallery images
+        type: image
+        options:
+          multiple:
+            max: 8
+          extensions: [svg, png, jpg, jpeg, webp, avif]
+
+  - name: models
+    label: Custom models
+    type: collection
+    path: models
+    format: yaml
+    view:
+      primary: id
+      sort: id
+    filename: "{actual_slug}/config.yml"
+    fields:
+      - name: id
+        type: string
+        required: true
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: text
+      - name: slicing_profiles
+        label: Slicing Profiles
+        type: select
+        options:
+          multiple: true
+          values:
+            - 0.2_fast
+            - 0.2_quality
+            - 0.4_fast
+            - 0.4_quality
+            - 0.6_fast
+            - 0.6_quality
       - name: gallery
         label: Gallery images
         type: image

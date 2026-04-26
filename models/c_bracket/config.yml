@@ -7,4 +7,7 @@ model:
   back_height_in: 2.0
   thickness_in: 0.125
   lip_height_in: 0.5
+slicing_profiles:
+  - 0.4_fast
+  - 0.4_quality
 gallery: []

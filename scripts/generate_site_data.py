@@ -41,14 +41,14 @@ def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
 
     return None
 
-def collect_downloads(base_name: str, stem: str) -> dict:
+def collect_downloads(base_name: str, stem: str, slicing_profiles: list) -> dict:
     out = {}
     for ext, key in ((".step", "step"), (".stl", "stl")):
         p = resolve_output_path(base_name, stem, ext)
         out[key] = f"outputs/{p.name}" if p else None
     
     # Handle G-code variants
-    for variant in ["fast", "quality"]:
+    for variant in slicing_profiles:
         p = resolve_output_path(base_name, f"{stem}_{variant}", ".gcode")
         out[f"gcode_{variant}"] = f"outputs/{p.name}" if p else None
         
@@ -104,6 +104,8 @@ def process_config(path: Path, is_pen=True):
     else:
         params = config.get("model", {})
 
+    slicing_profiles = config.get("slicing_profiles", [])
+
     return {
         "id": cid,
         "slug": path.stem if is_pen else f"{path.parent.name}_{path.stem}",
@@ -111,8 +113,9 @@ def process_config(path: Path, is_pen=True):
         "title": title,
         "description": description,
         "nose_cone": params, # we keep the key for compatibility with detail_template.html
+        "slicing_profiles": slicing_profiles,
         "images": normalize_gallery_paths(config),
-        "downloads": collect_downloads(base_name, stem),
+        "downloads": collect_downloads(base_name, stem, slicing_profiles),
     }
 
 def main():

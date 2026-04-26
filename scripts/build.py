@@ -96,8 +96,9 @@ def build_all_in_dir(directory: Path, build_func, pattern="*.yml"):
             export_result(result, stl_file)
 
             if ENABLE_SLICING:
-                slice_stl(stl_file, "fast")
-                slice_stl(stl_file, "quality")
+                profiles = config.get("slicing_profiles", [])
+                for profile in profiles:
+                    slice_stl(stl_file, profile)
         except Exception as e:
             print(f"Failed to build {path}: {e}")
 
