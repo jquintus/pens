@@ -47,6 +47,22 @@ def slice_stl(stl_path: Path, config_name: str) -> None:
             "--output", str(output_gcode),
             str(stl_path)
         ], check=True, capture_output=True)
+        
+        # Post-process: Prepend Bambu headers to enable "Send" button
+        if output_gcode.exists():
+            nozzle = config_name.split('_')[0] if '_' in config_name else "0.4"
+            headers = [
+                "; BambuStudio 01.08.00.00",
+                f"; printer_model: Bambu Lab P1S",
+                f"; printer_variant: {nozzle}",
+                "; printer_structure: corexy",
+                "; total estimated time: 30m 0s", # Dummy values
+                "; total layer number: 100",
+                "\n"
+            ]
+            original_content = output_gcode.read_text(encoding="utf-8")
+            output_gcode.write_text("\n".join(headers) + original_content, encoding="utf-8")
+            
         print(f"Generated G-code: {output_gcode}")
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         print(f"Slicing failed for {config_name}: {e}")
