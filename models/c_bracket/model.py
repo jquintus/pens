@@ -8,7 +8,7 @@ def build(model_config):
     base_l = model_config.get("length_in", 1.0) * inch
     back_h = model_config.get("back_height_in", 2.0) * inch
     lip_h = model_config.get("lip_height_in", 0.5) * inch
-    
+
     r = (1/32) * inch
 
     # --- Build parts (clear + explicit) ---
@@ -33,9 +33,16 @@ def build(model_config):
     # --- Fillets ---
     result = result.edges().fillet(r)
 
-    # --- Hole (FIXED) ---
-    hole_z = back_h * (5.0 / 6.0)
+    # --- Hole (correct position + proper #8 spec) ---
+    hole_z = back_h * (2.0 / 3.0)
 
+    result = (
+        result
+        .faces(">Y")  # inside face of back plate
+        .workplane(centerOption="CenterOfMass")
+        .center(0, hole_z)
+        .cskHole(4.3, 8.6, 82)  # #8 wood screw
+    )
     result = (
         result
         .faces(">Y")  # inside face of back plate
