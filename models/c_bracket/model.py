@@ -34,21 +34,14 @@ def build(model_config):
     result = result.edges().fillet(r)
 
     # --- Hole (correct position + proper #8 spec) ---
-    hole_z = back_h * (2.0 / 3.0)
-
+    hole_z = back_h * .5 *.3
+    
     result = (
         result
-        .faces(">Y")  # inside face of back plate
+        .faces("|Y")[2]  # inside face of back plate
         .workplane(centerOption="CenterOfMass")
         .center(0, hole_z)
         .cskHole(4.3, 8.6, 82)  # #8 wood screw
-    )
-    result = (
-        result
-        .faces(">Y")  # inside face of back plate
-        .workplane(centerOption="CenterOfMass")
-        .center(0, hole_z)  # <-- FIX: no subtraction
-        .cskHole(4.5, 8.5, 82)
     )
 
     return result
