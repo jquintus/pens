@@ -5,3 +5,10 @@ description: A C-shaped bracket designed for hanging pictures, featuring a
 slicing_profiles:
   - 0.6_fast
   - 0.6_quality
+
+model:
+  width_in: 0.5
+  thickness_in: 0.125
+  length_in: 1.0
+  back_height_in: 2.0
+  lip_height_in: 0.5
