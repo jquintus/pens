@@ -1,0 +1,17 @@
+id: pilot_precise_v5rt_68
+title: Pilot Precise V5RT
+nose_cone:
+  cylinder_height: 5.9
+  cylinder_outside_diameter: 7.68
+  frustum_height: 11
+  frustum_top_diameter: 5
+  frustum_bottom_diameter: 10.2
+  top_hole_diameter: 3
+  bottom_hole_diameter: 4.9
+  top_hole_height: 7
+slicing_profiles:
+  - 0.2_fast
+  - 0.2_quality
+gallery:
+  - /assets/1000012828.jpg
+  - /assets/1000012850.jpg

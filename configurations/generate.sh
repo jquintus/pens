@@ -1,0 +1,7 @@
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_63.yml
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_65.yml
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_68.yml
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_70.yml
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_73.yml
+cp pilot_precise_v5rt_7_60.yml pilot_precise_v5rt_7_78.yml
+
