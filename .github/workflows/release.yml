@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Get latest tag
         id: tag
@@ -47,14 +47,14 @@ jobs:
           git push origin ${{ steps.version.outputs.new }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1
+          sudo apt-get install -y libgl1 openscad xvfb
 
       - name: Install Python deps
         run: |
@@ -63,12 +63,19 @@ jobs:
       - name: Run build
         env:
           PENS_RELEASE_VERSION: ${{ steps.version.outputs.new }}
-        run: python scripts/build.py
+        run: |
+          python scripts/build.py
+          xvfb-run -a python scripts/build_openscad.py
+          python -m zipfile -c outputs/openscad-models.zip outputs/openscad
 
       - name: Create GitHub release with artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.new }}
           name: ${{ steps.version.outputs.new }}
           body: ${{ github.event.inputs.description }}
-          files: outputs/*
+          files: |
+            outputs/*.step
+            outputs/*.stl
+            outputs/*.gcode
+            outputs/openscad-models.zip

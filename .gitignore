@@ -207,3 +207,6 @@ marimo/_lsp/
 __marimo__/
 
 outputs/
+# Parallel gallery generated from the shared YAML configurations
+/site/openscad/data.json
+/site/openscad/pens/
