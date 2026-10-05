@@ -23,19 +23,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 prusa-slicer
+          sudo apt-get install -y libgl1 prusa-slicer openscad xvfb
 
       - name: Install Python deps
         run: pip install cadquery pyyaml
@@ -52,12 +52,18 @@ jobs:
           PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
         run: python scripts/build.py
 
+      - name: Build parallel OpenSCAD models
+        env:
+          PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
+        run: xvfb-run -a python scripts/build_openscad.py
+
       - name: Generate site data and pages
         env:
           PENS_RELEASE_VERSION: ${{ steps.ver.outputs.version }}
         run: |
           python scripts/generate_site_data.py
           python scripts/generate_pages.py
+          python scripts/generate_openscad_site.py
 
       - name: Assemble site for Pages
         run: |
@@ -67,6 +73,8 @@ jobs:
           cp site/index.html site/styles.css site/app.js site/viewer.js _site/
           cp site/data.json _site/
           cp site/.nojekyll _site/
+          cp -r site/openscad _site/openscad
+          cp -r outputs/openscad _site/outputs/openscad
           if [ -d site/pens ]; then cp -r site/pens _site/pens; fi
           if [ -d models ]; then cp -r models _site/models; fi
           if [ -d assets ]; then cp -r assets _site/assets; fi
@@ -76,13 +84,13 @@ jobs:
           done
 
       - name: Configure Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

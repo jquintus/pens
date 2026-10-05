@@ -101,3 +101,28 @@ By default the saved filename stem and output basename come from `id`, so `pen_a
 ## Future Work
 
 Slicer profiles (`slicer/`), `cad/utils.py`, and richer CMS fields can be added without changing the overall layout.
+
+## Parallel OpenSCAD gallery
+
+The OpenSCAD gallery is published alongside the original at `/pens/openscad/`. Both use the same `configurations/` and `models/*/config.yml` files, so Pages CMS edits rebuild both versions. All nine current pen variants and the C-bracket have OpenSCAD implementations.
+
+```sh
+python -m pip install pyyaml
+python scripts/build_openscad.py
+python scripts/generate_openscad_site.py
+```
+
+Install OpenSCAD and put `openscad` on PATH, set `OPENSCAD`, or pass `--openscad /path/to/executable`. The macOS application path is detected automatically. Linux CI uses the packaged OpenSCAD under `xvfb-run`.
+
+`cad/openscad/pen_parts.scad` and `models/c_bracket/model.scad` contain the geometry modules. Builds produce self-contained editable `.scad` files and printable `.stl` files under `outputs/openscad/`. Source downloads need no additional library installation. The models construct their rounded profiles explicitly rather than selecting edges after booleans.
+
+OpenSCAD exports meshes, so this gallery offers SCAD and STL. Exact STEP exports remain in the original CadQuery gallery. Slice the STL in Bambu Studio using your installed nozzle and filament; this parallel build does not fabricate G-code printer headers.
+
+Pages and release workflows build both backends. Releases attach the OpenSCAD files as `openscad-models.zip` to avoid colliding with the original STL asset names. The OpenSCAD validation workflow renders every config and checks closed geometry, component counts, dimensions and rounded volume against CadQuery, portable source downloads, and gallery links.
+
+```sh
+python -m pip install trimesh numpy cadquery
+python -m unittest discover -s tests -v
+```
+
+For a local preview, copy `assets/` and `outputs/` into a temporary site directory beside the contents of `site/`, then serve that directory with `python -m http.server`.
