@@ -8,6 +8,9 @@ from config_utils import REPO_ROOT, load_config
 
 REFILL_DIR = REPO_ROOT / "refills"
 STATUSES = {"measured", "approximate", "incomplete"}
+FORMATS = {"unknown", "parker-g2", "pilot-g2", "d1", "euro", "proprietary", "other"}
+INK_TYPES = {"unknown", "gel", "ballpoint", "rollerball", "hybrid", "fountain", "felt-tip", "other"}
+TIP_SHAPES = {"unknown", "needle", "conical", "ballpoint", "fineliner", "felt", "other"}
 KINDS = {
     "cylinder": ("diameter_mm",),
     "taper": ("diameter_start_mm", "diameter_end_mm"),
@@ -37,6 +40,15 @@ def validate_refill(refill):
     for field in ("brand", "model", "format"):
         if not isinstance(result.get(field), str) or not result[field].strip():
             raise ValueError(f"{field} is required")
+    for field, choices in (("format", FORMATS), ("ink_type", INK_TYPES), ("tip_shape", TIP_SHAPES)):
+        value = result.get(field)
+        if value is not None and (not isinstance(value, str) or value not in choices):
+            raise ValueError(f"{field} must be one of: {', '.join(sorted(choices))}")
+    for field in ("pen_photos", "ink_photos", "photos"):
+        value = result.get(field)
+        if value is not None and (not isinstance(value, list) or
+                                  any(not isinstance(path, str) or not path.strip() for path in value)):
+            raise ValueError(f"{field} must be a list of image paths")
     status = result.get("measurement_status")
     if status not in STATUSES:
         raise ValueError("measurement_status must be measured, approximate, or incomplete")

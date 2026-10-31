@@ -14,7 +14,7 @@ class RefillTests(unittest.TestCase):
     def record(self):
         return {
             "id": "test-refill", "brand": "Example", "model": "Test",
-            "format": "Example", "measurement_status": "measured",
+            "format": "unknown", "measurement_status": "measured",
             "segments": [
                 {"kind": "taper", "diameter_start_mm": 1, "diameter_end_mm": 2,
                  "end_distance_mm": 4},
@@ -60,6 +60,27 @@ class RefillTests(unittest.TestCase):
                 record["segments"][0]["end_distance_mm"] = invalid
                 with self.assertRaises(ValueError):
                     validate_refill(record)
+
+    def test_catalog_choices_reject_unlisted_values(self):
+        for field, invalid in (("format", "misc"), ("ink_type", "magic"),
+                               ("tip_shape", "sharp")):
+            with self.subTest(field=field):
+                record = self.record()
+                record[field] = invalid
+                with self.assertRaisesRegex(ValueError, field):
+                    validate_refill(record)
+
+    def test_photo_groups_accept_paths_and_reject_malformed_values(self):
+        record = self.record()
+        record["pen_photos"] = ["/assets/source-pen.jpg"]
+        record["ink_photos"] = ["/assets/writing-sample.jpg"]
+        record["ink_notes"] = "Smooth, dark blue line."
+        result = validate_refill(record)
+        self.assertEqual(result["pen_photos"], record["pen_photos"])
+        self.assertEqual(result["ink_photos"], record["ink_photos"])
+        record["ink_photos"] = [""]
+        with self.assertRaisesRegex(ValueError, "ink_photos"):
+            validate_refill(record)
 
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")

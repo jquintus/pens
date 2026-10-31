@@ -170,15 +170,22 @@ content:
         type: string
         required: true
       - name: format
-        type: string
+        type: select
         required: true
         label: Physical format / family
+        options:
+          values: [unknown, parker-g2, pilot-g2, d1, euro, proprietary, other]
       - name: ink_type
-        type: string
+        type: select
+        options:
+          values: [unknown, gel, ballpoint, rollerball, hybrid, fountain, felt-tip, other]
       - name: tip_size_mm
         type: number
       - name: tip_shape
-        type: string
+        type: select
+        label: Tip type
+        options:
+          values: [unknown, needle, conical, ballpoint, fineliner, felt, other]
       - name: measurement_status
         type: select
         required: true
@@ -239,8 +246,24 @@ content:
       - name: notes
         type: text
         label: Personal notes
+      - name: ink_notes
+        type: text
+        label: Ink performance and writing notes
+      - name: pen_photos
+        type: image
+        label: Photos of source pen
+        options:
+          multiple: true
+          extensions: [svg, png, jpg, jpeg, webp, avif]
+      - name: ink_photos
+        type: image
+        label: Photos of ink and writing samples
+        options:
+          multiple: true
+          extensions: [svg, png, jpg, jpeg, webp, avif]
       - name: photos
         type: image
+        label: Other photos (legacy)
         options:
           multiple: true
           extensions: [svg, png, jpg, jpeg, webp, avif]

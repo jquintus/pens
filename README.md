@@ -129,7 +129,11 @@ For a local preview, copy `assets/` and `outputs/` into a temporary site directo
 
 ## Refill measurements and designer
 
-The `refills/` collection is edited in Pages CMS alongside the existing `configurations/` pen collection. Each refill YAML file describes one model or family. Put color and SKU specific URLs or notes in `variants`, so the physical shape is stored once. `format` means the physical refill family (for example, Parker-style G2); `brand` and `ink_type` describe different things. Photos are user-owned files uploaded through the existing `assets/` media workflow. Store external product URLs in `links` or `variants`; do not copy product photos into the repo or hotlink them.
+Browse cartridge records, photos, notes, and measured profiles at `site/openscad/cartridges.html`. Select **Edit record** to change a record, then download its YAML or open the refill collection in Pages CMS. **Design a pen with this cartridge** opens the nose cone designer with that cartridge selected.
+
+The `refills/` collection is edited in Pages CMS alongside the existing `configurations/` pen collection. Each refill YAML file describes one model or family. Put color and SKU specific URLs or notes in `variants`, so the physical shape is stored once. `format` means the physical refill family (for example, Parker-style G2); `brand` and `ink_type` describe different things. Pages CMS offers controlled choices for `format`, `ink_type`, and `tip_shape` (labeled **Tip type**). Use `other` when the correct category is not listed, then expand the choices in `.pages.yml` and `scripts/refill_utils.py` when a new category is established.
+
+Store personal observations in `notes`, writing and ink observations in `ink_notes`, and an optional 1–5 `rating`. Upload your own photos of the original pen to `pen_photos` and ink or writing samples to `ink_photos` through the `assets/` media workflow. Existing general `photos` remain supported. Store external product URLs in `links` or `variants`; do not copy product photos into the repo or hotlink them.
 
 The **writing tip is distance 0 mm**. List `segments` in order from the tip toward the rear. Every `end_distance_mm` is the distance from that same tip to the *end* of the segment, not the length of the segment itself. The segment length is derived by subtracting the previous end distance (or zero for the first segment). The last end distance is the refill's overall length. Measure with calipers from the tip each time, so an error in one section does not propagate through later sections.
 

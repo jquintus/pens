@@ -86,8 +86,9 @@ def header(title, shared_prefix, local_prefix, cadquery_path):
   </div></a>
   <nav class="quick-links" aria-label="Quick links">
     <a class="quick-links__item" href="{local_prefix}designer.html">Designer</a>
+    <a class="quick-links__item" href="{local_prefix}cartridges.html">Cartridges</a>
     <a class="quick-links__item" href="{html(cadquery_path)}">CadQuery version</a>
-    <a class="quick-links__item" href="https://app.pagescms.org/jquintus/pens/" rel="noreferrer">Edit configurations</a>
+    <a class="quick-links__item" href="https://app.pagescms.org/jquintus/pens/main/collection/configurations" rel="noreferrer">Edit configurations</a>
   </nav>
 </div></header>'''
 
