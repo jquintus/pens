@@ -43,6 +43,16 @@ class RefillTests(unittest.TestCase):
         self.assertFalse(result["geometry_ready"])
         self.assertIsNone(result["overall_length_mm"])
 
+    def test_empty_profile_is_allowed_only_for_incomplete_placeholder(self):
+        record = self.record()
+        record["segments"] = []
+        with self.assertRaisesRegex(ValueError, "nonempty"):
+            validate_refill(record)
+        record["measurement_status"] = "incomplete"
+        result = validate_refill(record)
+        self.assertFalse(result["geometry_ready"])
+        self.assertIsNone(result["overall_length_mm"])
+
     def test_rejects_invalid_numbers(self):
         for invalid in (-1, 0, float("nan"), float("inf"), True, "5"):
             with self.subTest(invalid=invalid):
@@ -66,6 +76,12 @@ class RefillTests(unittest.TestCase):
                          [3, 7.5, 14.2, 15.5, 130])
         self.assertEqual([s["kind"] for s in record["segments"]],
                          ["cylinder", "taper", "taper", "cylinder", "cylinder"])
+
+    def test_jihekj_corrected_end_distances(self):
+        record = next(r for r in load_refills() if r["id"] == "jihekj-unspecified-05")
+        self.assertEqual(record["overall_length_mm"], 130.7)
+        self.assertEqual([s["end_distance_mm"] for s in record["segments"]],
+                         [1.4, 3.5, 8.0, 14.5, 16.0, 130.7])
 
 
 if __name__ == "__main__":

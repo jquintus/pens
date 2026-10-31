@@ -192,7 +192,6 @@ content:
           collapsible:
             collapsed: true
             summary: "{kind} to {end_distance_mm} mm"
-        required: true
         label: Axial segments, tip to rear
         description: Each end distance is measured from the writing tip, not from the previous segment.
         fields:

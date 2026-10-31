@@ -44,10 +44,10 @@ def validate_refill(refill):
     if rating is not None and (isinstance(rating, bool) or not isinstance(rating, int) or not 1 <= rating <= 5):
         raise ValueError("rating must be an integer from 1 to 5")
     segments = result.get("segments")
-    if not isinstance(segments, list) or not segments:
-        raise ValueError("segments must be a nonempty list")
+    if not isinstance(segments, list) or (not segments and status != "incomplete"):
+        raise ValueError("segments must be nonempty unless the refill is incomplete")
     known_end = 0.0
-    complete = True
+    complete = bool(segments)
     normalized = []
     for index, segment in enumerate(segments, 1):
         label = f"segment {index}"

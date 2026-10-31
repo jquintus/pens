@@ -1,0 +1,31 @@
+id: jihekj-unspecified-05
+brand: JIHEKJ
+model: Unspecified
+format: unknown
+ink_type: gel
+tip_size_mm: 0.5
+tip_shape: ballpoint
+colors:
+  - assorted
+measurement_status: measured
+measurement_notes: Dimensions supplied by Josh; model name was not provided.
+segments:
+  - kind: cylinder
+    diameter_mm: 0.8
+    end_distance_mm: 1.4
+  - kind: taper
+    diameter_start_mm: 1.7
+    diameter_end_mm: 2.3
+    end_distance_mm: 3.5
+  - kind: cylinder
+    diameter_mm: 2.3
+    end_distance_mm: 8.0
+  - kind: cylinder
+    diameter_mm: 3.2
+    end_distance_mm: 14.5
+  - kind: cylinder
+    diameter_mm: 5.5
+    end_distance_mm: 16.0
+  - kind: cylinder
+    diameter_mm: 4.5
+    end_distance_mm: 130.7
