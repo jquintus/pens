@@ -61,14 +61,6 @@ class RefillTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     validate_refill(record)
 
-    def test_catalog_fixture_is_explicit_example(self):
-        records = load_refills()
-        self.assertGreaterEqual(len(records), 1)
-        examples = [record for record in records if record["id"] == "example-refill"]
-        self.assertEqual(len(examples), 1)
-        self.assertTrue(examples[0]["geometry_ready"])
-        self.assertIn("Illustrative", examples[0]["measurement_notes"])
-
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)

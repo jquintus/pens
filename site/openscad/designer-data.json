@@ -228,42 +228,6 @@
   ],
   "refills": [
     {
-      "id": "example-refill",
-      "brand": "Example",
-      "model": "Demonstration refill (fictional)",
-      "format": "Example geometry",
-      "ink_type": "unknown",
-      "measurement_status": "approximate",
-      "measurement_notes": "Illustrative dimensions only; replace with caliper measurements before printing.",
-      "segments": [
-        {
-          "kind": "taper",
-          "diameter_start_mm": 1.5,
-          "diameter_end_mm": 2.5,
-          "end_distance_mm": 4.0
-        },
-        {
-          "kind": "cylinder",
-          "diameter_mm": 2.5,
-          "end_distance_mm": 8.0
-        },
-        {
-          "kind": "taper",
-          "diameter_start_mm": 2.5,
-          "diameter_end_mm": 6.0,
-          "end_distance_mm": 15.0
-        },
-        {
-          "kind": "cylinder",
-          "diameter_mm": 6.0,
-          "end_distance_mm": 95.0
-        }
-      ],
-      "notes": "Example fixture for the designer. Do not use these dimensions to fit a real refill.",
-      "overall_length_mm": 95.0,
-      "geometry_ready": true
-    },
-    {
       "id": "jihekj-unspecified-05",
       "brand": "JIHEKJ",
       "model": "Unspecified",
