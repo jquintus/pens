@@ -259,16 +259,17 @@ function drawProfile(segments, target = "profile") {
   }
   const total = complete.at(-1).end_distance_mm;
   const maxDiameter = Math.max(...complete.flatMap(segment => [segment.diameter_mm, segment.diameter_start_mm, segment.diameter_end_mm].filter(Boolean)));
-  const scaleX = 730 / total;
-  const scaleY = 130 / maxDiameter;
+  // Use one scale on both axes so the profile keeps its actual proportions.
+  const scale = Math.min(730 / total, 130 / maxDiameter);
+  const originX = (800 - total * scale) / 2;
   let previous = 0;
   for (const [index, segment] of complete.entries()) {
     const startDiameter = segment.diameter_start_mm || segment.diameter_mm;
     const endDiameter = segment.diameter_end_mm || segment.diameter_mm;
-    const x1 = 40 + previous * scaleX;
-    const x2 = 40 + segment.end_distance_mm * scaleX;
-    const y1 = startDiameter * scaleY / 2;
-    const y2 = endDiameter * scaleY / 2;
+    const x1 = originX + previous * scale;
+    const x2 = originX + segment.end_distance_mm * scale;
+    const y1 = startDiameter * scale / 2;
+    const y2 = endDiameter * scale / 2;
     const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
     polygon.setAttribute("points", `${x1},${100-y1} ${x2},${100-y2} ${x2},${100+y2} ${x1},${100+y1}`);
     polygon.setAttribute("fill", colors[index % colors.length]);
@@ -327,6 +328,13 @@ function setMode(mode) {
   $("editor-content").hidden = mode !== "edit";
   if (mode === "view") renderDetail();
 }
+function generatedId(record) {
+  const parts = [record.brand, record.model, record.tip_size_mm ? `${record.tip_size_mm}mm` : ""].filter(Boolean);
+  const base = (parts.join("-").normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")) || "cartridge";
+  let candidate = base;
+  for (let suffix = 2; catalog.some(item => item.id === candidate); suffix++) candidate = `${base}-${suffix}`;
+  return candidate;
+}
 function syncDraft() {
   if (!draft) return;
   for (const key of fields) {
@@ -335,6 +343,10 @@ function syncDraft() {
     else if (key === "colors") draft[key] = value.split(",").map(item => item.trim()).filter(Boolean);
     else if (["rating", "tip_size_mm"].includes(key)) draft[key] = value ? Number(value) : undefined;
     else draft[key] = value;
+  }
+  if (draftIsNew) {
+    draft.id = generatedId(draft);
+    $("field-id").value = draft.id;
   }
   const { result, issues } = readSegments();
   draft.segments = result;
@@ -382,7 +394,7 @@ $("clear-filters").addEventListener("click", () => {
   for (const key of filterFields) $(`filter-${key}`).value = "";
   applyCatalogFilters();
 });
-$("new-cartridge").addEventListener("click", () => { selectRecord({ id: "", brand: "", model: "", format: "unknown", ink_type: "unknown", tip_shape: "unknown", measurement_status: "incomplete", segments: [] }, true); history.replaceState(null, "", location.pathname); $("field-id").focus(); });
+$("new-cartridge").addEventListener("click", () => { selectRecord({ id: "", brand: "", model: "", format: "unknown", ink_type: "unknown", tip_shape: "unknown", measurement_status: "incomplete", segments: [] }, true); history.replaceState(null, "", location.pathname); $("field-brand").focus(); });
 for (const key of fields) $(`field-${key}`).addEventListener("input", syncDraft);
 $("segment-rows").addEventListener("input", event => {
   const row = event.target.closest(".segment-row");

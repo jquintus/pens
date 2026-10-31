@@ -51,6 +51,96 @@ function validate(s){const issues=[];for(const [label,obj] of [["Nose",s.nose],[
  if(parts.length&&parts.at(-1).end_distance_mm-s.projection>s.nose.visible_length_mm+s.bodyLength-s.cap.insertion_length_mm){const minimum=parts.at(-1).end_distance_mm-s.projection-s.nose.visible_length_mm+s.cap.insertion_length_mm;issues.push(`Refill reaches the end cap; body length must be at least ${minimum.toFixed(1)} mm`)}
  for(const fill of parts){const start=Math.max(fill.start_distance_mm-s.projection,noseTotal),end=Math.min(fill.end_distance_mm-s.projection,s.nose.visible_length_mm+s.bodyLength-s.cap.insertion_length_mm);if(end>start&&Math.max(diameterAt(fill,start+s.projection),diameterAt(fill,end+s.projection))>=tubeDiameter)issues.push("Refill is wider than the body tube")}}
  return [...new Set(issues)]}
+function renderValidation(s,issues){
+ document.querySelectorAll(".designer__field-error").forEach(node=>node.remove());
+ document.querySelectorAll('[aria-invalid="true"]').forEach(node=>node.removeAttribute("aria-invalid"));
+ const summary=$("validation");
+ summary.textContent=issues.length?`${issues.length} design ${issues.length===1?"issue":"issues"} to fix. See the highlighted controls below.`:"Geometry is ready to export.";
+ const shown=new Set();
+ function mark(target,message){
+  const element=typeof target==="string"?document.querySelector(target):target;
+  if(!element)return;
+  const holder=element.closest("label")||element.closest(".designer__table-row")||element;
+  const key=`${message}|${holder.id||holder.outerHTML.slice(0,80)}`;
+  if(shown.has(key))return;shown.add(key);
+  const note=document.createElement("div");note.className="designer__field-error";note.textContent=message;
+  holder.append(note);
+  if(element.matches("input,select"))element.setAttribute("aria-invalid","true");
+  else holder.querySelectorAll("input").forEach(input=>input.setAttribute("aria-invalid","true"));
+ }
+ const noseField=key=>`#nose-fields [data-key="${key}"]`,capField=key=>`#cap-fields [data-key="${key}"]`;
+ const bore=withStarts(s.nose.bore_segments),noseTotal=s.nose.visible_length_mm+s.nose.insertion_length_mm;
+ const outerAt=x=>x<s.nose.visible_length_mm?s.nose.tip_diameter_mm+(s.nose.base_diameter_mm-s.nose.tip_diameter_mm)*x/s.nose.visible_length_mm:s.nose.insertion_diameter_mm;
+ for(const issue of issues){
+  let match=issue.match(/^(Nose|Cap): (.+) must be positive$/);
+  if(match){const keys=match[1]==="Nose"?noseKeys:capKeys,key=keys.find(item=>(names[item]||item)===match[2]);if(key)mark(match[1]==="Nose"?noseField(key):capField(key),issue);continue}
+  if(issue==="Projection and clearances must be nonnegative"){
+   for(const [id,value] of [["tip-projection",s.projection],["tip-clearance",s.tipClearance],["passage-clearance",s.passageClearance]])if(!Number.isFinite(value)||value<0)mark(`#${id}`,"Enter zero or a positive value.");
+   continue;
+  }
+  if(issue==="Wood body dimensions must be positive"){
+   if(!(s.bodyDiameter>0))mark("#body-diameter","Enter a positive outside diameter.");
+   if(!(s.bodyLength>0))mark("#body-length","Enter a positive body length.");
+   continue;
+  }
+  if(issue==="Nose insertion must be narrower than its base"){
+   mark(noseField("insertion_diameter_mm"),"Reduce insertion diameter below the nose base diameter.");
+   mark(noseField("base_diameter_mm"),"Increase the base diameter above the insertion diameter.");continue;
+  }
+  if(issue==="Cap insertion must be narrower than its outside"){
+   mark(capField("insertion_diameter_mm"),"Reduce insertion diameter below the cap outside diameter.");
+   mark(capField("diameter_mm"),"Increase the outside diameter above the insertion diameter.");continue;
+  }
+  if(issue==="Rounded edge radius exceeds the profile limit"){
+   const noseLimit=Math.min(s.nose.tip_diameter_mm/4,s.nose.insertion_length_mm/2,s.nose.visible_length_mm/2);
+   const capLimit=Math.min(s.cap.tip_diameter_mm/4,s.cap.insertion_length_mm/2,s.cap.length_mm/2);
+   if(s.nose.round_radius_mm>=noseLimit)mark(noseField("round_radius_mm"),`Reduce this radius below ${noseLimit.toFixed(2)} mm.`);
+   if(s.cap.round_radius_mm>=capLimit)mark(capField("round_radius_mm"),`Reduce this radius below ${capLimit.toFixed(2)} mm.`);
+   continue;
+  }
+  if(issue==="Finish the partially entered bore row"||issue==="Nose bore needs at least one segment") {mark("#bore-segments",issue);continue}
+  match=issue.match(/^Bore row (\d+): (.+)$/);
+  if(match){
+   const index=Number(match[1])-1,row=document.querySelectorAll("#bore-segments .designer__table-row")[index];
+   if(match[2]==="less than 0.6 mm nose wall"){
+    const seg=bore[index];if(!seg)continue;
+    const positions=[seg.start_distance_mm,seg.end_distance_mm,Math.min(Math.max(s.nose.visible_length_mm,seg.start_distance_mm),seg.end_distance_mm)];
+    const worst=positions.map(x=>({x,wall:(outerAt(x)-diameterAt(seg,x))/2})).sort((a,b)=>a.wall-b.wall)[0];
+    const outerKey=worst.x>=s.nose.visible_length_mm?"insertion_diameter_mm":worst.x<s.nose.visible_length_mm/2?"tip_diameter_mm":"base_diameter_mm";
+    const wall=Number.isFinite(worst.wall)?worst.wall.toFixed(2):"unknown";
+    if(manualBore)mark(row,`Only ${wall} mm of wall remains; reduce this bore diameter or enlarge the nose. At least 0.6 mm is required.`);
+    else{
+     const clearance=index===0?s.tipClearance:s.passageClearance;
+     const clearanceId=index===0?"tip-clearance":"passage-clearance";
+     const allowed=outerAt(worst.x)-1.2-(diameterAt(seg,worst.x)-clearance);
+     const advice=allowed>0?`Reduce this clearance below ${allowed.toFixed(2)} mm`:`Reduce this clearance`;
+     mark(`#${clearanceId}`,`Bore row ${index+1} leaves ${wall} mm of nose wall. ${advice}, or enlarge the nose near this row (minimum 0.6 mm wall).`);
+    }
+    mark(noseField(outerKey),`Bore row ${index+1} leaves ${wall} mm of wall here; increasing this diameter can help.`);
+   }else mark(row,issue);
+   continue;
+  }
+  if(issue==="Last bore end must equal nose visible plus insertion length"){
+   mark(document.querySelectorAll("#bore-segments .designer__table-row").item(bore.length-1),`Set the final bore end to ${noseTotal.toFixed(1)} mm, or change the nose lengths.`);continue;
+  }
+  if(issue==="Body is too narrow for the insertion tube"){
+   const minimum=Math.max(s.nose.insertion_diameter_mm,s.cap.insertion_diameter_mm)+0.4;
+   mark("#body-diameter",`Increase outside diameter above ${minimum.toFixed(1)} mm to fit the insertion tube.`);continue;
+  }
+  if(issue==="Refill measurements are incomplete") {mark("#refill-select","Choose a cartridge with complete dimensions.");continue}
+  if(issue==="Refill intersects the nose bore"){
+   if(manualBore)mark("#bore-segments","Enlarge the bore where it meets the refill, or change tip projection.");
+   else mark("#passage-clearance","Increase passage clearance or change tip projection so the refill fits the bore.");
+   continue;
+  }
+  if(issue.startsWith("Refill reaches the end cap")){mark("#body-length",issue);continue}
+  if(issue==="Refill is wider than the body tube"){
+   mark(noseField("insertion_diameter_mm"),"Increase the insertion tube diameters to clear the refill; the wood body may need to grow too.");
+   mark(capField("insertion_diameter_mm"),"Increase the insertion tube diameters to clear the refill; the wood body may need to grow too.");continue;
+  }
+  mark(summary,issue);
+ }
+}
 function xml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&apos;"})[c])}
 function cutaway(s){
  const svg=$("cutaway"),parts=profile(s.refill),nose=s.nose,cap=s.cap;
@@ -90,6 +180,29 @@ function cutaway(s){
  shapes+=`<text x="${x(noseEnd/2)}" y="244" fill="#bccde4" font-size="11" text-anchor="middle">Nose ${xml(noseEnd)} mm</text><text x="${x((noseEnd+bodyEnd)/2)}" y="244" fill="#d8b793" font-size="11" text-anchor="middle">Wood ${xml(s.bodyLength)} mm</text><text x="${x(bodyEnd+cap.length_mm/2)}" y="244" fill="#bccde4" font-size="11" text-anchor="middle">Cap</text>`;
  svg.innerHTML=shapes;applySelection();
 }
+function overview(s){
+ const svg=$("overview");if(!svg)return;
+ const nose=s.nose,cap=s.cap,parts=profile(s.refill);
+ const noseEnd=nose.visible_length_mm,bodyEnd=noseEnd+s.bodyLength,capEnd=bodyEnd+cap.length_mm;
+ const left=Math.min(-s.projection,0),right=Math.max(capEnd,(parts.at(-1)?.end_distance_mm||0)-s.projection,1);
+ const largest=Math.max(s.bodyDiameter,nose.base_diameter_mm,cap.diameter_mm,cap.tip_diameter_mm,...parts.map(maxDiameter),1);
+ const scale=Math.min(744/Math.max(right-left,1),78/largest);
+ const x=value=>(800-(right-left)*scale)/2+(value-left)*scale,mid=57,r=diameter=>Math.max(0,diameter)*scale/2;
+ const p=(distance,diameter,sign)=>`${x(distance)},${mid+sign*r(diameter)}`;
+ let shapes=`<line x1="24" y1="${mid}" x2="776" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
+ shapes+=`<polygon points="${p(noseEnd,s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyDiameter,1)} ${p(noseEnd,s.bodyDiameter,1)}" fill="#8a5a36" stroke="#bd8a5d"/>`;
+ shapes+=`<polygon points="${p(0,nose.tip_diameter_mm,-1)} ${p(noseEnd,nose.base_diameter_mm,-1)} ${p(noseEnd,nose.base_diameter_mm,1)} ${p(0,nose.tip_diameter_mm,1)}" fill="#8da9cd" stroke="#c6d8ed"/>`;
+ shapes+=`<polygon points="${p(bodyEnd,cap.diameter_mm,-1)} ${p(capEnd,cap.tip_diameter_mm,-1)} ${p(capEnd,cap.tip_diameter_mm,1)} ${p(bodyEnd,cap.diameter_mm,1)}" fill="#8da9cd" stroke="#c6d8ed"/>`;
+ for(const [index,seg] of parts.entries()){
+  const start=seg.start_distance_mm-s.projection,end=seg.end_distance_mm-s.projection;
+  const d1=seg.kind==="taper"?seg.diameter_start_mm:seg.diameter_mm,d2=seg.kind==="taper"?seg.diameter_end_mm:seg.diameter_mm;
+  shapes+=`<polygon points="${p(start,d1,-1)} ${p(end,d2,-1)} ${p(end,d2,1)} ${p(start,d1,1)}" fill="${REFILL_COLORS[index%REFILL_COLORS.length]}" stroke="#fff1d8"/>`;
+ }
+ shapes+=`<text x="${x((noseEnd)/2)}" y="118" fill="#bccde4" font-size="11" text-anchor="middle">Nose ${xml(nose.visible_length_mm)} mm</text>`;
+ shapes+=`<text x="${x((noseEnd+bodyEnd)/2)}" y="118" fill="#d8b793" font-size="11" text-anchor="middle">Wood ${xml(s.bodyLength)} mm</text>`;
+ shapes+=`<text x="${x(capEnd)}" y="118" fill="#bccde4" font-size="11" text-anchor="end">Cap ${xml(cap.length_mm)} mm</text>`;
+ svg.innerHTML=shapes;
+}
 function cylinder(T,scene,d1,d2,length,start,color,opacity=1){if(length<=0)return;const geo=new T.CylinderGeometry(d2/2,d1/2,length,48);const mat=new T.MeshStandardMaterial({color,transparent:opacity<1,opacity,side:T.DoubleSide,metalness:.13,roughness:.52});const mesh=new T.Mesh(geo,mat);mesh.position.y=start+length/2;scene.add(mesh)}
 async function initThree(){try{const {THREE:T,OrbitControls}=await ensureViewerModules();const container=$("assembly"),scene=new T.Scene();scene.background=new T.Color(0x07090f);const camera=new T.PerspectiveCamera(40,1,.1,1000),renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));container.append(renderer.domElement);scene.add(new T.HemisphereLight(0xffffff,0x25354b,2));const light=new T.DirectionalLight(0xffffff,1.7);light.position.set(20,30,30);scene.add(light);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;let parts=[];function renderState(s){for(const obj of parts){scene.remove(obj);obj.geometry.dispose();obj.material.dispose()}parts=[];const old=new Set(scene.children);cylinder(T,scene,s.nose.tip_diameter_mm,s.nose.base_diameter_mm,s.nose.visible_length_mm,0,0x9bb8dc);cylinder(T,scene,s.bodyDiameter,s.bodyDiameter,s.bodyLength,s.nose.visible_length_mm,0x9b673f,.55);cylinder(T,scene,s.cap.diameter_mm,s.cap.tip_diameter_mm,s.cap.length_mm,s.nose.visible_length_mm+s.bodyLength,0x9bb8dc);for(const [index,seg] of profile(s.refill).entries())cylinder(T,scene,seg.kind==="taper"?seg.diameter_start_mm:seg.diameter_mm,seg.kind==="taper"?seg.diameter_end_mm:seg.diameter_mm,seg.end_distance_mm-seg.start_distance_mm,seg.start_distance_mm-s.projection,parseInt(REFILL_COLORS[index%REFILL_COLORS.length].slice(1),16));parts=[...scene.children].filter(o=>!old.has(o));const total=s.nose.visible_length_mm+s.bodyLength+s.cap.length_mm;camera.position.set(Math.max(total*1.7,55),total*.8,Math.max(total*1.7,55));controls.target.set(0,total/2,0);controls.update()}
  function resize(){const w=container.clientWidth,h=container.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(container);resize();function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)}loop();three=renderState;update()}catch(e){$("assembly-status").textContent=`3D preview unavailable: ${e.message}`}}
@@ -100,7 +213,7 @@ function configYaml(s){const copy=structuredClone(currentPen.config);if(s.refill
 function scadSource(s){const fields={nose_cone:s.nose,end_cap:s.cap}, assignments=Object.entries(fields).flatMap(([section,values])=>Object.entries(values).map(([key,value])=>`${section}_${key} = ${key==="bore_segments"?JSON.stringify(value.map(seg=>seg.kind==="taper"?[seg.diameter_start_mm,seg.diameter_end_mm,seg.end_distance_mm]:[seg.diameter_mm,seg.diameter_mm,seg.end_distance_mm])):value};`));const args=Object.entries(fields).flatMap(([section,values])=>Object.keys(values).map(key=>`${section}_${key}=${section}_${key}`));return `// Self-contained OpenSCAD source. Dimensions in millimeters.\n${assignments.join("\n")}\n$fn = 128;\n\n${data.scad_module}\ndesigner_parts(${args.join(", ")});\n`}
 function refillForExport(){if(!currentRefill)return null;const copy=structuredClone(currentRefill);delete copy.geometry_ready;delete copy.overall_length_mm;return copy}
 function showRefill(){const r=currentRefill;selectedSection=null;for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).value=r?.[key]||"";refillDraftError=false;renderTable("segments",r?.segments||[],false,syncRefillRows);$("view-cartridge").href=r?`cartridges.html?id=${encodeURIComponent(r.id)}`:"cartridges.html";$("refill-info").textContent=r?`${r.format} · ${r.measurement_status} · ${r.segments?.at(-1)?.end_distance_mm??"unknown"} mm total`:"Select a refill to check its clearance and display its measured shape.";update()}
-function update(){if(!currentPen)return;const s=getState(),issues=validate(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";$("validation").textContent=issues.join(" · ")||"Geometry is ready to export.";cutaway(s);if(three)three(s);const valid=!issues.length;$("download-config").disabled=!valid;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${currentPen.config.id || currentPen.id}.yml`;if(valid)githubLink($("github-config"),path,text);else{$("github-config").removeAttribute("href");$("github-config").setAttribute("aria-disabled","true")}
+function update(){if(!currentPen)return;const s=getState(),issues=validate(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);if(three)three(s);const valid=!issues.length;$("download-config").disabled=!valid;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${currentPen.config.id || currentPen.id}.yml`;if(valid)githubLink($("github-config"),path,text);else{$("github-config").removeAttribute("href");$("github-config").setAttribute("aria-disabled","true")}
  const refill=refillForExport(),refillErrors=refillIssues(refill);$("download-refill").disabled=!!refillErrors.length;if(!refillErrors.length)githubLink($("github-refill"),`refills/${refill.id}.yml`,yaml(refill)+"\n");else{$("github-refill").removeAttribute("href");$("github-refill").setAttribute("aria-disabled","true");$("github-refill").title=refillErrors.join(" · ")}}
 const penChoices=data.pens.map(p=>({value:p.id,label:p.config.title||p.id}));
 const refillChoices=[{value:"",label:"No refill selected"},...data.refills.map(r=>({value:r.id,label:`${r.brand} ${r.model}${r.measurement_status==="incomplete"?" (incomplete)":""}`}))];

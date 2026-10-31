@@ -27,12 +27,12 @@
         </div></section>
         <section class="detail-metadata"><h3>Cartridge details</h3><dl id="detail-metadata"></dl></section>
         <section class="detail-notes"><h3>Notes</h3><p id="detail-notes"></p><h4>Ink notes</h4><p id="detail-ink-notes"></p><h4>Measurement notes</h4><p id="detail-measurement-notes"></p></section>
-        <section><div class="section-heading"><h3>Axial dimensions</h3><span id="detail-overall-length" class="length-pill"></span></div><svg id="detail-profile" viewBox="0 0 800 200" role="img" aria-label="Axial cartridge profile"></svg><div id="detail-segments" class="detail-segments"></div></section>
+        <section><div class="section-heading"><h3>Axial dimensions</h3><span id="detail-overall-length" class="length-pill"></span></div><svg id="detail-profile" viewBox="0 0 800 200" role="img" aria-label="Proportional axial cartridge profile"></svg><p class="muted">Proportional view: length and diameter use the same scale. Use the dimensions below for physical measurements.</p><div id="detail-segments" class="detail-segments"></div></section>
       </div>
       <div id="editor-content" hidden>
         <div class="editor-heading"><div><p id="record-status" class="preview__eyebrow"></p><h2 id="record-title"></h2></div><button id="done-editing" type="button">Done editing</button></div>
         <div class="editor-fields">
-          <label>Record ID<input id="field-id" type="text" pattern="[a-z0-9_-]+" spellcheck="false"></label>
+          <input id="field-id" type="hidden">
           <label>Brand<input id="field-brand" type="text"></label>
           <label>Model<input id="field-model" type="text"></label>
           <label>Physical format<select id="field-format"></select></label>
@@ -47,7 +47,7 @@
           <label class="wide">Measurement notes<textarea id="field-measurement_notes" rows="3" placeholder="How and where the dimensions were measured…"></textarea></label>
         </div>
         <details id="photo-path-editor" class="photo-path-editor"><summary>Edit photo paths</summary><p class="muted">Upload images in Pages CMS, then enter one image URL or repository path per line.</p><div class="photo-path-fields"><label for="field-pen_photos">Source pen image paths<textarea id="field-pen_photos" rows="3" placeholder="assets/my-pen.jpg"></textarea></label><label for="field-ink_photos">Ink image paths<textarea id="field-ink_photos" rows="3" placeholder="assets/my-ink.jpg"></textarea></label></div></details>
-        <section><div class="section-heading"><div><h3>Axial dimensions</h3><p class="muted">End distances are measured from the writing tip. Enter a start diameter and end distance for a cylinder, or both diameters for a taper. Tab through cells; a fresh row appears as you type.</p></div><span id="overall-length" class="length-pill"></span></div><div class="segments-head"><span>Start Ø (mm)</span><span>End Ø (mm)</span><span>End from tip (mm)</span></div><div id="segment-rows"></div><p id="segment-error" class="error" role="status"></p><svg id="profile" viewBox="0 0 800 200" role="img" aria-label="Axial cartridge profile"></svg></section>
+        <section><div class="section-heading"><div><h3>Axial dimensions</h3><p class="muted">End distances are measured from the writing tip. Enter a start diameter and end distance for a cylinder, or both diameters for a taper. Tab through cells; a fresh row appears as you type.</p></div><span id="overall-length" class="length-pill"></span></div><div class="segments-head"><span>Start Ø (mm)</span><span>End Ø (mm)</span><span>End from tip (mm)</span></div><div id="segment-rows"></div><p id="segment-error" class="error" role="status"></p><svg id="profile" viewBox="0 0 800 200" role="img" aria-label="Proportional axial cartridge profile"></svg><p class="muted">Proportional view: length and diameter use the same scale. Use the dimensions above for physical measurements.</p></section>
         <p class="muted">Done editing keeps changes in this browser tab. Download or copy the YAML to save edits permanently. Pages CMS opens the saved catalog record.</p>
         <div class="editor-actions"><button id="download-yaml" type="button">Download YAML</button><button id="copy-yaml" type="button">Copy YAML</button><a id="github-yaml" target="_blank" rel="noopener">Edit on GitHub</a><a href="https://app.pagescms.org/jquintus/pens/main/collection/refills" target="_blank" rel="noopener">Open in Pages CMS</a></div>
       </div></article>

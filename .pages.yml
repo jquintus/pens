@@ -219,12 +219,6 @@ content:
           - name: end_distance_mm
             type: number
             label: Distance from writing tip to segment end (mm)
-          - name: measurement_status
-            type: select
-            options:
-              values: [measured, approximate, incomplete]
-          - name: notes
-            type: text
       - name: colors
         type: string
         list: true
