@@ -2,5 +2,39 @@ id: pilot-g-tec-c4
 brand: Pilot
 model: G-Tec-C4
 format: unknown
-measurement_status: incomplete
-segments: []
+ink_type: gel
+tip_shape: needle
+tip_size_mm: 0.4
+colors:
+  - blue
+measurement_status: measured
+segments:
+  - kind: cylinder
+    diameter_mm: 0.7
+    end_distance_mm: 1.9
+  - kind: cylinder
+    diameter_mm: 1.0
+    end_distance_mm: 3.4
+  - kind: taper
+    diameter_start_mm: 1.5
+    diameter_end_mm: 2.6
+    end_distance_mm: 5
+  - kind: cylinder
+    diameter_mm: 2.6
+    end_distance_mm: 6.3
+  - kind: cylinder
+    diameter_mm: 2.5
+    end_distance_mm: 9
+  - kind: taper
+    diameter_start_mm: 2.5
+    diameter_end_mm: 3.5
+    end_distance_mm: 10.5
+  - kind: cylinder
+    diameter_mm: 3.5
+    end_distance_mm: 13.8
+  - kind: cylinder
+    diameter_mm: 6.2
+    end_distance_mm: 15.5
+  - kind: cylinder
+    diameter_mm: 5.5
+    end_distance_mm: 115.7

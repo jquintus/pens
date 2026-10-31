@@ -1,0 +1,32 @@
+id: pilot-lg-2rf
+brand: Pilot
+model: LG 2RF
+source_pens:
+  - Pilot G-2 07
+  - Pilot G-2 Stylus
+format: unknown
+ink_type: gel
+tip_shape: ballpoint
+tip_size_mm: 0.7
+colors:
+  - green
+  - black
+measurement_status: measured
+notes: 'Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).'
+segments:
+  - kind: taper
+    diameter_start_mm: 1.1
+    diameter_end_mm: 2.4
+    end_distance_mm: 3.5
+  - kind: cylinder
+    diameter_mm: 2.4
+    end_distance_mm: 9
+  - kind: cylinder
+    diameter_mm: 3.1
+    end_distance_mm: 15
+  - kind: cylinder
+    diameter_mm: 4.5
+    end_distance_mm: 19.5
+  - kind: cylinder
+    diameter_mm: 6
+    end_distance_mm: 110.5

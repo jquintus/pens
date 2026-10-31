@@ -82,6 +82,40 @@ class RefillTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "ink_photos"):
             validate_refill(record)
 
+    def test_source_pens_are_optional_names(self):
+        record = self.record()
+        record["source_pens"] = ["Pilot Precise V5 RT", "Pilot Hi-Techpoint V5 RT"]
+        self.assertEqual(validate_refill(record)["source_pens"], record["source_pens"])
+        record["source_pens"] = [""]
+        with self.assertRaisesRegex(ValueError, "source_pens"):
+            validate_refill(record)
+
+    def test_pilot_shared_inks_and_g_tec_measurements(self):
+        records = {record["id"]: record for record in load_refills()}
+        self.assertNotIn("pilot-hi-techpoint-v5-rt", records)
+        self.assertNotIn("pilot-precise-v5-rt", records)
+        self.assertNotIn("pilot-g-2-07", records)
+        self.assertNotIn("pilot-g-2-penstylus", records)
+        expected = {
+            "pilot-bxs-v5rt": ([2.9, 8.9, 11.9, 15.6, 20.5, 21.5, 110],
+                                 ["Pilot Hi Techpoint V5 RT", "Pilot Precise V5 RT"]),
+            "pilot-lg-2rf": ([3.5, 9, 15, 19.5, 110.5],
+                              ["Pilot G-2 07", "Pilot G-2 Stylus"]),
+            "pilot-g-tec-c4": ([1.9, 3.4, 5, 6.3, 9, 10.5, 13.8, 15.5, 115.7], None),
+        }
+        for refill_id, (ends, source_pens) in expected.items():
+            with self.subTest(refill_id=refill_id):
+                record = records[refill_id]
+                self.assertTrue(record["geometry_ready"])
+                self.assertEqual([segment["end_distance_mm"] for segment in record["segments"]], ends)
+                self.assertEqual(record.get("source_pens"), source_pens)
+        self.assertEqual(
+            [(segment["diameter_start_mm"], segment["diameter_end_mm"])
+             for segment in records["pilot-g-tec-c4"]["segments"] if segment["kind"] == "taper"],
+            [(1.5, 2.6), (2.5, 3.5)],
+        )
+        self.assertEqual(records["pilot-lg-2rf"]["segments"][0]["kind"], "taper")
+
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)

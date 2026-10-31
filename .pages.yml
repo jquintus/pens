@@ -169,6 +169,10 @@ content:
       - name: model
         type: string
         required: true
+      - name: source_pens
+        type: string
+        list: true
+        label: Pens that use this refill
       - name: format
         type: select
         required: true

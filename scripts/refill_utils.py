@@ -44,6 +44,10 @@ def validate_refill(refill):
         value = result.get(field)
         if value is not None and (not isinstance(value, str) or value not in choices):
             raise ValueError(f"{field} must be one of: {', '.join(sorted(choices))}")
+    source_pens = result.get("source_pens")
+    if source_pens is not None and (not isinstance(source_pens, list) or
+                                    any(not isinstance(name, str) or not name.strip() for name in source_pens)):
+        raise ValueError("source_pens must be a list of pen names")
     for field in ("pen_photos", "ink_photos", "photos"):
         value = result.get(field)
         if value is not None and (not isinstance(value, list) or

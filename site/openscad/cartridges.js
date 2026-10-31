@@ -5,7 +5,7 @@ const choices = {
   tip_shape: ["unknown", "needle", "conical", "ballpoint", "fineliner", "felt", "other"]
 };
 const colors = ["#ffbd66", "#72d9c7", "#d6a6f3", "#f092a4", "#a9c7ff"];
-const fields = ["id", "brand", "model", "format", "ink_type", "tip_shape", "tip_size_mm", "measurement_status", "rating", "colors", "notes", "ink_notes", "measurement_notes", "pen_photos", "ink_photos"];
+const fields = ["id", "brand", "model", "source_pens", "format", "ink_type", "tip_shape", "tip_size_mm", "measurement_status", "rating", "colors", "notes", "ink_notes", "measurement_notes", "pen_photos", "ink_photos"];
 const data = await fetch(`designer-data.json?v=${Date.now()}`).then(response => {
   if (!response.ok) throw Error("Cartridge catalog failed to load");
   return response.json();
@@ -81,6 +81,7 @@ function renderPhotos(key, target) {
   catch { caption.textContent = filename; }
 }
 function catalogLabel(record) { return `${record.brand || "Unknown brand"} ${record.model || "Unknown model"}`.trim(); }
+function normalizeSearch(value) { return String(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " "); }
 function filterValue(record, key) {
   const value = record[key];
   return value === undefined || value === null || value === "" ? "unknown" : String(value);
@@ -102,10 +103,10 @@ function refreshFilterOptions() {
   }
 }
 function filteredRecords() {
-  const query = $("catalog-search").value.trim().toLowerCase();
+  const query = normalizeSearch($("catalog-search").value);
   return catalog.filter(record => {
     if (filterFields.some(key => $(`filter-${key}`).value && filterValue(record, key) !== $(`filter-${key}`).value)) return false;
-    return !query || [record.id, record.brand, record.model, record.format, record.ink_type, record.tip_shape, record.tip_size_mm, record.measurement_status, ...(record.colors || []), record.notes, record.ink_notes].join(" ").toLowerCase().includes(query);
+    return !query || normalizeSearch([record.id, record.brand, record.model, ...(record.source_pens || []), record.format, record.ink_type, record.tip_shape, record.tip_size_mm, record.measurement_status, ...(record.colors || []), record.notes, record.ink_notes].join(" ")).includes(query);
   });
 }
 function renderCatalog() {
@@ -127,7 +128,7 @@ function renderCatalog() {
     const title = document.createElement("strong");
     title.textContent = catalogLabel(record);
     const subtitle = document.createElement("span");
-    subtitle.textContent = `${record.ink_type || "Ink unknown"} · ${record.measurement_status}`;
+    subtitle.textContent = `${record.ink_type || "Ink unknown"} · ${record.measurement_status}${record.source_pens?.length ? ` · ${record.source_pens.join(", ")}` : ""}`;
     button.append(title, subtitle);
     button.addEventListener("click", () => selectRecord(record));
     $("catalog-list").append(button);
@@ -210,7 +211,7 @@ function exportRecord() {
   delete record.geometry_ready;
   delete record.overall_length_mm;
   for (const key of ["notes", "ink_notes", "measurement_notes"]) if (!record[key]) delete record[key];
-  for (const key of ["pen_photos", "ink_photos", "colors"]) if (!record[key]?.length) delete record[key];
+  for (const key of ["pen_photos", "ink_photos", "colors", "source_pens"]) if (!record[key]?.length) delete record[key];
   if (!record.tip_size_mm) delete record.tip_size_mm;
   if (!record.rating) delete record.rating;
   return record;
@@ -285,7 +286,7 @@ function renderDetail() {
   const metadata = $("detail-metadata");
   metadata.replaceChildren();
   const facts = [
-    ["Brand", draft.brand], ["Model", draft.model], ["Physical format", draft.format],
+    ["Brand", draft.brand], ["Model", draft.model], ["Pens using this refill", draft.source_pens?.join(", ")], ["Physical format", draft.format],
     ["Ink type", draft.ink_type], ["Tip type", draft.tip_shape],
     ["Tip size", draft.tip_size_mm ? `${draft.tip_size_mm} mm` : null],
     ["Colors", draft.colors?.join(", ")], ["Rating", draft.rating ? `${"★".repeat(draft.rating)}${"☆".repeat(5 - draft.rating)}` : "Not rated"],
@@ -339,7 +340,7 @@ function syncDraft() {
   if (!draft) return;
   for (const key of fields) {
     const value = $(`field-${key}`).value.trim();
-    if (["pen_photos", "ink_photos"].includes(key)) draft[key] = splitLines(value);
+    if (["pen_photos", "ink_photos", "source_pens"].includes(key)) draft[key] = splitLines(value);
     else if (key === "colors") draft[key] = value.split(",").map(item => item.trim()).filter(Boolean);
     else if (["rating", "tip_size_mm"].includes(key)) draft[key] = value ? Number(value) : undefined;
     else draft[key] = value;
@@ -374,7 +375,7 @@ function selectRecord(record, isNew = false) {
   for (const key of fields) {
     let value = draft[key];
     if (key === "colors") value = listLines(value).join(", ");
-    if (["pen_photos", "ink_photos"].includes(key)) value = listLines(value).join("\n");
+    if (["pen_photos", "ink_photos", "source_pens"].includes(key)) value = listLines(value).join("\n");
     $(`field-${key}`).value = value ?? (key in choices ? "unknown" : "");
   }
   $("segment-rows").replaceChildren();

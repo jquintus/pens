@@ -230,14 +230,11 @@
     {
       "id": "jihekj-unspecified-05",
       "brand": "JIHEKJ",
-      "model": "Unspecified",
+      "model": "JIHEKJ",
       "format": "unknown",
       "ink_type": "gel",
       "tip_size_mm": 0.5,
       "tip_shape": "ballpoint",
-      "colors": [
-        "assorted"
-      ],
       "measurement_status": "measured",
       "measurement_notes": "Dimensions supplied by Josh; model name was not provided.",
       "segments": [
@@ -272,6 +269,9 @@
           "diameter_mm": 4.5,
           "end_distance_mm": 130.7
         }
+      ],
+      "colors": [
+        "assorted"
       ],
       "overall_length_mm": 130.7,
       "geometry_ready": true
@@ -320,44 +320,124 @@
       "geometry_ready": false
     },
     {
-      "id": "pilot-g-2-07",
+      "id": "pilot-bxs-v5rt",
       "brand": "Pilot",
-      "model": "G-2 07",
+      "model": "BXS-V5RT",
+      "source_pens": [
+        "Pilot Hi Techpoint V5 RT",
+        "Pilot Precise V5 RT"
+      ],
       "format": "unknown",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
-    },
-    {
-      "id": "pilot-g-2-penstylus",
-      "brand": "Pilot",
-      "model": "G-2 Penstylus",
-      "format": "unknown",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "ink_type": "gel",
+      "tip_shape": "needle",
+      "tip_size_mm": 0.5,
+      "colors": [
+        "assorted"
+      ],
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "cylinder",
+          "diameter_mm": 0.8,
+          "end_distance_mm": 2.9
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.4,
+          "end_distance_mm": 8.9
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.5,
+          "end_distance_mm": 11.9
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 15.6
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 4.5,
+          "end_distance_mm": 20.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.0,
+          "end_distance_mm": 21.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.1,
+          "end_distance_mm": 110.0
+        }
+      ],
+      "overall_length_mm": 110.0,
+      "geometry_ready": true
     },
     {
       "id": "pilot-g-tec-c4",
       "brand": "Pilot",
       "model": "G-Tec-C4",
       "format": "unknown",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
-    },
-    {
-      "id": "pilot-hi-techpoint-v5-rt",
-      "brand": "Pilot",
-      "model": "HI-Techpoint V5 RT",
-      "format": "unknown",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "ink_type": "gel",
+      "tip_shape": "needle",
+      "tip_size_mm": 0.4,
+      "colors": [
+        "blue"
+      ],
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "cylinder",
+          "diameter_mm": 0.7,
+          "end_distance_mm": 1.9
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 1.0,
+          "end_distance_mm": 3.4
+        },
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.5,
+          "diameter_end_mm": 2.6,
+          "end_distance_mm": 5.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.6,
+          "end_distance_mm": 6.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.5,
+          "end_distance_mm": 9.0
+        },
+        {
+          "kind": "taper",
+          "diameter_start_mm": 2.5,
+          "diameter_end_mm": 3.5,
+          "end_distance_mm": 10.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.5,
+          "end_distance_mm": 13.8
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.2,
+          "end_distance_mm": 15.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 5.5,
+          "end_distance_mm": 115.7
+        }
+      ],
+      "overall_length_mm": 115.7,
+      "geometry_ready": true
     },
     {
       "id": "pilot-juice-up-04",
@@ -370,14 +450,53 @@
       "geometry_ready": false
     },
     {
-      "id": "pilot-precise-v5-rt",
+      "id": "pilot-lg-2rf",
       "brand": "Pilot",
-      "model": "Precise V5 RT",
+      "model": "LG 2RF",
+      "source_pens": [
+        "Pilot G-2 07",
+        "Pilot G-2 Stylus"
+      ],
       "format": "unknown",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "ink_type": "gel",
+      "tip_shape": "ballpoint",
+      "tip_size_mm": 0.7,
+      "colors": [
+        "green",
+        "black"
+      ],
+      "measurement_status": "measured",
+      "notes": "Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.1,
+          "diameter_end_mm": 2.4,
+          "end_distance_mm": 3.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.4,
+          "end_distance_mm": 9.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.1,
+          "end_distance_mm": 15.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 4.5,
+          "end_distance_mm": 19.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.0,
+          "end_distance_mm": 110.5
+        }
+      ],
+      "overall_length_mm": 110.5,
+      "geometry_ready": true
     },
     {
       "id": "sharpie-s-gel",

@@ -1,0 +1,35 @@
+id: pilot-bxs-v5rt
+brand: Pilot
+model: BXS-V5RT
+source_pens:
+  - Pilot Hi Techpoint V5 RT
+  - Pilot Precise V5 RT
+format: unknown
+ink_type: gel
+tip_shape: needle
+tip_size_mm: 0.5
+colors:
+  - assorted
+measurement_status: measured
+segments:
+  - kind: cylinder
+    diameter_mm: 0.8
+    end_distance_mm: 2.9
+  - kind: cylinder
+    diameter_mm: 2.4
+    end_distance_mm: 8.9
+  - kind: cylinder
+    diameter_mm: 2.5
+    end_distance_mm: 11.9
+  - kind: cylinder
+    diameter_mm: 3.4
+    end_distance_mm: 15.6
+  - kind: cylinder
+    diameter_mm: 4.5
+    end_distance_mm: 20.5
+  - kind: cylinder
+    diameter_mm: 6.0
+    end_distance_mm: 21.5
+  - kind: cylinder
+    diameter_mm: 6.1
+    end_distance_mm: 110
