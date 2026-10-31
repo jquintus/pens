@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cartridge catalog · OpenSCAD Pens</title>
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="cartridges.css">
+  <link rel="stylesheet" href="cartridges.css?v=20261031-filters">
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -53,6 +53,6 @@
       </div></article>
     </div>
   </main>
-  <script type="module" src="cartridges.js"></script>
+  <script type="module">import(`./cartridges.js?v=${Date.now()}`);</script>
 </body>
 </html>
