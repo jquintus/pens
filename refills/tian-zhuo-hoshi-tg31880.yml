@@ -1,0 +1,31 @@
+id: tian-zhuo-hoshi-tg31880
+brand: Tian Zhuo Hoshi
+model: TG31880
+format: unknown
+ink_type: gel
+tip_size_mm: 0.35
+tip_shape: needle
+colors:
+  - red
+  - black
+  - blue
+measurement_status: measured
+measurement_notes: Dimensions supplied by Josh; physical refill format has not been identified.
+segments:
+  - kind: cylinder
+    diameter_mm: 0.8
+    end_distance_mm: 3
+  - kind: taper
+    diameter_start_mm: 2
+    diameter_end_mm: 2.8
+    end_distance_mm: 7.5
+  - kind: taper
+    diameter_start_mm: 2.8
+    diameter_end_mm: 3.4
+    end_distance_mm: 14.2
+  - kind: cylinder
+    diameter_mm: 5.4
+    end_distance_mm: 15.5
+  - kind: cylinder
+    diameter_mm: 4.6
+    end_distance_mm: 130

@@ -1,0 +1,24 @@
+# Illustration only. These are not measurements of a commercial refill.
+id: example-refill
+brand: Example
+model: Demonstration refill (fictional)
+format: Example geometry
+ink_type: unknown
+measurement_status: approximate
+measurement_notes: Illustrative dimensions only; replace with caliper measurements before printing.
+segments:
+  - kind: taper
+    diameter_start_mm: 1.5
+    diameter_end_mm: 2.5
+    end_distance_mm: 4
+  - kind: cylinder
+    diameter_mm: 2.5
+    end_distance_mm: 8
+  - kind: taper
+    diameter_start_mm: 2.5
+    diameter_end_mm: 6
+    end_distance_mm: 15
+  - kind: cylinder
+    diameter_mm: 6
+    end_distance_mm: 95
+notes: Example fixture for the designer. Do not use these dimensions to fit a real refill.

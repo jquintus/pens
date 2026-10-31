@@ -118,7 +118,7 @@ Install OpenSCAD and put `openscad` on PATH, set `OPENSCAD`, or pass `--openscad
 
 OpenSCAD exports meshes, so this gallery offers SCAD and STL. Exact STEP exports remain in the original CadQuery gallery. Slice the STL in Bambu Studio using your installed nozzle and filament; this parallel build does not fabricate G-code printer headers.
 
-Pages and release workflows build both backends. Releases attach the OpenSCAD files as `openscad-models.zip` to avoid colliding with the original STL asset names. The OpenSCAD validation workflow renders every config and checks closed geometry, component counts, dimensions and rounded volume against CadQuery, portable source downloads, and gallery links.
+Pages and release workflows build both backends. Releases attach the OpenSCAD files as `openscad-models.zip` to avoid colliding with the original STL asset names. The OpenSCAD validation workflow renders every config and checks closed geometry, component counts, portable source downloads, and gallery links. Legacy geometry is also checked against CadQuery dimensions and rounded volume; OpenSCAD-only shapes have their own geometry and clearance checks.
 
 ```sh
 python -m pip install trimesh numpy cadquery
@@ -126,3 +126,17 @@ python -m unittest discover -s tests -v
 ```
 
 For a local preview, copy `assets/` and `outputs/` into a temporary site directory beside the contents of `site/`, then serve that directory with `python -m http.server`.
+
+## Refill measurements and designer
+
+The `refills/` collection is edited in Pages CMS alongside the existing `configurations/` pen collection. Each refill YAML file describes one model or family. Put color and SKU specific URLs or notes in `variants`, so the physical shape is stored once. `format` means the physical refill family (for example, Parker-style G2); `brand` and `ink_type` describe different things. Photos are user-owned files uploaded through the existing `assets/` media workflow. Store external product URLs in `links` or `variants`; do not copy product photos into the repo or hotlink them.
+
+The **writing tip is distance 0 mm**. List `segments` in order from the tip toward the rear. Every `end_distance_mm` is the distance from that same tip to the *end* of the segment, not the length of the segment itself. The segment length is derived by subtracting the previous end distance (or zero for the first segment). The last end distance is the refill's overall length. Measure with calipers from the tip each time, so an error in one section does not propagate through later sections.
+
+Use `kind: cylinder` with `diameter_mm` and `end_distance_mm` for a constant diameter. Use `kind: taper` with `diameter_start_mm`, `diameter_end_mm`, and `end_distance_mm` for a tapered section. The taper diameters refer to the segment's two ends, moving from tip to rear. Both kinds can appear as often as needed. End distances must increase strictly, and known dimensions must be positive finite numbers.
+
+Set `measurement_status` to `measured`, `approximate`, or `incomplete`. An individual segment can override that status and include `notes`. If a dimension is unknown, omit it and mark the refill or segment `incomplete`; the catalog retains the record, but the designer cannot use it for geometry until the profile is complete. For uncertain but usable measurements, enter the value, mark it `approximate`, and explain the uncertainty in `measurement_notes`. `refills/example-refill.yml` is fictional example geometry, not verified commercial refill data.
+
+The browser designer in the OpenSCAD gallery lets you inspect a refill, nose cone, end cap, and wooden body before exporting. Refill and nose bore profiles use the same three-column entry: starting diameter, ending diameter, and distance from the tip to the segment end. Leave either diameter blank for a cylinder; fill both for a taper. A blank row is always available for the next segment, so Tab moves through the measurements in order. The nose bore is initially derived from the refill and the two diameter clearances; choose **Customize bore** to edit its segments directly. The final bore end must equal the nose cone's visible plus insertion length.
+
+The axial cutaway draws the refill inside the nose's hollow bore and body tube, and the designer checks their overlap before export. Body outside diameter and body length affect visualization only; they are omitted from printable geometry parameters. Download a self-contained SCAD source or save an exported configuration through its prefilled GitHub new-file link when available; the download fallback belongs under `configurations/`. New or edited refill YAML belongs under `refills/`. Subsequent edits can be made in the matching Pages CMS collection. The OpenSCAD-only geometry lives in optional `openscad` fields; the original CadQuery build continues to read `nose_cone` from the same configuration.

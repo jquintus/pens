@@ -60,3 +60,70 @@ module pen_parts(cylinder_height=5.9, cylinder_outside_diameter=7.57,
     rotate_extrude(convexity=10)
         polygon(_pen_round_profile(cap_profile,[1,len(cap_profile)-2],fillet_radius));
 }
+
+// OpenSCAD-only designer geometry. The writing end of the nose is z=0;
+// z increases toward the body. Both parts are separated for printing.
+// Fillets are explicit arcs in the axial profile, independent of mesh edges.
+module designer_parts(
+    nose_cone_visible_length_mm=11,
+    nose_cone_insertion_length_mm=5.9,
+    nose_cone_insertion_diameter_mm=7.57,
+    nose_cone_base_diameter_mm=10.2,
+    nose_cone_tip_diameter_mm=5,
+    nose_cone_passage_diameter_mm=4.9,
+    nose_cone_stop_diameter_mm=3,
+    nose_cone_stop_depth_mm=7,
+    // Optional [start diameter, end diameter, absolute end distance from tip].
+    nose_cone_bore_segments=[],
+    nose_cone_round_radius_mm=0.4,
+    end_cap_length_mm=2,
+    end_cap_diameter_mm=10.2,
+    end_cap_tip_diameter_mm=7.57,
+    end_cap_insertion_length_mm=5.9,
+    end_cap_insertion_diameter_mm=7.57,
+    end_cap_round_radius_mm=0.4
+) {
+    nose_height=nose_cone_visible_length_mm+nose_cone_insertion_length_mm;
+    nose_profile=[
+        [0,0],
+        [nose_cone_tip_diameter_mm/2,0],
+        [nose_cone_base_diameter_mm/2,nose_cone_visible_length_mm],
+        [nose_cone_insertion_diameter_mm/2,nose_cone_visible_length_mm],
+        [nose_cone_insertion_diameter_mm/2,nose_height],
+        [0,nose_height]
+    ];
+    translate([20,0,0]) difference() {
+        rotate_extrude(convexity=10)
+            polygon(nose_cone_round_radius_mm>0
+                ? _pen_round_profile(nose_profile,[1,4],nose_cone_round_radius_mm)
+                : nose_profile);
+        if(len(nose_cone_bore_segments)>0) {
+            for(i=[0:len(nose_cone_bore_segments)-1]) {
+                start=i==0 ? 0 : nose_cone_bore_segments[i-1][2];
+                segment=nose_cone_bore_segments[i];
+                translate([0,0,start-(i==0 ? 0.01 : 0)])
+                    cylinder(d1=segment[0],d2=segment[1],
+                             h=segment[2]-start+(i==0 ? 0.02 : 0.01));
+            }
+        } else {
+            translate([0,0,-0.01])
+                cylinder(d=nose_cone_stop_diameter_mm,h=nose_cone_stop_depth_mm+0.01);
+            translate([0,0,nose_cone_stop_depth_mm])
+                cylinder(d=nose_cone_passage_diameter_mm,
+                         h=nose_height-nose_cone_stop_depth_mm+0.01);
+        }
+    }
+    cap_height=end_cap_length_mm+end_cap_insertion_length_mm;
+    cap_profile=[
+        [0,0],
+        [end_cap_tip_diameter_mm/2,0],
+        [end_cap_diameter_mm/2,end_cap_length_mm],
+        [end_cap_insertion_diameter_mm/2,end_cap_length_mm],
+        [end_cap_insertion_diameter_mm/2,cap_height],
+        [0,cap_height]
+    ];
+    rotate_extrude(convexity=10)
+        polygon(end_cap_round_radius_mm>0
+            ? _pen_round_profile(cap_profile,[1,4],end_cap_round_radius_mm)
+            : cap_profile);
+}

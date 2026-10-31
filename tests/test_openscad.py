@@ -4,7 +4,10 @@ import importlib.util
 from html.parser import HTMLParser
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import sys
+import tempfile
 import unittest
 from urllib.parse import unquote, urlparse
 
@@ -13,7 +16,7 @@ import trimesh
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'scripts'))
-from build_openscad import configurations, parameters, source_text
+from build_openscad import configurations, designer_parameters, parameters, source_text
 from config_utils import load_config, output_stem
 from generate_openscad_site import detail_page
 
@@ -43,8 +46,14 @@ class OpenSCADBuildTests(unittest.TestCase):
                 components = mesh.split(only_watertight=False)
                 self.assertEqual(len(components), 2 if kind == 'pen' else 1)
                 values = parameters(config, kind)
-                expected_height = (values['cylinder_height'] + values['frustum_height'] if kind == 'pen'
-                                   else values['back_height_in'] * 25.4)
+                if kind == 'pen' and 'openscad' in config:
+                    design = designer_parameters(config)
+                    expected_height = max(
+                        design['nose_cone']['visible_length_mm'] + design['nose_cone']['insertion_length_mm'],
+                        design['end_cap']['length_mm'] + design['end_cap']['insertion_length_mm'])
+                else:
+                    expected_height = (values['cylinder_height'] + values['frustum_height'] if kind == 'pen'
+                                       else values['back_height_in'] * 25.4)
                 self.assertAlmostEqual(mesh.extents[2], expected_height, delta=0.015)
                 if kind == 'c_bracket':
                     self.assertAlmostEqual(mesh.extents[0], values['width_in'] * 25.4, delta=0.015)
@@ -55,6 +64,8 @@ class OpenSCADBuildTests(unittest.TestCase):
         for path, kind in configurations():
             with self.subTest(path=path.name):
                 config = load_config(path)
+                if kind == 'pen' and 'openscad' in config:
+                    continue  # CAD-specific dimensions intentionally differ from CadQuery.
                 if kind == 'pen':
                     original = build(config)
                 else:
@@ -113,6 +124,81 @@ class OpenSCADBuildTests(unittest.TestCase):
                 source_text(bad, kind)
         with self.assertRaises(ValueError):
             source_text({'model': {}}, 'unknown_model')
+
+    def test_designer_dimensions_are_independent_and_validated(self):
+        path, _ = next(configurations())
+        config = load_config(path)
+        legacy = source_text(config, 'pen')
+        config['openscad'] = {'nose_cone': {'visible_length_mm': 15},
+                              'end_cap': {'length_mm': 4}}
+        source = source_text(config, 'pen')
+        self.assertIn('designer_parts(', source)
+        self.assertIn('nose_cone_visible_length_mm = 15.0;', source)
+        self.assertIn('end_cap_length_mm = 4.0;', source)
+        self.assertNotIn('include <', source)
+        self.assertEqual(parameters(config, 'pen'), parameters(load_config(path), 'pen'))
+        self.assertNotEqual(legacy, source)
+        for section, key, value in (
+            ('nose_cone', 'passage_diameter_mm', 50),
+            ('nose_cone', 'stop_depth_mm', 100),
+            ('nose_cone', 'round_radius_mm', 100),
+            ('end_cap', 'insertion_diameter_mm', 50),
+        ):
+            bad = copy.deepcopy(config)
+            bad['openscad'][section][key] = value
+            with self.subTest(section=section, key=key), self.assertRaises(ValueError):
+                source_text(bad, 'pen')
+
+    def test_designer_prints_two_closed_solids(self):
+        executable = shutil.which('openscad')
+        if not executable:
+            self.skipTest('OpenSCAD is not installed')
+        path, _ = next(configurations())
+        config = load_config(path)
+        config['openscad'] = {'nose_cone': {'visible_length_mm': 15,
+                                           'bore_segments': [
+                                               {'kind': 'cylinder', 'diameter_mm': 2.5,
+                                                'end_distance_mm': 4},
+                                               {'kind': 'taper', 'diameter_start_mm': 2.5,
+                                                'diameter_end_mm': 4.2, 'end_distance_mm': 9},
+                                               {'kind': 'cylinder', 'diameter_mm': 4.2,
+                                                'end_distance_mm': 20.9},
+                                           ]},
+                              'end_cap': {'length_mm': 4}}
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'designer.scad'
+            stl = Path(folder) / 'designer.stl'
+            source.write_text(source_text(config, 'pen'))
+            process = subprocess.run([executable, '-o', str(stl), str(source)],
+                                     capture_output=True, text=True)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            mesh = trimesh.load(stl, force='mesh')
+            self.assertTrue(mesh.is_watertight)
+            self.assertEqual(len(mesh.split(only_watertight=False)), 2)
+            self.assertAlmostEqual(mesh.extents[2], 20.9, delta=0.02)
+
+    def test_segmented_bore_uses_tip_referenced_ends(self):
+        path, _ = next(configurations())
+        config = load_config(path)
+        config['openscad'] = {'nose_cone': {'bore_segments': [
+            {'kind': 'cylinder', 'diameter_mm': 2.5, 'end_distance_mm': 4},
+            {'kind': 'taper', 'diameter_start_mm': 2.5,
+             'diameter_end_mm': 4.2, 'end_distance_mm': 9},
+            {'kind': 'cylinder', 'diameter_mm': 4.2, 'end_distance_mm': 16.9},
+        ]}}
+        normalized = designer_parameters(config)['nose_cone']['bore_segments']
+        self.assertEqual(normalized, [[2.5, 2.5, 4], [2.5, 4.2, 9], [4.2, 4.2, 16.9]])
+        self.assertIn('nose_cone_bore_segments = [[2.5, 2.5, 4.0],', source_text(config, 'pen'))
+        for edit in (
+            lambda parts: parts[1].update(end_distance_mm=3),
+            lambda parts: parts[2].update(end_distance_mm=15),
+            lambda parts: parts[0].update(diameter_mm=5),
+            lambda parts: parts[1].update(diameter_end_mm=float('nan')),
+        ):
+            bad = copy.deepcopy(config)
+            edit(bad['openscad']['nose_cone']['bore_segments'])
+            with self.assertRaises(ValueError):
+                designer_parameters(bad)
 
     def test_config_text_is_not_interpreted_as_page_markup(self):
         item = {'slug': 'example', 'id': 'example', 'title': '<script>alert(1)</script>',

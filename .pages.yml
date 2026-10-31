@@ -60,6 +60,75 @@ content:
         label: Short description
       - name: nose_cone
         component: nose_cone
+      - name: refill
+        type: reference
+        label: Refill
+        options:
+          collection: refills
+          value: "{primary}"
+          label: "{brand} {model}"
+      - name: openscad
+        type: object
+        label: OpenSCAD-only geometry (mm)
+        fields:
+          - name: refill_tip_projection_mm
+            type: number
+            label: Refill tip projection beyond nose (assembly view)
+          - name: refill_tip_clearance_mm
+            type: number
+            label: Added diameter clearance at tip bore
+          - name: refill_passage_clearance_mm
+            type: number
+            label: Added diameter clearance in passage
+          - name: nose_cone
+            type: object
+            fields:
+              - name: visible_length_mm
+                type: number
+              - name: insertion_length_mm
+                type: number
+              - name: insertion_diameter_mm
+                type: number
+              - name: base_diameter_mm
+                type: number
+              - name: tip_diameter_mm
+                type: number
+              - name: round_radius_mm
+                type: number
+              - name: bore_segments
+                type: object
+                list: true
+                label: Bore profile from nose tip to rear
+                description: End distances are measured from the nose tip. The last end must equal visible plus insertion length.
+                fields:
+                  - name: kind
+                    type: select
+                    required: true
+                    options:
+                      values: [cylinder, taper]
+                  - name: diameter_mm
+                    type: number
+                  - name: diameter_start_mm
+                    type: number
+                  - name: diameter_end_mm
+                    type: number
+                  - name: end_distance_mm
+                    type: number
+          - name: end_cap
+            type: object
+            fields:
+              - name: length_mm
+                type: number
+              - name: diameter_mm
+                type: number
+              - name: tip_diameter_mm
+                type: number
+              - name: insertion_length_mm
+                type: number
+              - name: insertion_diameter_mm
+                type: number
+              - name: round_radius_mm
+                type: number
       - name: slicing_profiles
         label: Slicing Profiles
         type: select
@@ -79,6 +148,111 @@ content:
           multiple:
             max: 8
           extensions: [svg, png, jpg, jpeg, webp, avif]
+
+  - name: refills
+    label: Refill catalog
+    type: collection
+    path: refills
+    format: yaml
+    filename: "{primary}.yml"
+    view:
+      primary: id
+      sort: id
+    fields:
+      - name: id
+        type: string
+        required: true
+        pattern: "^[a-z0-9_-]+$"
+      - name: brand
+        type: string
+        required: true
+      - name: model
+        type: string
+        required: true
+      - name: format
+        type: string
+        required: true
+        label: Physical format / family
+      - name: ink_type
+        type: string
+      - name: tip_size_mm
+        type: number
+      - name: tip_shape
+        type: string
+      - name: measurement_status
+        type: select
+        required: true
+        options:
+          values: [measured, approximate, incomplete]
+      - name: measurement_notes
+        type: text
+      - name: segments
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{kind} to {end_distance_mm} mm"
+        required: true
+        label: Axial segments, tip to rear
+        description: Each end distance is measured from the writing tip, not from the previous segment.
+        fields:
+          - name: kind
+            type: select
+            required: true
+            options:
+              values: [cylinder, taper]
+          - name: diameter_mm
+            type: number
+            label: Cylinder diameter (mm)
+          - name: diameter_start_mm
+            type: number
+            label: Taper diameter at segment start (mm)
+          - name: diameter_end_mm
+            type: number
+            label: Taper diameter at segment end (mm)
+          - name: end_distance_mm
+            type: number
+            label: Distance from writing tip to segment end (mm)
+          - name: measurement_status
+            type: select
+            options:
+              values: [measured, approximate, incomplete]
+          - name: notes
+            type: text
+      - name: colors
+        type: string
+        list: true
+      - name: variants
+        type: object
+        list: true
+        fields:
+          - name: color
+            type: string
+          - name: sku
+            type: string
+          - name: url
+            type: string
+          - name: notes
+            type: text
+      - name: rating
+        type: number
+        label: Personal rating (1–5 stars)
+      - name: notes
+        type: text
+        label: Personal notes
+      - name: photos
+        type: image
+        options:
+          multiple: true
+          extensions: [svg, png, jpg, jpeg, webp, avif]
+      - name: links
+        type: object
+        list: true
+        fields:
+          - name: label
+            type: string
+          - name: url
+            type: string
 
   - name: models
     label: Custom models

@@ -12,6 +12,7 @@ from urllib.parse import quote
 
 from config_utils import CONFIG_DIR, OUTPUT_DIR, REPO_ROOT, SITE_DIR, load_config, output_stem
 from generate_site_data import MODELS_DIR, normalize_gallery_paths
+from refill_utils import load_refills
 
 GALLERY_DIR = SITE_DIR / "openscad"
 
@@ -84,6 +85,7 @@ def header(title, shared_prefix, local_prefix, cadquery_path):
     <p class="brand__tag">Parametric configs to printable models</p></div>
   </div></a>
   <nav class="quick-links" aria-label="Quick links">
+    <a class="quick-links__item" href="{local_prefix}designer.html">Designer</a>
     <a class="quick-links__item" href="{html(cadquery_path)}">CadQuery version</a>
     <a class="quick-links__item" href="https://app.pagescms.org/jquintus/pens/" rel="noreferrer">Edit configurations</a>
   </nav>
@@ -188,6 +190,16 @@ def main():
 </body></html>\n'''
     (GALLERY_DIR / "index.html").write_text(index, encoding="utf-8")
     (GALLERY_DIR / "data.json").write_text(json.dumps({"pens": items}, indent=2) + "\n", encoding="utf-8")
+    pens = []
+    for path, is_pen in configurations():
+        if is_pen:
+            config = load_config(path)
+            pens.append({"id": config.get("id", path.stem), "config": config})
+    (GALLERY_DIR / "designer-data.json").write_text(
+        json.dumps({"pens": pens, "refills": load_refills(),
+                    "scad_module": (REPO_ROOT / "cad/openscad/pen_parts.scad").read_text()}, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(f"Generated OpenSCAD gallery: {len(items)} designs in {GALLERY_DIR}")
 
 

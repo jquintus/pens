@@ -1,0 +1,315 @@
+{
+  "pens": [
+    {
+      "id": "pilot_precise_v5rt_60",
+      "config": {
+        "id": "pilot_precise_v5rt_60",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.6,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_63",
+      "config": {
+        "id": "pilot_precise_v5rt_63",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.63,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_65",
+      "config": {
+        "id": "pilot_precise_v5rt_65",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.65,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_68",
+      "config": {
+        "id": "pilot_precise_v5rt_68",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.68,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_70",
+      "config": {
+        "id": "pilot_precise_v5rt_70",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.7,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_73",
+      "config": {
+        "id": "pilot_precise_v5rt_73",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.73,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt_78",
+      "config": {
+        "id": "pilot_precise_v5rt_78",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.78,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "pilot_precise_v5rt",
+      "config": {
+        "id": "pilot_precise_v5rt",
+        "title": "Pilot Precise V5RT",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.57,
+          "frustum_height": 11,
+          "frustum_top_diameter": 5,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 3,
+          "bottom_hole_diameter": 4.9,
+          "top_hole_height": 7
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/1000012828.jpg",
+          "/assets/1000012850.jpg"
+        ]
+      }
+    },
+    {
+      "id": "schmidt-888",
+      "config": {
+        "id": "schmidt-888",
+        "title": "Schmidt 888",
+        "nose_cone": {
+          "cylinder_height": 5.9,
+          "cylinder_outside_diameter": 7.48,
+          "frustum_height": 11,
+          "frustum_top_diameter": 4.75,
+          "frustum_bottom_diameter": 10.2,
+          "top_hole_diameter": 2.9,
+          "bottom_hole_diameter": 5.2,
+          "top_hole_height": 11
+        },
+        "slicing_profiles": [
+          "0.2_fast",
+          "0.2_quality"
+        ],
+        "gallery": [
+          "/assets/pen1.jpg",
+          "/assets/pen2.jpg"
+        ]
+      }
+    }
+  ],
+  "refills": [
+    {
+      "id": "example-refill",
+      "brand": "Example",
+      "model": "Demonstration refill (fictional)",
+      "format": "Example geometry",
+      "ink_type": "unknown",
+      "measurement_status": "approximate",
+      "measurement_notes": "Illustrative dimensions only; replace with caliper measurements before printing.",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.5,
+          "diameter_end_mm": 2.5,
+          "end_distance_mm": 4.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.5,
+          "end_distance_mm": 8.0
+        },
+        {
+          "kind": "taper",
+          "diameter_start_mm": 2.5,
+          "diameter_end_mm": 6.0,
+          "end_distance_mm": 15.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.0,
+          "end_distance_mm": 95.0
+        }
+      ],
+      "notes": "Example fixture for the designer. Do not use these dimensions to fit a real refill.",
+      "overall_length_mm": 95.0,
+      "geometry_ready": true
+    },
+    {
+      "id": "tian-zhuo-hoshi-tg31880",
+      "brand": "Tian Zhuo Hoshi",
+      "model": "TG31880",
+      "format": "unknown",
+      "ink_type": "gel",
+      "tip_size_mm": 0.35,
+      "tip_shape": "needle",
+      "colors": [
+        "red",
+        "black",
+        "blue"
+      ],
+      "measurement_status": "measured",
+      "measurement_notes": "Dimensions supplied by Josh; physical refill format has not been identified.",
+      "segments": [
+        {
+          "kind": "cylinder",
+          "diameter_mm": 0.8,
+          "end_distance_mm": 3.0
+        },
+        {
+          "kind": "taper",
+          "diameter_start_mm": 2.0,
+          "diameter_end_mm": 2.8,
+          "end_distance_mm": 7.5
+        },
+        {
+          "kind": "taper",
+          "diameter_start_mm": 2.8,
+          "diameter_end_mm": 3.4,
+          "end_distance_mm": 14.2
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 5.4,
+          "end_distance_mm": 15.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 4.6,
+          "end_distance_mm": 130.0
+        }
+      ],
+      "overall_length_mm": 130.0,
+      "geometry_ready": true
+    }
+  ],
+  "scad_module": "// Pen nose cone and end cap. All dimensions are millimeters.\n// Rounded ends are drawn into the revolved profile; no edge selection is needed.\n// This file is a module library. Call pen_parts(...) to create the printable pair.\nfunction _pen_unit(v) = v / norm(v);\nfunction _pen_cross(a, b) = a.x * b.y - a.y * b.x;\nfunction _pen_rotate(v, a) = [v.x*cos(a)-v.y*sin(a), v.x*sin(a)+v.y*cos(a)];\nfunction _pen_arc(previous, corner, next, radius, segments=24) =\n    let(incoming=_pen_unit(corner-previous), outgoing=_pen_unit(next-corner),\n        turn=atan2(_pen_cross(incoming,outgoing), incoming*outgoing),\n        tangent=radius*tan(abs(turn)/2),\n        entry=corner-incoming*tangent,\n        center=entry+[-incoming.y,incoming.x]*radius*sign(turn),\n        initial=entry-center)\n    [for(i=[0:segments]) center+_pen_rotate(initial,turn*i/segments)];\nfunction _pen_round_profile(points, corners, radius=1) =\n    [for(i=[0:len(points)-1])\n        each len(search(i,corners))>0\n            ? _pen_arc(points[(i+len(points)-1)%len(points)],points[i],\n                       points[(i+1)%len(points)],radius)\n            : [points[i]]];\nmodule pen_parts(cylinder_height=5.9, cylinder_outside_diameter=7.57,\n                 frustum_height=11, frustum_top_diameter=5,\n                 frustum_bottom_diameter=10.2, top_hole_diameter=3,\n                 bottom_hole_diameter=4.9, top_hole_height=7) {\n    assert(cylinder_height>0 && cylinder_outside_diameter>0,\n           \"Cylinder dimensions must be positive\");\n    assert(frustum_height>=0 && frustum_top_diameter>0 && frustum_bottom_diameter>0,\n           \"Frustum height must be nonnegative and diameters positive\");\n    assert(top_hole_diameter>0 && bottom_hole_diameter>0,\n           \"Bore diameters must be positive\");\n    total_height=cylinder_height+frustum_height;\n    assert(top_hole_height>=0 && top_hole_height<=total_height,\n           \"Top bore height must lie within the part\");\n    rc=cylinder_outside_diameter/2;\n    rb=frustum_bottom_diameter/2;\n    rt=frustum_top_diameter/2;\n    fillet_radius=1;\n    // Preserve the original cylinder-to-cone shoulder; only end edges are filleted.\n    nose_profile=frustum_height>0\n        ? (rc==rb\n            ? [[0,0],[rc,0],[rc,cylinder_height],[rt,total_height],[0,total_height]]\n            : [[0,0],[rc,0],[rc,cylinder_height],[rb,cylinder_height],\n               [rt,total_height],[0,total_height]])\n        : [[0,0],[rc,0],[rc,total_height],[0,total_height]];\n    translate([20,0,0]) difference() {\n        rotate_extrude(convexity=10)\n            polygon(_pen_round_profile(nose_profile,[1,len(nose_profile)-2],fillet_radius));\n        bottom_hole_height=total_height-top_hole_height;\n        if(bottom_hole_height>0)\n            translate([0,0,-0.01])\n                cylinder(d=bottom_hole_diameter,h=bottom_hole_height+0.01);\n        if(top_hole_height>0)\n            translate([0,0,bottom_hole_height])\n                cylinder(d=top_hole_diameter,h=top_hole_height+0.01);\n    }\n    end_cap_height=2+cylinder_height;\n    cap_profile=rc==rb\n        ? [[0,0],[rb,0],[rc,end_cap_height],[0,end_cap_height]]\n        : [[0,0],[rb,0],[rb,2],[rc,2],[rc,end_cap_height],[0,end_cap_height]];\n    rotate_extrude(convexity=10)\n        polygon(_pen_round_profile(cap_profile,[1,len(cap_profile)-2],fillet_radius));\n}\n\n// OpenSCAD-only designer geometry. The writing end of the nose is z=0;\n// z increases toward the body. Both parts are separated for printing.\n// Fillets are explicit arcs in the axial profile, independent of mesh edges.\nmodule designer_parts(\n    nose_cone_visible_length_mm=11,\n    nose_cone_insertion_length_mm=5.9,\n    nose_cone_insertion_diameter_mm=7.57,\n    nose_cone_base_diameter_mm=10.2,\n    nose_cone_tip_diameter_mm=5,\n    nose_cone_passage_diameter_mm=4.9,\n    nose_cone_stop_diameter_mm=3,\n    nose_cone_stop_depth_mm=7,\n    // Optional [start diameter, end diameter, absolute end distance from tip].\n    nose_cone_bore_segments=[],\n    nose_cone_round_radius_mm=0.4,\n    end_cap_length_mm=2,\n    end_cap_diameter_mm=10.2,\n    end_cap_tip_diameter_mm=7.57,\n    end_cap_insertion_length_mm=5.9,\n    end_cap_insertion_diameter_mm=7.57,\n    end_cap_round_radius_mm=0.4\n) {\n    nose_height=nose_cone_visible_length_mm+nose_cone_insertion_length_mm;\n    nose_profile=[\n        [0,0],\n        [nose_cone_tip_diameter_mm/2,0],\n        [nose_cone_base_diameter_mm/2,nose_cone_visible_length_mm],\n        [nose_cone_insertion_diameter_mm/2,nose_cone_visible_length_mm],\n        [nose_cone_insertion_diameter_mm/2,nose_height],\n        [0,nose_height]\n    ];\n    translate([20,0,0]) difference() {\n        rotate_extrude(convexity=10)\n            polygon(nose_cone_round_radius_mm>0\n                ? _pen_round_profile(nose_profile,[1,4],nose_cone_round_radius_mm)\n                : nose_profile);\n        if(len(nose_cone_bore_segments)>0) {\n            for(i=[0:len(nose_cone_bore_segments)-1]) {\n                start=i==0 ? 0 : nose_cone_bore_segments[i-1][2];\n                segment=nose_cone_bore_segments[i];\n                translate([0,0,start-(i==0 ? 0.01 : 0)])\n                    cylinder(d1=segment[0],d2=segment[1],\n                             h=segment[2]-start+(i==0 ? 0.02 : 0.01));\n            }\n        } else {\n            translate([0,0,-0.01])\n                cylinder(d=nose_cone_stop_diameter_mm,h=nose_cone_stop_depth_mm+0.01);\n            translate([0,0,nose_cone_stop_depth_mm])\n                cylinder(d=nose_cone_passage_diameter_mm,\n                         h=nose_height-nose_cone_stop_depth_mm+0.01);\n        }\n    }\n    cap_height=end_cap_length_mm+end_cap_insertion_length_mm;\n    cap_profile=[\n        [0,0],\n        [end_cap_tip_diameter_mm/2,0],\n        [end_cap_diameter_mm/2,end_cap_length_mm],\n        [end_cap_insertion_diameter_mm/2,end_cap_length_mm],\n        [end_cap_insertion_diameter_mm/2,cap_height],\n        [0,cap_height]\n    ];\n    rotate_extrude(convexity=10)\n        polygon(end_cap_round_radius_mm>0\n            ? _pen_round_profile(cap_profile,[1,4],end_cap_round_radius_mm)\n            : cap_profile);\n}\n"
+}
