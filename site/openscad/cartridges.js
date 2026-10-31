@@ -12,6 +12,7 @@ const data = await fetch(`designer-data.json?v=${Date.now()}`).then(response => 
 });
 const catalog = data.refills;
 const persistedIds = new Set(catalog.map(record => record.id));
+const filterFields = ["brand", "ink_type", "tip_shape", "tip_size_mm", "format", "measurement_status"];
 let draft = null;
 let selectedId = null;
 let draftIsNew = false;
@@ -80,11 +81,43 @@ function renderPhotos(key, target) {
   catch { caption.textContent = filename; }
 }
 function catalogLabel(record) { return `${record.brand || "Unknown brand"} ${record.model || "Unknown model"}`.trim(); }
+function filterValue(record, key) {
+  const value = record[key];
+  return value === undefined || value === null || value === "" ? "unknown" : String(value);
+}
+function filterLabel(key, value) {
+  if (value === "unknown") return "Unknown";
+  if (key === "tip_size_mm") return `${value} mm`;
+  return value.replaceAll("-", " ").replace(/^./, letter => letter.toUpperCase());
+}
+function refreshFilterOptions() {
+  for (const key of filterFields) {
+    const select = $(`filter-${key}`);
+    const selected = select.value;
+    const values = [...new Set(catalog.map(record => filterValue(record, key)))];
+    values.sort(key === "tip_size_mm" ? (a, b) => a === "unknown" ? 1 : b === "unknown" ? -1 : Number(a) - Number(b) : (a, b) => a.localeCompare(b));
+    select.replaceChildren(new Option("All", ""));
+    for (const value of values) select.add(new Option(filterLabel(key, value), value));
+    select.value = values.includes(selected) ? selected : "";
+  }
+}
+function filteredRecords() {
+  const query = $("catalog-search").value.trim().toLowerCase();
+  return catalog.filter(record => {
+    if (filterFields.some(key => $(`filter-${key}`).value && filterValue(record, key) !== $(`filter-${key}`).value)) return false;
+    return !query || [record.id, record.brand, record.model, record.format, record.ink_type, record.tip_shape, record.tip_size_mm, record.measurement_status, ...(record.colors || []), record.notes, record.ink_notes].join(" ").toLowerCase().includes(query);
+  });
+}
 function renderCatalog() {
-  const filter = $("catalog-search").value.trim().toLowerCase();
-  const matches = catalog.filter(record => [record.brand, record.model, record.ink_type, record.format, record.id].join(" ").toLowerCase().includes(filter));
+  const matches = filteredRecords();
   $("catalog-count").textContent = `${matches.length} of ${catalog.length} cartridges`;
   $("catalog-list").replaceChildren();
+  if (!matches.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No cartridges match these filters.";
+    $("catalog-list").append(empty);
+  }
   for (const record of matches) {
     const button = document.createElement("button");
     button.type = "button";
@@ -99,6 +132,17 @@ function renderCatalog() {
     button.addEventListener("click", () => selectRecord(record));
     $("catalog-list").append(button);
   }
+}
+function applyCatalogFilters() {
+  const matches = filteredRecords();
+  if ($("editor-content").hidden && !matches.some(record => record.id === selectedId)) {
+    if (matches.length) { selectRecord(matches[0]); return; }
+    selectedId = null;
+    $("detail-view").hidden = true;
+    $("editor-empty").hidden = false;
+    $("editor-empty").textContent = "No cartridges match these filters.";
+  }
+  renderCatalog();
 }
 
 function addSegmentRow(segment = {}, index = null) {
@@ -330,7 +374,14 @@ function selectRecord(record, isNew = false) {
   if (!isNew) history.replaceState(null, "", `?id=${encodeURIComponent(record.id)}`);
 }
 
-$("catalog-search").addEventListener("input", renderCatalog);
+refreshFilterOptions();
+$("catalog-search").addEventListener("input", applyCatalogFilters);
+for (const key of filterFields) $(`filter-${key}`).addEventListener("change", applyCatalogFilters);
+$("clear-filters").addEventListener("click", () => {
+  $("catalog-search").value = "";
+  for (const key of filterFields) $(`filter-${key}`).value = "";
+  applyCatalogFilters();
+});
 $("new-cartridge").addEventListener("click", () => { selectRecord({ id: "", brand: "", model: "", format: "unknown", ink_type: "unknown", tip_shape: "unknown", measurement_status: "incomplete", segments: [] }, true); history.replaceState(null, "", location.pathname); $("field-id").focus(); });
 for (const key of fields) $(`field-${key}`).addEventListener("input", syncDraft);
 $("segment-rows").addEventListener("input", event => {
@@ -362,6 +413,7 @@ $("done-editing").addEventListener("click", () => {
   else catalog.push(structuredClone(draft));
   selectedId = draft.id;
   draftIsNew = false;
+  refreshFilterOptions();
   renderCatalog();
   setMode("view");
   history.replaceState(null, "", `?id=${encodeURIComponent(draft.id)}`);
