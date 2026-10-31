@@ -4,6 +4,10 @@ model: Uni Jetstream Standard Ballpoint 1.0 mm
 format: unknown
 ink_type: ballpoint
 tip_size_mm: 1.0
-tip_shape: ballpoint
+tip_shape: conical
+notes: JetPens lists SXR-10 as the refill for this Jetstream Standard pen.
+links:
+  - label: JetPens Jetstream Standard 1.0
+    url: https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643
 measurement_status: incomplete
 segments: []

@@ -300,6 +300,19 @@ function renderDetail() {
     content.textContent = value;
     metadata.append(label, content);
   }
+  const links = [...(draft.links || []), ...(draft.variants || []).filter(item => item?.url).map(item => ({ label: item.color || "Product variant", url: item.url }))];
+  const linkList = $("detail-links");
+  linkList.replaceChildren();
+  for (const item of links) {
+    if (!/^https?:\/\//i.test(item?.url || "")) continue;
+    const anchor = document.createElement("a");
+    anchor.href = item.url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.textContent = item.label || "Product link";
+    linkList.append(anchor);
+  }
+  $("detail-links-section").hidden = !linkList.childElementCount;
   for (const [key, id] of [["notes", "detail-notes"], ["ink_notes", "detail-ink-notes"], ["measurement_notes", "detail-measurement-notes"]]) {
     $(id).textContent = draft[key]?.trim() || "No notes yet.";
     $(id).classList.toggle("is-empty", !draft[key]?.trim());

@@ -5,5 +5,9 @@ format: unknown
 ink_type: gel
 tip_size_mm: 0.5
 tip_shape: needle
+notes: Pentel identifies the matching 0.5 mm needle refill as LRN5.
+links:
+  - label: Pentel EnerGel LRN5 refill
+    url: https://www.pentel.com/products/energel-gel-pen-refill-lrn5
 measurement_status: incomplete
 segments: []

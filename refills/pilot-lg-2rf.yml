@@ -12,6 +12,7 @@ colors:
   - green
   - black
 measurement_status: measured
+measurement_notes: The Japanese LG2RF-8F specification lists a 6.2 mm maximum diameter, while JetPens lists 6.0 mm for a US Pilot G2 green refill. These may be different regional models, so the supplied 6.0 mm measurement is retained.
 notes: 'Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).'
 segments:
   - kind: taper
@@ -28,5 +29,10 @@ segments:
     diameter_mm: 4.5
     end_distance_mm: 19.5
   - kind: cylinder
-    diameter_mm: 6
+    diameter_mm: 6.0
     end_distance_mm: 110.5
+links:
+  - label: Pilot LG2RF-8F specifications
+    url: https://www.pilot-refill.jp/gel/lg2rf8f
+  - label: JetPens Pilot G2 green refill
+    url: https://www.jetpens.com/Pilot-G2-Gel-Pen-Refill-0.7-mm-Green-Pack-of-2/pd/7463

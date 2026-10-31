@@ -1,0 +1,37 @@
+id: zebra-jf-07
+brand: Zebra
+model: JF 0.7
+source_pens:
+  - Zebra Sarasa Clip
+format: euro
+ink_type: gel
+tip_shape: conical
+tip_size_mm: 0.7
+colors:
+  - assorted
+measurement_status: measured
+segments:
+  - kind: taper
+    diameter_start_mm: 0.6
+    diameter_end_mm: 2.1
+    end_distance_mm: 4
+  - kind: cylinder
+    diameter_mm: 2.1
+    end_distance_mm: 8.3
+  - kind: cylinder
+    diameter_mm: 3.1
+    end_distance_mm: 13.5
+  - kind: cylinder
+    diameter_mm: 3.4
+    end_distance_mm: 16.5
+  - kind: cylinder
+    diameter_mm: 3.5
+    end_distance_mm: 20
+  - kind: cylinder
+    diameter_mm: 6.1
+    end_distance_mm: 111.1
+links:
+  - label: JetPens JF 0.7
+    url: https://www.jetpens.com/Zebra-JF-0.7-Sarasa-Gel-Pen-Refill-0.7-mm-Black/pd/5971
+  - label: Zebra refill specifications
+    url: https://www.zebra.co.jp/pro/kaeshin/kaeshin_jel/

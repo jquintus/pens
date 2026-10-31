@@ -4,6 +4,7 @@ model: Uni-ball One Gel Pen 0.38 mm
 format: unknown
 ink_type: gel
 tip_size_mm: 0.38
+tip_shape: conical
 variants:
 - color: Bordeaux Black
   url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605

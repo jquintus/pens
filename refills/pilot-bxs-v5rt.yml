@@ -5,12 +5,13 @@ source_pens:
   - Pilot Hi Techpoint V5 RT
   - Pilot Precise V5 RT
 format: unknown
-ink_type: gel
+ink_type: rollerball
 tip_shape: needle
 tip_size_mm: 0.5
 colors:
   - assorted
 measurement_status: measured
+measurement_notes: Pilot identifies the BXS-V5-RT as a liquid ink rollerball refill. Its supplied 110 mm length is retained; the 111 mm JetPens listing is for the different US Precise V5 RT refill model PV5RRBLK.
 segments:
   - kind: cylinder
     diameter_mm: 0.8
@@ -33,3 +34,6 @@ segments:
   - kind: cylinder
     diameter_mm: 6.1
     end_distance_mm: 110
+links:
+  - label: Pilot Europe BXS-V5-RT catalog
+    url: https://www.pilotpen.eu/pilot_eu_catalogue/

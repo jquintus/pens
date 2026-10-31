@@ -1,0 +1,40 @@
+id: zebra-jf-05
+brand: Zebra
+model: JF 0.5
+source_pens:
+  - Zebra Sarasa Clip
+format: euro
+ink_type: gel
+tip_shape: conical
+tip_size_mm: 0.5
+colors:
+  - assorted
+measurement_status: measured
+segments:
+  - kind: taper
+    diameter_start_mm: 0.6
+    diameter_end_mm: 2.1
+    end_distance_mm: 4
+  - kind: cylinder
+    diameter_mm: 2.1
+    end_distance_mm: 8.3
+  - kind: cylinder
+    diameter_mm: 3.1
+    end_distance_mm: 13.5
+  - kind: cylinder
+    diameter_mm: 3.4
+    end_distance_mm: 16.5
+  - kind: cylinder
+    diameter_mm: 3.5
+    end_distance_mm: 20
+  - kind: cylinder
+    diameter_mm: 6.1
+    end_distance_mm: 111.1
+variants:
+  - color: Vintage Color Green Black
+    url: https://www.jetpens.com/Zebra-Sarasa-Clip-Gel-Pen-0.5-mm-Vintage-Color-Green-Black/pd/18120
+links:
+  - label: JetPens JF 0.5
+    url: https://www.jetpens.com/Zebra-JF-0.5-Sarasa-Gel-Pen-Refill-0.5-mm-Black/pd/3141
+  - label: Zebra refill specifications
+    url: https://www.zebra.co.jp/pro/kaeshin/kaeshin_jel/

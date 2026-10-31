@@ -282,6 +282,15 @@
       "model": "Rays flash dry Gel Pen",
       "format": "unknown",
       "ink_type": "gel",
+      "tip_size_mm": 0.5,
+      "tip_shape": "needle",
+      "notes": "Ohto lists PG-105NP as the refill supplied with the Rays pen.",
+      "links": [
+        {
+          "label": "Ohto Rays product specifications",
+          "url": "https://ohto.co.jp/global/products/gs/rays/"
+        }
+      ],
       "measurement_status": "incomplete",
       "segments": [],
       "overall_length_mm": null,
@@ -295,6 +304,13 @@
       "ink_type": "gel",
       "tip_size_mm": 0.5,
       "tip_shape": "needle",
+      "notes": "Pentel identifies the matching 0.5 mm needle refill as LRN5.",
+      "links": [
+        {
+          "label": "Pentel EnerGel LRN5 refill",
+          "url": "https://www.pentel.com/products/energel-gel-pen-refill-lrn5"
+        }
+      ],
       "measurement_status": "incomplete",
       "segments": [],
       "overall_length_mm": null,
@@ -328,13 +344,14 @@
         "Pilot Precise V5 RT"
       ],
       "format": "unknown",
-      "ink_type": "gel",
+      "ink_type": "rollerball",
       "tip_shape": "needle",
       "tip_size_mm": 0.5,
       "colors": [
         "assorted"
       ],
       "measurement_status": "measured",
+      "measurement_notes": "Pilot identifies the BXS-V5-RT as a liquid ink rollerball refill. Its supplied 110 mm length is retained; the 111 mm JetPens listing is for the different US Precise V5 RT refill model PV5RRBLK.",
       "segments": [
         {
           "kind": "cylinder",
@@ -370,6 +387,12 @@
           "kind": "cylinder",
           "diameter_mm": 6.1,
           "end_distance_mm": 110.0
+        }
+      ],
+      "links": [
+        {
+          "label": "Pilot Europe BXS-V5-RT catalog",
+          "url": "https://www.pilotpen.eu/pilot_eu_catalogue/"
         }
       ],
       "overall_length_mm": 110.0,
@@ -444,6 +467,16 @@
       "brand": "Pilot",
       "model": "Juice up 04",
       "format": "unknown",
+      "ink_type": "gel",
+      "tip_size_mm": 0.4,
+      "tip_shape": "other",
+      "notes": "Pilot calls this a Synergy tip and identifies the refill as LP3RF12S4.",
+      "links": [
+        {
+          "label": "Pilot Juice Up 0.4 refill",
+          "url": "https://pilot-refill.jp/index.php/en/gel/lp3rf12s4"
+        }
+      ],
       "measurement_status": "incomplete",
       "segments": [],
       "overall_length_mm": null,
@@ -466,6 +499,7 @@
         "black"
       ],
       "measurement_status": "measured",
+      "measurement_notes": "The Japanese LG2RF-8F specification lists a 6.2 mm maximum diameter, while JetPens lists 6.0 mm for a US Pilot G2 green refill. These may be different regional models, so the supplied 6.0 mm measurement is retained.",
       "notes": "Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).",
       "segments": [
         {
@@ -495,6 +529,16 @@
           "end_distance_mm": 110.5
         }
       ],
+      "links": [
+        {
+          "label": "Pilot LG2RF-8F specifications",
+          "url": "https://www.pilot-refill.jp/gel/lg2rf8f"
+        },
+        {
+          "label": "JetPens Pilot G2 green refill",
+          "url": "https://www.jetpens.com/Pilot-G2-Gel-Pen-Refill-0.7-mm-Green-Pack-of-2/pd/7463"
+        }
+      ],
       "overall_length_mm": 110.5,
       "geometry_ready": true
     },
@@ -504,6 +548,8 @@
       "model": "S-Gel Gel Pen",
       "format": "unknown",
       "ink_type": "gel",
+      "tip_size_mm": 0.7,
+      "tip_shape": "conical",
       "variants": [
         {
           "color": "Purple",
@@ -569,6 +615,7 @@
       "format": "unknown",
       "ink_type": "gel",
       "tip_size_mm": 0.38,
+      "tip_shape": "conical",
       "variants": [
         {
           "color": "Bordeaux Black",
@@ -587,6 +634,7 @@
       "format": "unknown",
       "ink_type": "gel",
       "tip_size_mm": 0.5,
+      "tip_shape": "conical",
       "variants": [
         {
           "color": "Poppy Red",
@@ -605,29 +653,207 @@
       "format": "unknown",
       "ink_type": "ballpoint",
       "tip_size_mm": 1.0,
-      "tip_shape": "ballpoint",
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
-    },
-    {
-      "id": "zebra-sarasa-clip-gel-05",
-      "brand": "Zebra",
-      "model": "Sarasa Clip Gel Pen 0.5 mm",
-      "format": "unknown",
-      "ink_type": "gel",
-      "tip_size_mm": 0.5,
-      "variants": [
+      "tip_shape": "conical",
+      "notes": "JetPens lists SXR-10 as the refill for this Jetstream Standard pen.",
+      "links": [
         {
-          "color": "Vintage Color Green Black",
-          "url": "https://www.jetpens.com/Zebra-Sarasa-Clip-Gel-Pen-0.5-mm-Vintage-Color-Green-Black/pd/18120"
+          "label": "JetPens Jetstream Standard 1.0",
+          "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643"
         }
       ],
       "measurement_status": "incomplete",
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
+    },
+    {
+      "id": "zebra-jf-03",
+      "brand": "Zebra",
+      "model": "JF 0.3",
+      "source_pens": [
+        "Zebra Sarasa Nano"
+      ],
+      "format": "euro",
+      "ink_type": "gel",
+      "tip_shape": "conical",
+      "tip_size_mm": 0.3,
+      "colors": [
+        "assorted"
+      ],
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 0.6,
+          "diameter_end_mm": 2.1,
+          "end_distance_mm": 4.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.1,
+          "end_distance_mm": 8.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.1,
+          "end_distance_mm": 13.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 16.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.5,
+          "end_distance_mm": 20.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.1,
+          "end_distance_mm": 111.1
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens JF 0.3",
+          "url": "https://www.jetpens.com/Zebra-JF-0.3-Sarasa-Gel-Pen-Refill-0.3-mm-Black/pd/6406"
+        },
+        {
+          "label": "Zebra refill specifications",
+          "url": "https://www.zebra.co.jp/pro/kaeshin/kaeshin_jel/"
+        }
+      ],
+      "overall_length_mm": 111.1,
+      "geometry_ready": true
+    },
+    {
+      "id": "zebra-jf-05",
+      "brand": "Zebra",
+      "model": "JF 0.5",
+      "source_pens": [
+        "Zebra Sarasa Clip"
+      ],
+      "format": "euro",
+      "ink_type": "gel",
+      "tip_shape": "conical",
+      "tip_size_mm": 0.5,
+      "colors": [
+        "assorted"
+      ],
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 0.6,
+          "diameter_end_mm": 2.1,
+          "end_distance_mm": 4.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.1,
+          "end_distance_mm": 8.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.1,
+          "end_distance_mm": 13.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 16.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.5,
+          "end_distance_mm": 20.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.1,
+          "end_distance_mm": 111.1
+        }
+      ],
+      "variants": [
+        {
+          "color": "Vintage Color Green Black",
+          "url": "https://www.jetpens.com/Zebra-Sarasa-Clip-Gel-Pen-0.5-mm-Vintage-Color-Green-Black/pd/18120"
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens JF 0.5",
+          "url": "https://www.jetpens.com/Zebra-JF-0.5-Sarasa-Gel-Pen-Refill-0.5-mm-Black/pd/3141"
+        },
+        {
+          "label": "Zebra refill specifications",
+          "url": "https://www.zebra.co.jp/pro/kaeshin/kaeshin_jel/"
+        }
+      ],
+      "overall_length_mm": 111.1,
+      "geometry_ready": true
+    },
+    {
+      "id": "zebra-jf-07",
+      "brand": "Zebra",
+      "model": "JF 0.7",
+      "source_pens": [
+        "Zebra Sarasa Clip"
+      ],
+      "format": "euro",
+      "ink_type": "gel",
+      "tip_shape": "conical",
+      "tip_size_mm": 0.7,
+      "colors": [
+        "assorted"
+      ],
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 0.6,
+          "diameter_end_mm": 2.1,
+          "end_distance_mm": 4.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.1,
+          "end_distance_mm": 8.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.1,
+          "end_distance_mm": 13.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 16.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.5,
+          "end_distance_mm": 20.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.1,
+          "end_distance_mm": 111.1
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens JF 0.7",
+          "url": "https://www.jetpens.com/Zebra-JF-0.7-Sarasa-Gel-Pen-Refill-0.7-mm-Black/pd/5971"
+        },
+        {
+          "label": "Zebra refill specifications",
+          "url": "https://www.zebra.co.jp/pro/kaeshin/kaeshin_jel/"
+        }
+      ],
+      "overall_length_mm": 111.1,
+      "geometry_ready": true
     }
   ],
   "scad_module": "// Pen nose cone and end cap. All dimensions are millimeters.\n// Rounded ends are drawn into the revolved profile; no edge selection is needed.\n// This file is a module library. Call pen_parts(...) to create the printable pair.\nfunction _pen_unit(v) = v / norm(v);\nfunction _pen_cross(a, b) = a.x * b.y - a.y * b.x;\nfunction _pen_rotate(v, a) = [v.x*cos(a)-v.y*sin(a), v.x*sin(a)+v.y*cos(a)];\nfunction _pen_arc(previous, corner, next, radius, segments=24) =\n    let(incoming=_pen_unit(corner-previous), outgoing=_pen_unit(next-corner),\n        turn=atan2(_pen_cross(incoming,outgoing), incoming*outgoing),\n        tangent=radius*tan(abs(turn)/2),\n        entry=corner-incoming*tangent,\n        center=entry+[-incoming.y,incoming.x]*radius*sign(turn),\n        initial=entry-center)\n    [for(i=[0:segments]) center+_pen_rotate(initial,turn*i/segments)];\nfunction _pen_round_profile(points, corners, radius=1) =\n    [for(i=[0:len(points)-1])\n        each len(search(i,corners))>0\n            ? _pen_arc(points[(i+len(points)-1)%len(points)],points[i],\n                       points[(i+1)%len(points)],radius)\n            : [points[i]]];\nmodule pen_parts(cylinder_height=5.9, cylinder_outside_diameter=7.57,\n                 frustum_height=11, frustum_top_diameter=5,\n                 frustum_bottom_diameter=10.2, top_hole_diameter=3,\n                 bottom_hole_diameter=4.9, top_hole_height=7) {\n    assert(cylinder_height>0 && cylinder_outside_diameter>0,\n           \"Cylinder dimensions must be positive\");\n    assert(frustum_height>=0 && frustum_top_diameter>0 && frustum_bottom_diameter>0,\n           \"Frustum height must be nonnegative and diameters positive\");\n    assert(top_hole_diameter>0 && bottom_hole_diameter>0,\n           \"Bore diameters must be positive\");\n    total_height=cylinder_height+frustum_height;\n    assert(top_hole_height>=0 && top_hole_height<=total_height,\n           \"Top bore height must lie within the part\");\n    rc=cylinder_outside_diameter/2;\n    rb=frustum_bottom_diameter/2;\n    rt=frustum_top_diameter/2;\n    fillet_radius=1;\n    // Preserve the original cylinder-to-cone shoulder; only end edges are filleted.\n    nose_profile=frustum_height>0\n        ? (rc==rb\n            ? [[0,0],[rc,0],[rc,cylinder_height],[rt,total_height],[0,total_height]]\n            : [[0,0],[rc,0],[rc,cylinder_height],[rb,cylinder_height],\n               [rt,total_height],[0,total_height]])\n        : [[0,0],[rc,0],[rc,total_height],[0,total_height]];\n    translate([20,0,0]) difference() {\n        rotate_extrude(convexity=10)\n            polygon(_pen_round_profile(nose_profile,[1,len(nose_profile)-2],fillet_radius));\n        bottom_hole_height=total_height-top_hole_height;\n        if(bottom_hole_height>0)\n            translate([0,0,-0.01])\n                cylinder(d=bottom_hole_diameter,h=bottom_hole_height+0.01);\n        if(top_hole_height>0)\n            translate([0,0,bottom_hole_height])\n                cylinder(d=top_hole_diameter,h=top_hole_height+0.01);\n    }\n    end_cap_height=2+cylinder_height;\n    cap_profile=rc==rb\n        ? [[0,0],[rb,0],[rc,end_cap_height],[0,end_cap_height]]\n        : [[0,0],[rb,0],[rb,2],[rc,2],[rc,end_cap_height],[0,end_cap_height]];\n    rotate_extrude(convexity=10)\n        polygon(_pen_round_profile(cap_profile,[1,len(cap_profile)-2],fillet_radius));\n}\n\n// OpenSCAD-only designer geometry. The writing end of the nose is z=0;\n// z increases toward the body. Both parts are separated for printing.\n// Fillets are explicit arcs in the axial profile, independent of mesh edges.\nmodule designer_parts(\n    nose_cone_visible_length_mm=11,\n    nose_cone_insertion_length_mm=5.9,\n    nose_cone_insertion_diameter_mm=7.57,\n    nose_cone_base_diameter_mm=10.2,\n    nose_cone_tip_diameter_mm=5,\n    nose_cone_passage_diameter_mm=4.9,\n    nose_cone_stop_diameter_mm=3,\n    nose_cone_stop_depth_mm=7,\n    // Optional [start diameter, end diameter, absolute end distance from tip].\n    nose_cone_bore_segments=[],\n    nose_cone_round_radius_mm=0.4,\n    end_cap_length_mm=2,\n    end_cap_diameter_mm=10.2,\n    end_cap_tip_diameter_mm=7.57,\n    end_cap_insertion_length_mm=5.9,\n    end_cap_insertion_diameter_mm=7.57,\n    end_cap_round_radius_mm=0.4\n) {\n    nose_height=nose_cone_visible_length_mm+nose_cone_insertion_length_mm;\n    nose_profile=[\n        [0,0],\n        [nose_cone_tip_diameter_mm/2,0],\n        [nose_cone_base_diameter_mm/2,nose_cone_visible_length_mm],\n        [nose_cone_insertion_diameter_mm/2,nose_cone_visible_length_mm],\n        [nose_cone_insertion_diameter_mm/2,nose_height],\n        [0,nose_height]\n    ];\n    translate([20,0,0]) difference() {\n        rotate_extrude(convexity=10)\n            polygon(nose_cone_round_radius_mm>0\n                ? _pen_round_profile(nose_profile,[1,4],nose_cone_round_radius_mm)\n                : nose_profile);\n        if(len(nose_cone_bore_segments)>0) {\n            for(i=[0:len(nose_cone_bore_segments)-1]) {\n                start=i==0 ? 0 : nose_cone_bore_segments[i-1][2];\n                segment=nose_cone_bore_segments[i];\n                translate([0,0,start-(i==0 ? 0.01 : 0)])\n                    cylinder(d1=segment[0],d2=segment[1],\n                             h=segment[2]-start+(i==0 ? 0.02 : 0.01));\n            }\n        } else {\n            translate([0,0,-0.01])\n                cylinder(d=nose_cone_stop_diameter_mm,h=nose_cone_stop_depth_mm+0.01);\n            translate([0,0,nose_cone_stop_depth_mm])\n                cylinder(d=nose_cone_passage_diameter_mm,\n                         h=nose_height-nose_cone_stop_depth_mm+0.01);\n        }\n    }\n    cap_height=end_cap_length_mm+end_cap_insertion_length_mm;\n    cap_profile=[\n        [0,0],\n        [end_cap_tip_diameter_mm/2,0],\n        [end_cap_diameter_mm/2,end_cap_length_mm],\n        [end_cap_insertion_diameter_mm/2,end_cap_length_mm],\n        [end_cap_insertion_diameter_mm/2,cap_height],\n        [0,cap_height]\n    ];\n    rotate_extrude(convexity=10)\n        polygon(end_cap_round_radius_mm>0\n            ? _pen_round_profile(cap_profile,[1,4],end_cap_round_radius_mm)\n            : cap_profile);\n}\n"

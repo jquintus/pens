@@ -116,6 +116,23 @@ class RefillTests(unittest.TestCase):
         )
         self.assertEqual(records["pilot-lg-2rf"]["segments"][0]["kind"], "taper")
 
+    def test_zebra_jf_sizes_share_measured_geometry(self):
+        records = {record["id"]: record for record in load_refills()}
+        small = records["zebra-jf-03"]
+        medium = records["zebra-jf-05"]
+        large = records["zebra-jf-07"]
+        self.assertTrue(small["geometry_ready"])
+        self.assertTrue(medium["geometry_ready"])
+        self.assertTrue(large["geometry_ready"])
+        self.assertEqual(small["tip_size_mm"], 0.3)
+        self.assertEqual(medium["tip_size_mm"], 0.5)
+        self.assertEqual(large["tip_size_mm"], 0.7)
+        self.assertEqual(small["segments"], medium["segments"])
+        self.assertEqual(small["segments"], large["segments"])
+        self.assertEqual(small["overall_length_mm"], 111.1)
+        self.assertEqual(small["segments"][-1]["diameter_mm"], 6.1)
+        self.assertEqual(small["segments"][0]["kind"], "taper")
+
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)

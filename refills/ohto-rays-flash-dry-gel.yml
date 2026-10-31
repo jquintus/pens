@@ -3,5 +3,11 @@ brand: Ohto
 model: Rays flash dry Gel Pen
 format: unknown
 ink_type: gel
+tip_size_mm: 0.5
+tip_shape: needle
+notes: Ohto lists PG-105NP as the refill supplied with the Rays pen.
+links:
+  - label: Ohto Rays product specifications
+    url: https://ohto.co.jp/global/products/gs/rays/
 measurement_status: incomplete
 segments: []

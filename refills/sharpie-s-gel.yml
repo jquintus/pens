@@ -3,6 +3,8 @@ brand: Sharpie
 model: S-Gel Gel Pen
 format: unknown
 ink_type: gel
+tip_size_mm: 0.7
+tip_shape: conical
 variants:
 - color: Purple
   url: https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Purple/pd/35873

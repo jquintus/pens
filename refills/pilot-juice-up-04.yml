@@ -2,5 +2,12 @@ id: pilot-juice-up-04
 brand: Pilot
 model: Juice up 04
 format: unknown
+ink_type: gel
+tip_size_mm: 0.4
+tip_shape: other
+notes: Pilot calls this a Synergy tip and identifies the refill as LP3RF12S4.
+links:
+  - label: Pilot Juice Up 0.4 refill
+    url: https://pilot-refill.jp/index.php/en/gel/lp3rf12s4
 measurement_status: incomplete
 segments: []
