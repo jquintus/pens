@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+from html import escape
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -28,7 +29,7 @@ def generate_pages():
         title = pen["title"]
         description = pen.get("description", "No description yet.")
         pen_id = pen["id"]
-        
+
         # Downloads HTML
         downloads_html = ""
         d = pen.get("downloads", {})
@@ -39,7 +40,7 @@ def generate_pages():
                 downloads_html += f'<a href="../{path}" class="btn" download>{label}</a>\n'
             else:
                 downloads_html += f'<a href="#" class="btn btn--ghost" aria-disabled="true">{label}</a>\n'
-        
+
         # G-code variants
         slicing_profiles = pen.get("slicing_profiles", [])
         for variant in slicing_profiles:
@@ -48,6 +49,20 @@ def generate_pages():
             if path:
                 label = f"G-code ({variant})"
                 downloads_html += f'<a href="../{path}" class="btn" download>{label}</a>\n'
+
+        if pen.get("fit_variants"):
+            downloads_html += '<h3>Print-fit sweep</h3><ul class="fit-variants">\n'
+            for fit in pen["fit_variants"]:
+                diameter = escape(str(fit["diameter_mm"]))
+                downloads_html += f'<li><strong>{diameter} mm insertion</strong> '
+                for label, key in (("STEP", "step"), ("STL", "stl")):
+                    path = fit["downloads"].get(key)
+                    if path:
+                        downloads_html += f'<a href="../{escape(path, quote=True)}" class="btn" download>{label}</a> '
+                    else:
+                        downloads_html += f'<span class="btn btn--ghost" aria-disabled="true">{label} not built</span> '
+                downloads_html += '</li>\n'
+            downloads_html += '</ul>\n'
 
         # Metrics HTML
         metrics_html = ""

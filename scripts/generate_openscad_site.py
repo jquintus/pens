@@ -10,7 +10,8 @@ import json
 from pathlib import Path
 from urllib.parse import quote
 
-from config_utils import CONFIG_DIR, OUTPUT_DIR, REPO_ROOT, SITE_DIR, load_config, output_stem
+from config_utils import (CONFIG_DIR, OUTPUT_DIR, REPO_ROOT, SITE_DIR, is_base_fit_variant,
+                          fit_sweep_values, fit_variant_stem, load_config, output_stem)
 from generate_site_data import MODELS_DIR, normalize_gallery_paths
 from refill_utils import load_refills
 
@@ -55,7 +56,7 @@ def entry(path, is_pen):
     for extension in ("stl", "scad"):
         artifact = OUTPUT_DIR / "openscad" / f"{stem}.{extension}"
         downloads[extension] = f"outputs/openscad/{artifact.name}" if artifact.is_file() else None
-    return {
+    item = {
         "slug": slug,
         "id": str(config.get("id") or slug),
         "title": str(config.get("title") or slug.replace("_", " ").title()),
@@ -64,6 +65,17 @@ def entry(path, is_pen):
         "images": normalize_gallery_paths(config),
         "downloads": downloads,
     }
+    if is_pen and config.get("fit_sweep") is not None:
+        variants = []
+        for diameter in fit_sweep_values(config):
+            variant_stem = stem if is_base_fit_variant(config, diameter) else fit_variant_stem(path, config, diameter)
+            variant_downloads = {}
+            for extension in ("stl", "scad"):
+                artifact = OUTPUT_DIR / "openscad" / f"{variant_stem}.{extension}"
+                variant_downloads[extension] = f"outputs/openscad/{artifact.name}" if artifact.is_file() else None
+            variants.append({"diameter_mm": str(diameter), "downloads": variant_downloads})
+        item["fit_variants"] = variants
+    return item
 
 
 def header(title, shared_prefix, local_prefix, cadquery_path):
@@ -125,6 +137,17 @@ def detail_page(item):
         if path else f'<span class="btn btn--ghost" aria-disabled="true">{ext.upper()} not built</span>'
         for ext, path in item["downloads"].items()
     )
+    fit_downloads = ""
+    if item.get("fit_variants"):
+        rows = []
+        for variant in item["fit_variants"]:
+            links = " ".join(
+                f'<a class="btn" href="../../{url(path)}" download>{ext.upper()}</a>'
+                if path else f'<span class="btn btn--ghost" aria-disabled="true">{ext.upper()} not built</span>'
+                for ext, path in variant["downloads"].items()
+            )
+            rows.append(f'<li><strong>{html(variant["diameter_mm"])} mm insertion</strong> {links}</li>')
+        fit_downloads = '<h3>Print-fit sweep</h3><ul class="fit-variants">' + ''.join(rows) + '</ul>'
     images = item["images"] or ["assets/default-pen.svg"]
     gallery = "".join(
         f'<button class="gallery-item" type="button" data-image="../../{url(image)}">'
@@ -153,6 +176,7 @@ def detail_page(item):
       <aside class="preview__sidebar">
         <p class="preview__description">{html(item['description'])}</p>
         <h3>Downloads</h3><div class="downloads downloads--stack">{downloads}</div>
+        {fit_downloads}
         <p class="download-note">Slice the STL for your printer. The SCAD download is self-contained and editable in OpenSCAD.</p>
         <h3>Parameters</h3><ul class="metrics metrics--stack">{metrics(item['parameters'])}</ul>
       </aside>
@@ -196,8 +220,10 @@ def main():
         if is_pen:
             config = load_config(path)
             pens.append({"id": config.get("id", path.stem), "config": config})
+    hardware_path = REPO_ROOT / "hardware" / "catalog.json"
+    hardware = json.loads(hardware_path.read_text(encoding="utf-8")) if hardware_path.is_file() else {"tubes": [], "bushings": []}
     (GALLERY_DIR / "designer-data.json").write_text(
-        json.dumps({"pens": pens, "refills": load_refills(),
+        json.dumps({"pens": pens, "refills": load_refills(), "hardware": hardware,
                     "scad_module": (REPO_ROOT / "cad/openscad/pen_parts.scad").read_text()}, indent=2) + "\n",
         encoding="utf-8",
     )

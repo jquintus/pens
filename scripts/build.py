@@ -10,6 +10,10 @@ from config_utils import (
     OUTPUT_DIR,
     REPO_ROOT,
     get_nose_cone,
+    is_base_fit_variant,
+    fit_sweep_values,
+    fit_variant_config,
+    fit_variant_stem,
     load_config,
     output_stem,
 )
@@ -103,6 +107,7 @@ def build_all_in_dir(directory: Path, build_func, pattern="*.yml"):
         try:
             print(f"Processing {path}...")
             result, config = build_func(path)
+            diameters = fit_sweep_values(config) if build_func is build_pen else []
             stem = output_stem(path, config)
             
             step_file = OUTPUT_DIR / f"{stem}.step"
@@ -115,6 +120,19 @@ def build_all_in_dir(directory: Path, build_func, pattern="*.yml"):
                 profiles = config.get("slicing_profiles", [])
                 for profile in profiles:
                     slice_stl(stl_file, profile)
+
+            if build_func is build_pen:
+                from cad.engine import build as build_model
+                for diameter in diameters:
+                    if is_base_fit_variant(config, diameter):
+                        continue
+                    variant = fit_variant_config(config, diameter)
+                    variant_result = build_model(variant)
+                    variant_stem = fit_variant_stem(path, config, diameter)
+                    variant_step = OUTPUT_DIR / f"{variant_stem}.step"
+                    variant_stl = OUTPUT_DIR / f"{variant_stem}.stl"
+                    export_result(variant_result, variant_step)
+                    export_result(variant_result, variant_stl)
         except Exception as e:
             print(f"Failed to build {path}: {e}")
 

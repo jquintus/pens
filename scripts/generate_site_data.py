@@ -15,6 +15,9 @@ from config_utils import (
     REPO_ROOT,
     SITE_DIR,
     get_nose_cone,
+    is_base_fit_variant,
+    fit_sweep_values,
+    fit_variant_stem,
     load_config,
     output_base_name,
     output_stem,
@@ -106,7 +109,7 @@ def process_config(path: Path, is_pen=True):
 
     slicing_profiles = config.get("slicing_profiles", [])
 
-    return {
+    item = {
         "id": cid,
         "slug": path.stem if is_pen else f"{path.parent.name}_{path.stem}",
         "actual_slug": path.stem if is_pen else path.parent.name,
@@ -117,6 +120,17 @@ def process_config(path: Path, is_pen=True):
         "images": normalize_gallery_paths(config),
         "downloads": collect_downloads(base_name, stem, slicing_profiles),
     }
+    if is_pen and config.get("fit_sweep") is not None:
+        variants = []
+        for diameter in fit_sweep_values(config):
+            variant_stem = stem if is_base_fit_variant(config, diameter) else fit_variant_stem(path, config, diameter)
+            downloads = {}
+            for extension in ("step", "stl"):
+                artifact = OUTPUT_DIR / f"{variant_stem}.{extension}"
+                downloads[extension] = f"outputs/{artifact.name}" if artifact.is_file() else None
+            variants.append({"diameter_mm": str(diameter), "downloads": downloads})
+        item["fit_variants"] = variants
+    return item
 
 def main():
     entries = []

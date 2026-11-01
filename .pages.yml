@@ -60,6 +60,44 @@ content:
         label: Short description
       - name: nose_cone
         component: nose_cone
+      - name: fit_sweep
+        type: object
+        label: Nose insertion print-fit sweep (optional)
+        description: Print several insertion diameters from one design to dial in the fit to a fixed brass tube ID. Base dimensions remain the design default.
+        fields:
+          - name: target
+            type: select
+            required: true
+            options:
+              values: [nose_insertion_diameter_mm]
+          - name: start_mm
+            type: number
+            required: true
+          - name: end_mm
+            type: number
+            required: true
+          - name: step_mm
+            type: number
+            required: true
+      - name: barrel
+        type: object
+        label: Brass tube and bushing snapshot
+        description: Selected hardware dimensions for this design. Tube dimensions are fixed by the selected brass tube; bushing outside diameters set the turned body ends.
+        fields:
+          - name: tube_id
+            type: string
+          - name: tube_od_mm
+            type: number
+          - name: tube_id_mm
+            type: number
+          - name: bushing_id
+            type: string
+          - name: front_od_mm
+            type: number
+          - name: rear_od_mm
+            type: number
+          - name: length_mm
+            type: number
       - name: refill
         type: reference
         label: Refill

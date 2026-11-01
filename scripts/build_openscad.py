@@ -10,7 +10,8 @@ import shutil
 import subprocess
 import sys
 
-from config_utils import CONFIG_DIR, REPO_ROOT, load_config, output_stem
+from config_utils import (CONFIG_DIR, REPO_ROOT, is_base_fit_variant, fit_sweep_values,
+                          fit_variant_config, fit_variant_stem, load_config, output_stem)
 
 OUTPUT_DIR = REPO_ROOT / 'outputs' / 'openscad'
 PEN_KEYS = ('cylinder_height', 'cylinder_outside_diameter', 'frustum_height',
@@ -218,13 +219,18 @@ def build_all(executable, output_dir=OUTPUT_DIR):
     entries = []
     for path, kind in configurations():
         config = load_config(path)
-        stem = output_stem(path, config)
-        if not re.fullmatch(r'[a-zA-Z0-9_-]+', stem):
-            raise ValueError(f'Unsafe output name: {stem!r}')
-        if stem in seen:
-            raise ValueError(f'Duplicate output name: {stem}')
-        seen.add(stem)
-        entries.append((stem, source_text(config, kind)))
+        variants = [(output_stem(path, config), config)]
+        if kind == 'pen':
+            diameters = fit_sweep_values(config)
+            variants.extend((fit_variant_stem(path, config, diameter), fit_variant_config(config, diameter))
+                            for diameter in diameters if not is_base_fit_variant(config, diameter))
+        for stem, variant in variants:
+            if not re.fullmatch(r'[a-zA-Z0-9_-]+', stem):
+                raise ValueError(f'Unsafe output name: {stem!r}')
+            if stem in seen:
+                raise ValueError(f'Duplicate output name: {stem}')
+            seen.add(stem)
+            entries.append((stem, source_text(variant, kind)))
     for stem, text in entries:
         source = output_dir / f'{stem}.scad'
         stl = output_dir / f'{stem}.stl'
