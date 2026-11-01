@@ -599,21 +599,71 @@
     {
       "id": "sharpie-s-gel",
       "brand": "Sharpie",
-      "model": "S-Gel Gel Pen",
+      "model": "S-Gel 0.7 mm refill",
+      "source_pens": [
+        "Sharpie S-Gel Gel Pen"
+      ],
       "format": "unknown",
       "ink_type": "gel",
       "tip_size_mm": 0.7,
       "tip_shape": "conical",
+      "rating": 2,
+      "colors": [
+        "black",
+        "red",
+        "green",
+        "blue",
+        "purple"
+      ],
+      "ink_notes": "JetPens describes the pen's gel ink as water-based and smear-resistant.",
+      "measurement_notes": "Refill dimensions supplied by Josh. JetPens publishes dimensions for the complete pen, not this refill, so those specifications are not directly comparable.",
+      "notes": "The source pen comes in five ink colors. Sharpie currently lists its separately sold 0.7 mm replacement refill in black; availability of replacement colors may differ from complete pens.",
       "variants": [
         {
-          "color": "Purple",
+          "color": "Black source pen",
+          "url": "https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Black/pd/30210"
+        },
+        {
+          "color": "Purple source pen",
           "url": "https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Purple/pd/35873"
         }
       ],
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "measurement_status": "measured",
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.0,
+          "diameter_end_mm": 2.2,
+          "end_distance_mm": 2.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.2,
+          "end_distance_mm": 7.8
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.2,
+          "end_distance_mm": 20.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 5.9,
+          "end_distance_mm": 111.0
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens S-Gel source pen",
+          "url": "https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Black/pd/30210"
+        },
+        {
+          "label": "Sharpie S-Gel refill",
+          "url": "https://www.sharpie.com/pens/gel-pens/sharpie-s-gel-medium-point-refills-0.7mm/SAP_2096168.html"
+        }
+      ],
+      "overall_length_mm": 111.0,
+      "geometry_ready": true
     },
     {
       "id": "tian-zhuo-hoshi-tg31880",

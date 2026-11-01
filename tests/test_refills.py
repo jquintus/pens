@@ -146,6 +146,15 @@ class RefillTests(unittest.TestCase):
         self.assertEqual(refill["segments"][0]["kind"], "taper")
         self.assertEqual(refill["segments"][5]["diameter_mm"], 5.9)
 
+    def test_sharpie_s_gel_measured_refill(self):
+        refill = next(record for record in load_refills() if record["id"] == "sharpie-s-gel")
+        self.assertTrue(refill["geometry_ready"])
+        self.assertEqual(refill["rating"], 2)
+        self.assertEqual(refill["overall_length_mm"], 111)
+        self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
+                         [2.5, 7.8, 20.5, 111])
+        self.assertEqual(refill["segments"][0]["kind"], "taper")
+
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)
