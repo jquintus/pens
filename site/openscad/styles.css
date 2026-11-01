@@ -122,6 +122,15 @@
 .designer__derived-field:not(.is-overridden) input[type="number"] {color:#72d9c7;background:rgba(114,217,199,.07)}
 .designer__derived-field.is-overridden input[type="number"] {border-color:#f9cf80;color:#f9cf80}
 .designer__derived-field.is-overridden .designer__derived-toolbar {color:#f9cf80}
+.designer__length-field {min-width:0}
+.designer__length-field label {margin:.3rem 0}
+.designer__fit-action {display:block;margin:.2rem 0 0;padding:.2rem .35rem;border:1px solid var(--accent);border-radius:5px;background:transparent;color:var(--accent);font:inherit;font-size:.68rem;cursor:pointer}
+.designer__fit-action:disabled {opacity:.55;cursor:default}
+#cap-fit-note.is-overlap {color:#f9cf80}
+#cutaway .designer__radius-marker {cursor:pointer;pointer-events:stroke}
+#cutaway .designer__radius-marker:hover,#cutaway .designer__radius-marker.is-active {stroke-width:4;filter:drop-shadow(0 0 4px currentColor)}
+#cutaway .designer__radius-label {cursor:pointer}
+#cutaway .designer__radius-label.is-active {font-weight:700;text-decoration:underline}
 .designer input[readonly] {color:#72d9c7;background:rgba(114,217,199,.07);cursor:default}
 @media (min-width:1200px) {body {zoom:1.25}}
 .designer__sweep-toggle {display:flex!important;align-items:center;gap:.4rem;cursor:pointer}
