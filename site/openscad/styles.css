@@ -102,3 +102,10 @@
 .designer__save-strip h3 {margin:0;color:var(--accent);font-size:.78rem;white-space:nowrap}
 .designer__save-strip .designer__actions {gap:.3rem}
 .designer__save-strip .designer__actions a,.designer__save-strip .designer__actions button {padding:.28rem .4rem;font-size:.69rem}
+.designer__dimensions-grid {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.65rem}
+.designer__dimensions-grid .designer__inline-dimensions {min-width:0}
+.designer__dimensions-grid .designer__table-head {font-size:.66rem}
+.designer__dimensions-grid .designer__table-row input {padding:.23rem .3rem;font-size:.72rem}
+.designer__dimensions-grid .designer__actions {margin-top:.3rem}
+.designer__dimensions-grid .designer__actions button {padding:.25rem .4rem;font-size:.69rem}
+@media(max-width:650px){.designer__dimensions-grid{grid-template-columns:1fr}}
