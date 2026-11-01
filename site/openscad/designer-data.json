@@ -1581,22 +1581,25 @@
         "id": "7mm",
         "label": "7 mm brass tube",
         "nominal_size": "7 mm",
-        "tube_od_mm": null,
-        "tube_id_mm": null
+        "tube_od_mm": 7.0,
+        "tube_id_mm": 6.4,
+        "assumed_wall_mm": 0.3
       },
       {
         "id": "3-8in",
         "label": "3/8 in brass tube",
         "nominal_size": "3/8 in",
-        "tube_od_mm": null,
-        "tube_id_mm": null
+        "tube_od_mm": 9.525,
+        "tube_id_mm": 8.925,
+        "assumed_wall_mm": 0.3
       },
       {
         "id": "10mm",
         "label": "10 mm brass tube",
         "nominal_size": "10 mm",
-        "tube_od_mm": null,
-        "tube_id_mm": null
+        "tube_od_mm": 10.0,
+        "tube_id_mm": 9.4,
+        "assumed_wall_mm": 0.3
       }
     ],
     "bushings": [

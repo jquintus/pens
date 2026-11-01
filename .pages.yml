@@ -82,7 +82,7 @@ content:
       - name: barrel
         type: object
         label: Brass tube and bushing snapshot
-        description: Selected hardware dimensions for this design. Tube dimensions are fixed by the selected brass tube; bushing outside diameters set the turned body ends.
+        description: Selected hardware dimensions for this design. Unmeasured tube IDs assume a 0.3 mm wall; bushing outside diameters set the turned body ends.
         fields:
           - name: tube_id
             type: string
@@ -90,6 +90,9 @@ content:
             type: number
           - name: tube_id_mm
             type: number
+          - name: tube_wall_assumption_mm
+            type: number
+            label: Assumed brass wall thickness (mm; omit for measured tubes)
           - name: bushing_id
             type: string
           - name: front_od_mm
