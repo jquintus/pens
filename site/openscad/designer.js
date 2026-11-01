@@ -217,6 +217,26 @@ function renderValidation(s,issues){
  if(overhangs.length){const holder=$("body-hardware-notes");for(const message of overhangs){const note=document.createElement("div");note.className="designer__field-warning";note.textContent=message;holder.append(note)}summary.textContent+=" Outer diameter overhangs the body; see Body."}
 }
 function xml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&apos;"})[c])}
+// Match the arcs in _pen_round_profile in cad/openscad/pen_parts.scad.
+function roundedProfile(points,corners,radius){
+ if(!(radius>0))return points;
+ const unit=([a,b])=>{const length=Math.hypot(a,b);return [a/length,b/length]};
+ const cross=(a,b)=>a[0]*b[1]-a[1]*b[0];
+ const dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+ const result=[];
+ for(let i=0;i<points.length;i++){
+  const corner=points[i];
+  if(!corners.includes(i)){result.push(corner);continue}
+  const previous=points[(i+points.length-1)%points.length],next=points[(i+1)%points.length];
+  const incoming=unit([corner[0]-previous[0],corner[1]-previous[1]]),outgoing=unit([next[0]-corner[0],next[1]-corner[1]]);
+  const turn=Math.atan2(cross(incoming,outgoing),dot(incoming,outgoing));
+  const tangent=radius*Math.tan(Math.abs(turn)/2),entry=[corner[0]-incoming[0]*tangent,corner[1]-incoming[1]*tangent];
+  const center=[entry[0]-incoming[1]*radius*Math.sign(turn),entry[1]+incoming[0]*radius*Math.sign(turn)];
+  const initial=[entry[0]-center[0],entry[1]-center[1]];
+  for(let step=0;step<=16;step++){const angle=turn*step/16;result.push([center[0]+initial[0]*Math.cos(angle)-initial[1]*Math.sin(angle),center[1]+initial[0]*Math.sin(angle)+initial[1]*Math.cos(angle)])}
+ }
+ return result;
+}
 function cutaway(s){
  const svg=$("cutaway"),parts=profile(s.refill),nose=s.nose,cap=s.cap;
  const noseEnd=nose.visible_length_mm,noseRear=noseEnd+nose.insertion_length_mm,bodyEnd=noseEnd+s.bodyLength;
@@ -228,6 +248,7 @@ function cutaway(s){
  svg.setAttribute("viewBox",`0 0 800 ${Math.ceil(diagramBottom+94)}`);
  const point=(a,r)=>`${x(a)},${mid-r}`;
  const polygon=(points,fill,stroke="none",opacity=1,attrs="")=>`<polygon points="${points.map(([a,r])=>point(a,r)).join(" ")}" fill="${fill}" stroke="${stroke}" opacity="${opacity}" ${attrs}/>`;
+ const profilePath=(points,corners,radius)=>`${roundedProfile(points,corners,radius).map(([a,r],index)=>`${index?"L":"M"}${x(a)},${mid-r*scale}`).join(" ")} Z`;
  let shapes=`<line x1="25" y1="${mid}" x2="780" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
  const tubeOD=s.barrel?.tube_od_mm??8,tubeID=s.barrel?.tube_id_mm??7.4;
  for(const sign of [-1,1]){
@@ -235,6 +256,8 @@ function cutaway(s){
    shapes+=polygon([[noseEnd,sign*rad(tubeOD)],[bodyEnd,sign*rad(tubeOD)],[bodyEnd,sign*rad(tubeID)],[noseEnd,sign*rad(tubeID)]],"#d9b268","#f8d591",.9,'data-section-kind="body" role="button" tabindex="0" aria-label="Brass tube and body settings"');
  }
  const noseOuterAt=distance=>distance<noseEnd?nose.tip_diameter_mm+(nose.base_diameter_mm-nose.tip_diameter_mm)*distance/noseEnd:nose.insertion_diameter_mm;
+ const nosePath=profilePath([[0,0],[0,nose.tip_diameter_mm/2],[noseEnd,nose.base_diameter_mm/2],[noseEnd,nose.insertion_diameter_mm/2],[noseRear,nose.insertion_diameter_mm/2],[noseRear,0],[noseRear,-nose.insertion_diameter_mm/2],[noseEnd,-nose.insertion_diameter_mm/2],[noseEnd,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,4,6,9],nose.round_radius_mm);
+ shapes+=`<defs><clipPath id="nose-profile-clip"><path d="${nosePath}"/></clipPath></defs><path d="${nosePath}" fill="#8da9cd"/><g clip-path="url(#nose-profile-clip)">`;
  for(const [index,seg] of withStarts(nose.bore_segments).entries()){
    const start=seg.start_distance_mm,end=seg.end_distance_mm;
    const outer=[[start,noseOuterAt(start)]];
@@ -244,8 +267,11 @@ function cutaway(s){
    const attrs=`data-section-kind="bore" data-section-index="${index}" role="button" tabindex="0" aria-label="Bore section ${index+1}, ending ${xml(end)} millimeters from the nose tip"`;
    for(const sign of [-1,1])shapes+=polygon([...outer,...inner].map(([a,d])=>[a,sign*rad(d)]),BORE_COLORS[index%BORE_COLORS.length],"#c6d8ed",.92,attrs);
  }
+ shapes+=`</g><path class="designer__rounded-edge" data-radius-for="nose" role="button" tabindex="0" aria-label="Nose radius rounds the writing tip and insert end" d="${nosePath}" fill="none" stroke="#c6d8ed" stroke-width="2"/>`;
  const capInsertStart=bodyEnd-cap.insertion_length_mm;
- for(const sign of [-1,1])shapes+=polygon([[capInsertStart,sign*rad(cap.insertion_diameter_mm)],[bodyEnd,sign*rad(cap.insertion_diameter_mm)],[bodyEnd,sign*rad(cap.diameter_mm)],[bodyEnd+cap.length_mm,sign*rad(cap.tip_diameter_mm)],[bodyEnd+cap.length_mm,0],[capInsertStart,0]],"#8da9cd","#c6d8ed",.9,'data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"');
+ const capEnd=bodyEnd+cap.length_mm;
+ const capPath=profilePath([[capInsertStart,0],[capInsertStart,cap.insertion_diameter_mm/2],[bodyEnd,cap.insertion_diameter_mm/2],[bodyEnd,cap.diameter_mm/2],[capEnd,cap.tip_diameter_mm/2],[capEnd,0],[capEnd,-cap.tip_diameter_mm/2],[bodyEnd,-cap.diameter_mm/2],[bodyEnd,-cap.insertion_diameter_mm/2],[capInsertStart,-cap.insertion_diameter_mm/2]],[1,4,6,9],cap.round_radius_mm);
+ shapes+=`<path d="${capPath}" fill="#8da9cd" stroke="#c6d8ed" stroke-width="2" opacity=".9" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/><path class="designer__rounded-edge" data-radius-for="cap" role="button" tabindex="0" aria-label="Cap radius rounds the outer tip and insert end" d="${capPath}" fill="none" stroke="#c6d8ed" stroke-width="2"/>`;
  for(const [index,seg] of parts.entries()){
    const a=seg.start_distance_mm-s.projection,b=seg.end_distance_mm-s.projection;
    const start=seg.kind==="taper"?seg.diameter_start_mm:seg.diameter_mm,end=seg.kind==="taper"?seg.diameter_end_mm:seg.diameter_mm;
@@ -262,11 +288,10 @@ function cutaway(s){
   shapes+=`<line x1="${center-35}" y1="${diagramBottom+5}" x2="${center+35}" y2="${diagramBottom+5}" stroke="${color}" stroke-width="2"/><text x="${center}" y="${diagramBottom+22}" fill="#9ca9c0" font-size="11" text-anchor="middle">${label}</text><text x="${center}" y="${diagramBottom+40}" fill="${color}" font-size="13" font-weight="600" text-anchor="middle">${xml(value)}</text>`;
  }
  const focusedRadius=document.activeElement?.dataset?.key==="round_radius_mm"?(document.activeElement.closest("#nose-fields")?"nose":"cap"):null;
- for(const [kind,radius,corners,center,color,description] of [
-  ["nose",nose.round_radius_mm,[[0,nose.tip_diameter_mm],[noseRear,nose.insertion_diameter_mm]],205,"#f6c56a","writing tip and insert end"],
-  ["cap",cap.round_radius_mm,[[bodyEnd+cap.length_mm,cap.tip_diameter_mm],[capInsertStart,cap.insertion_diameter_mm]],595,"#d6a6f3","outer tip and insert end"]
+ for(const [kind,radius,center,color,description] of [
+  ["nose",nose.round_radius_mm,205,"#f6c56a","writing tip and insert end"],
+  ["cap",cap.round_radius_mm,595,"#d6a6f3","outer tip and insert end"]
  ]){
-  if(radius>0)for(const [distance,diameter] of corners)for(const sign of [-1,1])shapes+=`<circle class="designer__radius-marker${focusedRadius===kind?" is-active":""}" data-radius-for="${kind}" role="button" tabindex="0" aria-label="${kind} radius rounds the ${xml(description)}" cx="${x(distance)}" cy="${mid+sign*rad(diameter)}" r="${Math.max(4,Math.min(12,radius*scale))}" fill="none" stroke="${color}" stroke-width="2"><title>${xml(kind)} radius rounds the ${xml(description)}</title></circle>`;
   const note=radius>0?`${kind==="nose"?"Nose":"Cap"} R${radius} mm: ${description}`:`${kind==="nose"?"Nose":"Cap"}: square edges`;
   shapes+=`<text class="designer__radius-label${focusedRadius===kind?" is-active":""}" data-radius-for="${kind}" x="${center}" y="${diagramBottom+72}" fill="${color}" font-size="11" text-anchor="middle">${xml(note)}</text>`;
  }
@@ -286,10 +311,13 @@ function overview(s){
  const scale=Math.min(744/Math.max(right-left,1),78/largest);
  const x=value=>(800-(right-left)*scale)/2+(value-left)*scale,mid=57,r=diameter=>Math.max(0,diameter)*scale/2;
  const p=(distance,diameter,sign)=>`${x(distance)},${mid+sign*r(diameter)}`;
+ const outline=(points,corners,radius)=>`${roundedProfile(points,corners,radius).map(([distance,radial],index)=>`${index?"L":"M"}${x(distance)},${mid-radial*scale}`).join(" ")} Z`;
  let shapes=`<line x1="24" y1="${mid}" x2="776" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
  shapes+=`<polygon points="${p(noseEnd,s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyRearDiameter||s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyRearDiameter||s.bodyDiameter,1)} ${p(noseEnd,s.bodyDiameter,1)}" fill="#8a5a36" stroke="#bd8a5d" data-section-kind="body" role="button" tabindex="0" aria-label="Body settings"/>`;
- shapes+=`<polygon points="${p(0,nose.tip_diameter_mm,-1)} ${p(noseEnd,nose.base_diameter_mm,-1)} ${p(noseEnd,nose.base_diameter_mm,1)} ${p(0,nose.tip_diameter_mm,1)}" fill="#8da9cd" stroke="#c6d8ed" data-section-kind="nose" role="button" tabindex="0" aria-label="Nose cone settings"/>`;
- shapes+=`<polygon points="${p(bodyEnd,cap.diameter_mm,-1)} ${p(capEnd,cap.tip_diameter_mm,-1)} ${p(capEnd,cap.tip_diameter_mm,1)} ${p(bodyEnd,cap.diameter_mm,1)}" fill="#8da9cd" stroke="#c6d8ed" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/>`;
+ const noseOutline=outline([[0,0],[0,nose.tip_diameter_mm/2],[noseEnd,nose.base_diameter_mm/2],[noseEnd,0],[noseEnd,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,5],nose.round_radius_mm);
+ shapes+=`<path d="${noseOutline}" fill="#8da9cd" stroke="#c6d8ed" data-section-kind="nose" role="button" tabindex="0" aria-label="Nose cone settings"/>`;
+ const capOutline=outline([[bodyEnd,0],[bodyEnd,cap.diameter_mm/2],[capEnd,cap.tip_diameter_mm/2],[capEnd,0],[capEnd,-cap.tip_diameter_mm/2],[bodyEnd,-cap.diameter_mm/2]],[2,4],cap.round_radius_mm);
+ shapes+=`<path d="${capOutline}" fill="#8da9cd" stroke="#c6d8ed" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/>`;
  for(const [index,seg] of parts.entries()){
   const start=seg.start_distance_mm-s.projection,end=seg.end_distance_mm-s.projection;
   const d1=seg.kind==="taper"?seg.diameter_start_mm:seg.diameter_mm,d2=seg.kind==="taper"?seg.diameter_end_mm:seg.diameter_mm;
