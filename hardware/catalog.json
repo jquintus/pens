@@ -10,21 +10,21 @@
     },
     {
       "id": "7mm",
-      "label": "7 mm brass tube — dimensions needed",
+      "label": "7 mm brass tube",
       "nominal_size": "7 mm",
       "tube_od_mm": null,
       "tube_id_mm": null
     },
     {
       "id": "3-8in",
-      "label": "3/8 in brass tube — dimensions needed",
+      "label": "3/8 in brass tube",
       "nominal_size": "3/8 in",
       "tube_od_mm": null,
       "tube_id_mm": null
     },
     {
       "id": "10mm",
-      "label": "10 mm brass tube — dimensions needed",
+      "label": "10 mm brass tube",
       "nominal_size": "10 mm",
       "tube_od_mm": null,
       "tube_id_mm": null
