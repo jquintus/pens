@@ -34,7 +34,8 @@ def resolve_output_path(base_name: str, stem: str, ext: str) -> Path | None:
     if exact.is_file():
         return exact
 
-    matches = sorted(OUTPUT_DIR.glob(f"{base_name}_*{ext}"))
+    matches = sorted(path for path in OUTPUT_DIR.glob(f"{base_name}_*{ext}")
+                     if "_fit_" not in path.stem)
     if matches:
         return matches[-1]
 

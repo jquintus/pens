@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from config_utils import (fit_sweep_values, fit_variant_config, fit_variant_stem,
                           is_base_fit_variant, load_config, output_stem)
 from build_openscad import build_all
+from build_openscad import source_text
 from generate_openscad_site import detail_page, entry
 from generate_site_data import process_config
 
@@ -53,6 +54,21 @@ class FitSweepTests(unittest.TestCase):
         self.assertEqual(self.config["nose_cone"]["cylinder_outside_diameter"], 7.6)
         self.assertFalse(is_base_fit_variant(self.config, Decimal("7.41")))
         self.assertNotIn("openscad", fit_variant_config(original, Decimal("7.41")))
+        self.assertIn("nose_cone_insertion_diameter_mm = 7.41;", source_text(variant, "pen"))
+
+    def test_base_diameter_inside_range_reuses_base_artifact(self):
+        self.config["nose_cone"]["cylinder_outside_diameter"] = 7.42
+        self.assertTrue(is_base_fit_variant(self.config, Decimal("7.42")))
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder)
+            artifact = output / (output_stem(self.path, self.config) + ".step")
+            artifact.touch()
+            with mock.patch("generate_site_data.load_config", return_value=self.config), \
+                 mock.patch("generate_site_data.OUTPUT_DIR", output):
+                item = process_config(self.path)
+        self.assertEqual(item["fit_variants"][2]["diameter_mm"], "7.42")
+        self.assertEqual(item["fit_variants"][2]["downloads"]["step"], f"outputs/{artifact.name}")
+        self.assertEqual(len(item["fit_variants"]), 6)
 
     def test_openscad_build_keeps_base_and_adds_each_fit(self):
         with tempfile.TemporaryDirectory() as folder:
