@@ -281,7 +281,7 @@ function cutaway(s){
  }
  const noseOuterAt=distance=>distance<noseEnd?nose.tip_diameter_mm+(nose.base_diameter_mm-nose.tip_diameter_mm)*distance/noseEnd:nose.insertion_diameter_mm;
  const nosePath=profilePath([[0,0],[0,nose.tip_diameter_mm/2],[noseEnd,nose.base_diameter_mm/2],[noseEnd,nose.insertion_diameter_mm/2],[noseRear,nose.insertion_diameter_mm/2],[noseRear,0],[noseRear,-nose.insertion_diameter_mm/2],[noseEnd,-nose.insertion_diameter_mm/2],[noseEnd,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,4,6,9],nose.round_radius_mm);
- shapes+=`<defs><clipPath id="nose-profile-clip"><path d="${nosePath}"/></clipPath></defs><path d="${nosePath}" fill="#8da9cd"/><g clip-path="url(#nose-profile-clip)">`;
+ shapes+=`<defs><clipPath id="nose-profile-clip"><path d="${nosePath}"/></clipPath></defs><g clip-path="url(#nose-profile-clip)">`;
  for(const [index,seg] of withStarts(nose.bore_segments).entries()){
    const start=seg.start_distance_mm,end=seg.end_distance_mm;
    const outer=[[start,noseOuterAt(start)]];
