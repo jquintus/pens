@@ -190,6 +190,16 @@ class RefillTests(unittest.TestCase):
         self.assertEqual(len(fine["source_pen_colors"]), 32)
         self.assertEqual(len(medium["source_pen_colors"]), 22)
 
+    def test_jetstream_sxr10_measured_profile(self):
+        refill = next(record for record in load_refills() if record["id"] == "uni-jetstream-standard-10")
+        self.assertTrue(refill["geometry_ready"])
+        self.assertEqual(refill["rating"], 2)
+        self.assertEqual(refill["overall_length_mm"], 112)
+        self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
+                         [2.3, 8.5, 12.5, 17.8, 28, 112])
+        self.assertEqual(refill["segments"][4]["diameter_mm"], 6.2)
+        self.assertEqual(refill["segments"][5]["diameter_mm"], 4.3)
+
     def test_source_pen_colors_are_distinct_from_refill_colors(self):
         record = self.record()
         record["colors"] = ["black"]

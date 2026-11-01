@@ -1152,23 +1152,61 @@
     {
       "id": "uni-jetstream-standard-10",
       "brand": "Uni",
-      "model": "Uni Jetstream Standard Ballpoint 1.0 mm",
-      "format": "unknown",
+      "model": "SXR-10 1.0 mm",
+      "source_pens": [
+        "Uni Jetstream Standard Ballpoint 1.0 mm"
+      ],
+      "format": "euro",
       "ink_type": "ballpoint",
       "tip_size_mm": 1.0,
       "tip_shape": "conical",
-      "notes": "JetPens lists SXR-10 as the refill for this Jetstream Standard pen.",
+      "rating": 2,
+      "colors": [
+        "black",
+        "blue",
+        "red"
+      ],
+      "source_pen_colors": [
+        "black",
+        "blue",
+        "red"
+      ],
+      "notes": "JetPens lists SXR-10 as the refill for the Jetstream Standard pen. The separately linked Jetstream RT is a similar pen; its price is labeled separately.",
+      "ink_notes": "JetPens lists low-viscosity, oil-based ballpoint ink that is fade-resistant.",
+      "measurement_notes": "Dimensions supplied by Josh. JetPens lists a 6.2 mm maximum diameter, matching the supplied profile, and a 111 mm overall length. The supplied 112 mm length is retained because the difference is exactly 1 mm.",
       "links": [
         {
           "label": "JetPens Jetstream Standard 1.0",
           "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643"
         },
         {
+          "label": "JetPens Standard colors and sizes",
+          "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643/related"
+        },
+        {
+          "label": "JetPens similar Jetstream RT 1.0",
+          "url": "https://www.jetpens.com/Uni-ball-Jetstream-RT-Ballpoint-Pen-1.0-mm-Black/pd/39671"
+        },
+        {
           "label": "JetPens SXR-10 refill",
           "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816"
         }
       ],
-      "measurement_status": "incomplete",
+      "variants": [
+        {
+          "color": "Black refill",
+          "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816"
+        },
+        {
+          "color": "Blue refill",
+          "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Blue/pd/3817"
+        },
+        {
+          "color": "Red refill",
+          "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Red/pd/3818"
+        }
+      ],
+      "measurement_status": "measured",
       "prices": [
         {
           "source": "JetPens",
@@ -1183,11 +1221,50 @@
           "amount_usd": 2.5,
           "checked_on": "2026-11-01",
           "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643"
+        },
+        {
+          "source": "JetPens",
+          "item": "Similar Jetstream RT 1.0 black pen",
+          "amount_usd": 3.25,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-Jetstream-RT-Ballpoint-Pen-1.0-mm-Black/pd/39671"
         }
       ],
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.2,
+          "diameter_end_mm": 2.3,
+          "end_distance_mm": 2.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.3,
+          "end_distance_mm": 8.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.1,
+          "end_distance_mm": 12.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.5,
+          "end_distance_mm": 17.8
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.2,
+          "end_distance_mm": 28.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 4.3,
+          "end_distance_mm": 112.0
+        }
+      ],
+      "overall_length_mm": 112.0,
+      "geometry_ready": true
     },
     {
       "id": "zebra-jf-03",
