@@ -1,21 +1,78 @@
 id: uni-ball-one-gel-038
 brand: Uni
-model: Uni-ball One Gel Pen 0.38 mm
-format: unknown
+model: UMR-38S 0.38 mm
+source_pens:
+  - Uni-ball One Gel Pen 0.38 mm
+format: euro
 ink_type: gel
 tip_size_mm: 0.38
 tip_shape: conical
-notes: JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink.
+colors:
+  - black
+  - blue black
+  - blue
+  - red
+source_pen_colors:
+  - black
+  - cappuccino brown
+  - green black
+  - plum purple
+  - nemophila blue
+  - brown black
+  - blue black
+  - emerald
+  - poppy red
+  - avocado green
+  - violet
+  - mandarin orange
+  - red
+  - sesame gray
+  - ganache
+  - bordeaux black
+  - pink
+  - green
+  - blue
+  - baby pink
+  - royal blue
+  - mango orange
+  - butterfly pea
+  - baked apple
+  - white (creative color)
+  - sky blue
+  - lime green
+  - light blue
+  - orange
+  - ramune
+  - light pink
+  - yellow
+notes: JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink. Pen and refill color options were checked on 2026-11-01 and may change.
+ink_notes: JetPens lists pigment-based, water-based gel ink that is fade-resistant, quick-drying, and water-resistant.
+measurement_notes: Refill dimensions supplied by Josh. JetPens lists 112 mm overall length and 6.0 mm maximum diameter, matching the supplied measurements.
 variants:
-- color: Bordeaux Black
-  url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605
-measurement_status: incomplete
+  - color: Black refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739
+  - color: Blue Black refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Blue-Black/pd/36773
+  - color: Blue refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Blue/pd/30741
+  - color: Red refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Red/pd/30740
+  - color: Black source pen
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598
+  - color: Bordeaux Black source pen
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605
+measurement_status: measured
 prices:
   - source: JetPens
     item: UMR-38S 0.38 black replacement refill
     amount_usd: 1.65
     checked_on: "2026-11-01"
     url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739
+  - source: JetPens
+    item: Uni-ball One 0.38 black source pen
+    amount_usd: 1.90
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598
   - source: JetPens
     item: Uni-ball One 0.38 Bordeaux Black source pen
     amount_usd: 1.90
@@ -24,4 +81,24 @@ prices:
 links:
   - label: JetPens UMR-38S refill
     url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739
-segments: []
+  - label: JetPens Uni-ball One 0.38 pen
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598
+  - label: JetPens 0.38 pen colors
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598/related
+segments:
+  - kind: taper
+    diameter_start_mm: 1
+    diameter_end_mm: 2.2
+    end_distance_mm: 3.2
+  - kind: cylinder
+    diameter_mm: 2.2
+    end_distance_mm: 8.4
+  - kind: cylinder
+    diameter_mm: 3.2
+    end_distance_mm: 12.1
+  - kind: cylinder
+    diameter_mm: 3.4
+    end_distance_mm: 21
+  - kind: cylinder
+    diameter_mm: 6
+    end_distance_mm: 112

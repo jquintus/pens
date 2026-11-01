@@ -159,6 +159,8 @@ class RefillTests(unittest.TestCase):
         refill = next(record for record in load_refills() if record["id"] == "sharpie-s-gel")
         self.assertTrue(refill["geometry_ready"])
         self.assertEqual(refill["rating"], 2)
+        self.assertEqual(refill["colors"], ["black"])
+        self.assertEqual(len(refill["source_pen_colors"]), 5)
         self.assertEqual(refill["overall_length_mm"], 111)
         self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
                          [2.5, 7.8, 20.5, 111])
@@ -173,6 +175,29 @@ class RefillTests(unittest.TestCase):
         self.assertEqual(refill["segments"][-1]["diameter_mm"], 6)
         self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
                          [0.5, 2.6, 11.5, 17.8, 20.5, 112])
+
+    def test_uni_ball_one_sizes_share_profile(self):
+        records = {record["id"]: record for record in load_refills()}
+        fine = records["uni-ball-one-gel-038"]
+        medium = records["uni-ball-one-gel-05"]
+        self.assertTrue(fine["geometry_ready"])
+        self.assertTrue(medium["geometry_ready"])
+        self.assertEqual(fine["segments"], medium["segments"])
+        self.assertEqual(fine["overall_length_mm"], 112)
+        self.assertEqual(fine["segments"][-1]["diameter_mm"], 6)
+        self.assertEqual(len(fine["colors"]), 4)
+        self.assertEqual(len(medium["colors"]), 4)
+        self.assertEqual(len(fine["source_pen_colors"]), 32)
+        self.assertEqual(len(medium["source_pen_colors"]), 22)
+
+    def test_source_pen_colors_are_distinct_from_refill_colors(self):
+        record = self.record()
+        record["colors"] = ["black"]
+        record["source_pen_colors"] = ["black", "blue"]
+        self.assertEqual(validate_refill(record)["source_pen_colors"], ["black", "blue"])
+        record["source_pen_colors"] = ["", "blue"]
+        with self.assertRaisesRegex(ValueError, "source_pen_colors"):
+            validate_refill(record)
 
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")

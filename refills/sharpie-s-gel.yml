@@ -21,6 +21,8 @@ prices:
     url: https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Purple/pd/35873
 colors:
   - black
+source_pen_colors:
+  - black
   - red
   - green
   - blue

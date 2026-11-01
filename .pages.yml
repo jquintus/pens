@@ -226,6 +226,11 @@ content:
       - name: colors
         type: string
         list: true
+        label: Refill ink colors
+      - name: source_pen_colors
+        type: string
+        list: true
+        label: Source pen ink colors
       - name: variants
         type: object
         list: true

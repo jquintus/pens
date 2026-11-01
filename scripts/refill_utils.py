@@ -49,6 +49,11 @@ def validate_refill(refill):
     if source_pens is not None and (not isinstance(source_pens, list) or
                                     any(not isinstance(name, str) or not name.strip() for name in source_pens)):
         raise ValueError("source_pens must be a list of pen names")
+    for field in ("colors", "source_pen_colors"):
+        value = result.get(field)
+        if value is not None and (not isinstance(value, list) or
+                                  any(not isinstance(color, str) or not color.strip() for color in value)):
+            raise ValueError(f"{field} must be a list of color names")
     for field in ("pen_photos", "ink_photos", "photos"):
         value = result.get(field)
         if value is not None and (not isinstance(value, list) or

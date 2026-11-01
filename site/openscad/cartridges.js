@@ -5,7 +5,7 @@ const choices = {
   tip_shape: ["unknown", "needle", "conical", "synergy", "ballpoint", "fineliner", "felt", "other"]
 };
 const colors = ["#ffbd66", "#72d9c7", "#d6a6f3", "#f092a4", "#a9c7ff"];
-const fields = ["id", "brand", "model", "source_pens", "format", "ink_type", "tip_shape", "tip_size_mm", "measurement_status", "rating", "colors", "notes", "ink_notes", "measurement_notes", "pen_photos", "ink_photos"];
+const fields = ["id", "brand", "model", "source_pens", "format", "ink_type", "tip_shape", "tip_size_mm", "measurement_status", "rating", "colors", "source_pen_colors", "notes", "ink_notes", "measurement_notes", "pen_photos", "ink_photos"];
 const data = await fetch(`designer-data.json?v=${Date.now()}`).then(response => {
   if (!response.ok) throw Error("Cartridge catalog failed to load");
   return response.json();
@@ -106,7 +106,7 @@ function filteredRecords() {
   const query = normalizeSearch($("catalog-search").value);
   return catalog.filter(record => {
     if (filterFields.some(key => $(`filter-${key}`).value && filterValue(record, key) !== $(`filter-${key}`).value)) return false;
-    return !query || normalizeSearch([record.id, record.brand, record.model, ...(record.source_pens || []), record.format, record.ink_type, record.tip_shape, record.tip_size_mm, record.measurement_status, ...(record.colors || []), record.notes, record.ink_notes].join(" ")).includes(query);
+    return !query || normalizeSearch([record.id, record.brand, record.model, ...(record.source_pens || []), record.format, record.ink_type, record.tip_shape, record.tip_size_mm, record.measurement_status, ...(record.colors || []), ...(record.source_pen_colors || []), record.notes, record.ink_notes].join(" ")).includes(query);
   });
 }
 function renderCatalog() {
@@ -211,7 +211,7 @@ function exportRecord() {
   delete record.geometry_ready;
   delete record.overall_length_mm;
   for (const key of ["notes", "ink_notes", "measurement_notes"]) if (!record[key]) delete record[key];
-  for (const key of ["pen_photos", "ink_photos", "colors", "source_pens"]) if (!record[key]?.length) delete record[key];
+  for (const key of ["pen_photos", "ink_photos", "colors", "source_pen_colors", "source_pens"]) if (!record[key]?.length) delete record[key];
   if (!record.tip_size_mm) delete record.tip_size_mm;
   if (!record.rating) delete record.rating;
   return record;
@@ -289,7 +289,7 @@ function renderDetail() {
     ["Brand", draft.brand], ["Model", draft.model], ["Pens using this refill", draft.source_pens?.join(", ")], ["Physical format", draft.format],
     ["Ink type", draft.ink_type], ["Tip type", draft.tip_shape],
     ["Tip size", draft.tip_size_mm ? `${draft.tip_size_mm} mm` : null],
-    ["Colors", draft.colors?.join(", ")], ["Rating", draft.rating ? `${"★".repeat(draft.rating)}${"☆".repeat(5 - draft.rating)}` : "Not rated"],
+    ["Refill ink colors", draft.colors?.join(", ")], ["Source pen ink colors", draft.source_pen_colors?.join(", ")], ["Rating", draft.rating ? `${"★".repeat(draft.rating)}${"☆".repeat(5 - draft.rating)}` : "Not rated"],
     ["Measurements", draft.measurement_status]
   ];
   for (const [name, value] of facts) {
@@ -373,7 +373,7 @@ function syncDraft() {
   for (const key of fields) {
     const value = $(`field-${key}`).value.trim();
     if (["pen_photos", "ink_photos", "source_pens"].includes(key)) draft[key] = splitLines(value);
-    else if (key === "colors") draft[key] = value.split(",").map(item => item.trim()).filter(Boolean);
+    else if (["colors", "source_pen_colors"].includes(key)) draft[key] = value.split(",").map(item => item.trim()).filter(Boolean);
     else if (["rating", "tip_size_mm"].includes(key)) draft[key] = value ? Number(value) : undefined;
     else draft[key] = value;
   }
@@ -406,7 +406,7 @@ function selectRecord(record, isNew = false) {
   $("photo-path-editor").open = false;
   for (const key of fields) {
     let value = draft[key];
-    if (key === "colors") value = listLines(value).join(", ");
+    if (["colors", "source_pen_colors"].includes(key)) value = listLines(value).join(", ");
     if (["pen_photos", "ink_photos", "source_pens"].includes(key)) value = listLines(value).join("\n");
     $(`field-${key}`).value = value ?? (key in choices ? "unknown" : "");
   }

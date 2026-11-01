@@ -755,6 +755,9 @@
         }
       ],
       "colors": [
+        "black"
+      ],
+      "source_pen_colors": [
         "black",
         "red",
         "green",
@@ -861,19 +864,84 @@
     {
       "id": "uni-ball-one-gel-038",
       "brand": "Uni",
-      "model": "Uni-ball One Gel Pen 0.38 mm",
-      "format": "unknown",
+      "model": "UMR-38S 0.38 mm",
+      "source_pens": [
+        "Uni-ball One Gel Pen 0.38 mm"
+      ],
+      "format": "euro",
       "ink_type": "gel",
       "tip_size_mm": 0.38,
       "tip_shape": "conical",
-      "notes": "JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink.",
+      "colors": [
+        "black",
+        "blue black",
+        "blue",
+        "red"
+      ],
+      "source_pen_colors": [
+        "black",
+        "cappuccino brown",
+        "green black",
+        "plum purple",
+        "nemophila blue",
+        "brown black",
+        "blue black",
+        "emerald",
+        "poppy red",
+        "avocado green",
+        "violet",
+        "mandarin orange",
+        "red",
+        "sesame gray",
+        "ganache",
+        "bordeaux black",
+        "pink",
+        "green",
+        "blue",
+        "baby pink",
+        "royal blue",
+        "mango orange",
+        "butterfly pea",
+        "baked apple",
+        "white (creative color)",
+        "sky blue",
+        "lime green",
+        "light blue",
+        "orange",
+        "ramune",
+        "light pink",
+        "yellow"
+      ],
+      "notes": "JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink. Pen and refill color options were checked on 2026-11-01 and may change.",
+      "ink_notes": "JetPens lists pigment-based, water-based gel ink that is fade-resistant, quick-drying, and water-resistant.",
+      "measurement_notes": "Refill dimensions supplied by Josh. JetPens lists 112 mm overall length and 6.0 mm maximum diameter, matching the supplied measurements.",
       "variants": [
         {
-          "color": "Bordeaux Black",
+          "color": "Black refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739"
+        },
+        {
+          "color": "Blue Black refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Blue-Black/pd/36773"
+        },
+        {
+          "color": "Blue refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Blue/pd/30741"
+        },
+        {
+          "color": "Red refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Red/pd/30740"
+        },
+        {
+          "color": "Black source pen",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598"
+        },
+        {
+          "color": "Bordeaux Black source pen",
           "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605"
         }
       ],
-      "measurement_status": "incomplete",
+      "measurement_status": "measured",
       "prices": [
         {
           "source": "JetPens",
@@ -881,6 +949,13 @@
           "amount_usd": 1.65,
           "checked_on": "2026-11-01",
           "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739"
+        },
+        {
+          "source": "JetPens",
+          "item": "Uni-ball One 0.38 black source pen",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598"
         },
         {
           "source": "JetPens",
@@ -894,28 +969,118 @@
         {
           "label": "JetPens UMR-38S refill",
           "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739"
+        },
+        {
+          "label": "JetPens Uni-ball One 0.38 pen",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598"
+        },
+        {
+          "label": "JetPens 0.38 pen colors",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Black/pd/29598/related"
         }
       ],
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.0,
+          "diameter_end_mm": 2.2,
+          "end_distance_mm": 3.2
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.2,
+          "end_distance_mm": 8.4
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.2,
+          "end_distance_mm": 12.1
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 21.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.0,
+          "end_distance_mm": 112.0
+        }
+      ],
+      "overall_length_mm": 112.0,
+      "geometry_ready": true
     },
     {
       "id": "uni-ball-one-gel-05",
       "brand": "Uni",
-      "model": "Uni-ball One Gel Pen 0.5 mm",
-      "format": "unknown",
+      "model": "UMR-05S 0.5 mm",
+      "source_pens": [
+        "Uni-ball One Gel Pen 0.5 mm"
+      ],
+      "format": "euro",
       "ink_type": "gel",
       "tip_size_mm": 0.5,
       "tip_shape": "conical",
-      "notes": "JetPens lists UMR-05S as a standard 0.5 mm replacement refill; the black refill price below does not represent Poppy Red ink.",
+      "colors": [
+        "black",
+        "blue black",
+        "blue",
+        "red"
+      ],
+      "source_pen_colors": [
+        "plum purple",
+        "avocado green",
+        "cappuccino brown",
+        "nemophila blue",
+        "poppy red",
+        "black",
+        "ganache",
+        "white (creative color)",
+        "light pink",
+        "sesame gray",
+        "mango orange",
+        "blue black",
+        "green",
+        "butterfly pea",
+        "red",
+        "blue",
+        "ramune",
+        "pink",
+        "baked apple",
+        "sky blue",
+        "orange",
+        "yellow"
+      ],
+      "notes": "JetPens lists UMR-05S as a standard 0.5 mm replacement refill; the black refill price below does not represent Poppy Red ink. Pen and refill color options were checked on 2026-11-01 and may change.",
+      "ink_notes": "JetPens lists pigment-based, water-based gel ink that is fade-resistant, quick-drying, and water-resistant.",
+      "measurement_notes": "Refill dimensions supplied by Josh. JetPens lists 112 mm overall length and 6.0 mm maximum diameter, matching the supplied measurements.",
       "variants": [
         {
-          "color": "Poppy Red",
+          "color": "Black refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742"
+        },
+        {
+          "color": "Blue Black refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Blue-Black/pd/36774"
+        },
+        {
+          "color": "Blue refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Blue/pd/30744"
+        },
+        {
+          "color": "Red refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Red/pd/30743"
+        },
+        {
+          "color": "Black source pen",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Black/pd/29615"
+        },
+        {
+          "color": "Poppy Red source pen",
           "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Poppy-Red/pd/35718"
         }
       ],
-      "measurement_status": "incomplete",
+      "measurement_status": "measured",
       "prices": [
         {
           "source": "JetPens",
@@ -923,6 +1088,13 @@
           "amount_usd": 1.65,
           "checked_on": "2026-11-01",
           "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742"
+        },
+        {
+          "source": "JetPens",
+          "item": "Uni-ball One 0.5 black source pen",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Black/pd/29615"
         },
         {
           "source": "JetPens",
@@ -936,11 +1108,46 @@
         {
           "label": "JetPens UMR-05S refill",
           "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742"
+        },
+        {
+          "label": "JetPens Uni-ball One 0.5 pen",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Black/pd/29615"
+        },
+        {
+          "label": "JetPens 0.5 pen colors",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Black/pd/29615/related"
         }
       ],
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "segments": [
+        {
+          "kind": "taper",
+          "diameter_start_mm": 1.0,
+          "diameter_end_mm": 2.2,
+          "end_distance_mm": 3.2
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.2,
+          "end_distance_mm": 8.4
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.2,
+          "end_distance_mm": 12.1
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.4,
+          "end_distance_mm": 21.0
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.0,
+          "end_distance_mm": 112.0
+        }
+      ],
+      "overall_length_mm": 112.0,
+      "geometry_ready": true
     },
     {
       "id": "uni-jetstream-standard-10",
