@@ -88,7 +88,7 @@ function renderValidation(s,issues){
  function mark(target,message){
   const element=typeof target==="string"?document.querySelector(target):target;
   if(!element)return;
-  const holder=element.closest("label")||element.closest(".designer__table-row")||element;
+  const holder=element.closest("label")||element.closest(".designer__table-row")||element.closest(".designer__combo")||element;
   const key=`${message}|${holder.id||holder.outerHTML.slice(0,80)}`;
   if(shown.has(key))return;shown.add(key);
   const note=document.createElement("div");note.className="designer__field-error";note.textContent=message;
@@ -101,8 +101,8 @@ function renderValidation(s,issues){
  const outerAt=x=>x<s.nose.visible_length_mm?s.nose.tip_diameter_mm+(s.nose.base_diameter_mm-s.nose.tip_diameter_mm)*x/s.nose.visible_length_mm:s.nose.insertion_diameter_mm;
  for(const issue of issues){
   if(issue==="Design name is required"){mark("#design-title",issue);continue}
-  if(issue==="Choose a measured tube and matching bushing set"){mark("#tube-select",issue);mark("#bushing-select",issue);continue}
-  if(issue==="Selected hardware dimensions do not leave a body wall"){mark("#bushing-select","Choose a bushing with outside diameters larger than the tube outside diameter.");continue}
+  if(issue==="Choose a measured tube and matching bushing set"){mark("#tube-select",issue);mark("#bushing-filter",issue);continue}
+  if(issue==="Selected hardware dimensions do not leave a body wall"){mark("#bushing-filter","Choose a bushing with outside diameters larger than the tube outside diameter.");continue}
   if(issue.startsWith("Fit sweep needs")){mark("#fit-sweep-controls",issue);continue}
   let match=issue.match(/^(Nose|Cap): (.+) must be positive$/);
   if(match){const keys=match[1]==="Nose"?noseKeys:capKeys,key=keys.find(item=>(names[item]||item)===match[2]);if(key)mark(match[1]==="Nose"?noseField(key):capField(key),issue);continue}
@@ -111,7 +111,7 @@ function renderValidation(s,issues){
    continue;
   }
   if(issue==="Wood body dimensions must be positive"){
-   if(!(s.bodyDiameter>0))mark("#bushing-select","Choose a measured bushing set.");
+   if(!(s.bodyDiameter>0))mark("#bushing-filter","Choose a measured bushing set.");
    if(!(s.bodyLength>0))mark("#body-length","Enter a positive body length.");
    continue;
   }
@@ -285,12 +285,16 @@ for(const choice of penChoices)option($("pen-select"),choice.value,choice.label)
 for(const choice of refillChoices)option($("refill-select"),choice.value,choice.label);
 bindCombobox("pen-filter","pen-select","pen-options",penChoices);
 bindCombobox("refill-filter","refill-select","refill-options",refillChoices);
+const bushingChoices=[];
+bindCombobox("bushing-filter","bushing-select","bushing-options",bushingChoices);
 const measuredTubes=(hardware.tubes||[]).filter(tube=>tube.id&&Number.isFinite(tube.tube_od_mm)&&Number.isFinite(tube.tube_id_mm));
 const measuredBushings=(hardware.bushings||[]).filter(bushing=>bushing.id&&Number.isFinite(bushing.front_od_mm)&&Number.isFinite(bushing.rear_od_mm));
+const displayDiameter=value=>Number(value).toFixed(1);
+function bushingLabel(bushing){const front=displayDiameter(bushing.front_od_mm),rear=displayDiameter(bushing.rear_od_mm),diameter=bushing.front_od_mm===bushing.rear_od_mm?`Ø${front} mm`:`Ø${front} / ${rear} mm (tip / cap)`;return `${bushing.id} · ${bushing.label} · ${diameter}`}
 function fillTubeChoices(saved){const select=$("tube-select");select.replaceChildren();for(const tube of hardware.tubes||[]){const el=document.createElement("option");el.value=tube.id||"";const measured=measuredTubes.some(item=>item.id===tube.id);el.textContent=measured?`${tube.label} · Ø${tube.tube_od_mm}/${tube.tube_id_mm} mm`:(tube.label.includes("dimensions needed")?tube.label:`${tube.label} · dimensions needed`);el.disabled=!measured;select.append(el)}if(saved&&(!saved.tube_id||!measuredTubes.some(tube=>tube.id===saved.tube_id)))option(select,"saved-tube","Legacy tube size (assumed, unverified)");if(!select.options.length)option(select,"","Hardware catalog unavailable");select.value=saved?(measuredTubes.some(tube=>tube.id===saved.tube_id)?saved.tube_id:"saved-tube"):(measuredTubes.find(tube=>tube.id==="8mm-measured")||measuredTubes[0])?.id||""}
-function fillBushingChoices(saved){const select=$("bushing-select"),tubeId=$("tube-select").value;select.replaceChildren();for(const bushing of measuredBushings.filter(item=>item.tube_id===tubeId))option(select,bushing.id,`${bushing.label} · Ø${bushing.front_od_mm}/${bushing.rear_od_mm} mm`);if(saved&&(!saved.bushing_id||!measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId)))option(select,"saved-bushing","Legacy bushing size (assumed, unverified)");if(!select.options.length)option(select,"","No measured bushing for this tube");select.value=saved?(measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId)?saved.bushing_id:"saved-bushing"):(measuredBushings.find(item=>item.id==="PK-PENXXBU"&&item.tube_id===tubeId)||measuredBushings.find(item=>item.tube_id===tubeId))?.id||""}
+function fillBushingChoices(saved){const select=$("bushing-select"),tubeId=$("tube-select").value;select.replaceChildren();bushingChoices.length=0;for(const bushing of measuredBushings.filter(item=>item.tube_id===tubeId)){const label=bushingLabel(bushing);option(select,bushing.id,label);bushingChoices.push({value:bushing.id,label})}if(saved&&(!saved.bushing_id||!measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId))){const label="Legacy bushing size (assumed, unverified)";option(select,"saved-bushing",label);bushingChoices.push({value:"saved-bushing",label})}if(!select.options.length){const label="No measured bushing for this tube";option(select,"",label);bushingChoices.push({value:"",label})}select.value=saved?(measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId)?saved.bushing_id:"saved-bushing"):(measuredBushings.find(item=>item.id==="PK-PENXXBU"&&item.tube_id===tubeId)||measuredBushings.find(item=>item.tube_id===tubeId))?.id||"";syncCombo("bushing-filter","bushing-select",bushingChoices)}
 function barrelFromSelection(){const tube=measuredTubes.find(item=>item.id===$("tube-select").value),bushing=measuredBushings.find(item=>item.id===$("bushing-select").value);if(!tube||!bushing)return currentBarrel||null;return {tube_id:tube.id,tube_od_mm:tube.tube_od_mm,tube_id_mm:tube.tube_id_mm,bushing_id:bushing.id,front_od_mm:bushing.front_od_mm,rear_od_mm:bushing.rear_od_mm,length_mm:Number($("body-length").value)}}
-function showHardware(){const barrel=currentBarrel,fmt=value=>Number.isFinite(value)?`${value} mm`:"—";$("tube-od").textContent=fmt(barrel?.tube_od_mm);$("tube-id").textContent=fmt(barrel?.tube_id_mm);$("body-front-od").textContent=fmt(barrel?.front_od_mm);$("body-rear-od").textContent=fmt(barrel?.rear_od_mm);$("body-diameter").value=barrel?.front_od_mm??"";$("hardware-summary").textContent=barrel?`${barrel.tube_id&&barrel.bushing_id?"Measured hardware":"Assumed legacy dimensions (unverified)"} · Tube Ø${barrel.tube_od_mm} OD / Ø${barrel.tube_id_mm} ID · Body Ø${barrel.front_od_mm} front / Ø${barrel.rear_od_mm} rear`:"Choose a measured tube and matching bushing set.";const source=measuredBushings.find(item=>item.id===barrel?.bushing_id)?.source_url,link=$("bushing-source");link.hidden=!source;if(source)link.href=source;else link.removeAttribute("href")}
+function showHardware(){const barrel=currentBarrel,fmt=value=>Number.isFinite(value)?`${value} mm`:"—",bodyFmt=value=>Number.isFinite(value)?`${displayDiameter(value)} mm`:"—";$("tube-od").textContent=fmt(barrel?.tube_od_mm);$("tube-id").textContent=fmt(barrel?.tube_id_mm);$("body-front-od").textContent=bodyFmt(barrel?.front_od_mm);$("body-rear-od").textContent=bodyFmt(barrel?.rear_od_mm);$("body-diameter").value=barrel?.front_od_mm??"";const bodySummary=barrel?(barrel.front_od_mm===barrel.rear_od_mm?`Body Ø${displayDiameter(barrel.front_od_mm)}`:`Body Ø${displayDiameter(barrel.front_od_mm)} tip / Ø${displayDiameter(barrel.rear_od_mm)} cap`):"";$("hardware-summary").textContent=barrel?`${barrel.tube_id&&barrel.bushing_id?"Measured hardware":"Assumed legacy dimensions (unverified)"} · Tube Ø${barrel.tube_od_mm} OD / Ø${barrel.tube_id_mm} ID · ${bodySummary}`:"Choose a measured tube and matching bushing set.";const source=measuredBushings.find(item=>item.id===barrel?.bushing_id)?.source_url,link=$("bushing-source");link.hidden=!source;if(source)link.href=source;else link.removeAttribute("href")}
 function legacyBarrel(nose,cap){return {tube_id:null,tube_od_mm:8,tube_id_mm:7.4,bushing_id:null,front_od_mm:nose.base_diameter_mm,rear_od_mm:cap.diameter_mm,length_mm:Number($("body-length").value)}}
 function loadHardware(saved){fillTubeChoices(saved);fillBushingChoices(saved);currentBarrel=saved||barrelFromSelection();showHardware()}
 function applyHardware(resetInserts){currentBarrel=barrelFromSelection();if(!currentBarrel){showHardware();update();return}for(const [container,key,value] of [["nose-fields","base_diameter_mm",currentBarrel.front_od_mm],["cap-fields","diameter_mm",currentBarrel.rear_od_mm],...(resetInserts?[["nose-fields","insertion_diameter_mm",currentBarrel.tube_id_mm],["cap-fields","insertion_diameter_mm",currentBarrel.tube_id_mm],["cap-fields","tip_diameter_mm",currentBarrel.tube_id_mm]]:[])]){const input=document.querySelector(`#${container} [data-key="${key}"]`);if(input){input.value=value;if(input.nextElementSibling)input.nextElementSibling.value=value}}showHardware();update()}
