@@ -1,4 +1,8 @@
 id: tian-zhuo-hoshi-tg31880
+pen_photos:
+  - assets/refills/tian-zhuo-hoshi-pen.jpg
+ink_photos:
+  - assets/refills/tian-zhuo-hoshi-refill.jpg
 brand: Tian Zhuo Hoshi
 model: TG31880
 format: unknown

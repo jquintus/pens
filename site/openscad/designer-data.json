@@ -229,6 +229,9 @@
   "refills": [
     {
       "id": "jihekj-unspecified-05",
+      "pen_photos": [
+        "assets/refills/jihekj-pens-and-refill.jpg"
+      ],
       "brand": "JIHEKJ",
       "model": "JIHEKJ",
       "format": "unknown",
@@ -477,6 +480,9 @@
     },
     {
       "id": "pilot-bxs-v5rt",
+      "pen_photos": [
+        "assets/refills/pilot-bxs-v5rt-pen-and-refill.jpg"
+      ],
       "brand": "Pilot",
       "model": "BXS-V5RT",
       "source_pens": [
@@ -549,6 +555,9 @@
     },
     {
       "id": "pilot-g-tec-c4",
+      "pen_photos": [
+        "assets/refills/pilot-g-tec-c4-pen-and-refill.jpg"
+      ],
       "brand": "Pilot",
       "model": "G-Tec-C4",
       "format": "unknown",
@@ -709,6 +718,9 @@
     },
     {
       "id": "pilot-lg-2rf",
+      "pen_photos": [
+        "assets/refills/pilot-lg-2rf-g2-pen-and-refill.jpg"
+      ],
       "brand": "Pilot",
       "model": "LG 2RF",
       "source_pens": [
@@ -866,6 +878,12 @@
     },
     {
       "id": "tian-zhuo-hoshi-tg31880",
+      "pen_photos": [
+        "assets/refills/tian-zhuo-hoshi-pen.jpg"
+      ],
+      "ink_photos": [
+        "assets/refills/tian-zhuo-hoshi-refill.jpg"
+      ],
       "brand": "Tian Zhuo Hoshi",
       "model": "TG31880",
       "format": "unknown",
@@ -913,6 +931,9 @@
     },
     {
       "id": "uni-ball-one-gel-038",
+      "pen_photos": [
+        "assets/refills/uni-ball-one-038-packaging.jpg"
+      ],
       "brand": "Uni",
       "model": "UMR-38S 0.38 mm",
       "source_pens": [
@@ -1318,6 +1339,9 @@
     },
     {
       "id": "zebra-jf-03",
+      "pen_photos": [
+        "assets/refills/zebra-sarasa-clip-nano-pens.jpg"
+      ],
       "brand": "Zebra",
       "model": "JF 0.3",
       "source_pens": [
@@ -1388,6 +1412,9 @@
     },
     {
       "id": "zebra-jf-05",
+      "pen_photos": [
+        "assets/refills/zebra-sarasa-clip-nano-pens.jpg"
+      ],
       "brand": "Zebra",
       "model": "JF 0.5",
       "source_pens": [
