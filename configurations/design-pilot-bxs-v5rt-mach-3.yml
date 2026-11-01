@@ -11,6 +11,11 @@ barrel:
   front_od_mm: 10.795
   rear_od_mm: 10.795
   length_mm: 106.3
+fit_sweep:
+  target: "nose_insertion_diameter_mm"
+  start_mm: 7.40
+  end_mm: 7.45
+  step_mm: 0.01
 nose_cone:
   cylinder_height: 5.6
   cylinder_outside_diameter: 7.4
