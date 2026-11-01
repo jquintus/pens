@@ -133,6 +133,19 @@ class RefillTests(unittest.TestCase):
         self.assertEqual(small["segments"][-1]["diameter_mm"], 6.1)
         self.assertEqual(small["segments"][0]["kind"], "taper")
 
+    def test_energel_lrn5_shared_refill(self):
+        records = {record["id"]: record for record in load_refills()}
+        self.assertNotIn("pentel-energel-liquid-gel-05-needle", records)
+        self.assertNotIn("pentel-energel-x-gel", records)
+        refill = records["pentel-energel-lrn5"]
+        self.assertTrue(refill["geometry_ready"])
+        self.assertEqual(refill["source_pens"], ["Pentel EnerGel-X Gel Pen"])
+        self.assertEqual(refill["overall_length_mm"], 112)
+        self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
+                         [0.3, 2.9, 8.5, 19.5, 19.8, 22.4, 112])
+        self.assertEqual(refill["segments"][0]["kind"], "taper")
+        self.assertEqual(refill["segments"][5]["diameter_mm"], 5.9)
+
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)

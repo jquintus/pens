@@ -297,43 +297,97 @@
       "geometry_ready": false
     },
     {
-      "id": "pentel-energel-liquid-gel-05-needle",
+      "id": "pentel-energel-lrn5",
       "brand": "Pentel",
-      "model": "Energel liquid gel ink 0.5 needle tip",
-      "format": "unknown",
+      "model": "EnerGel LRN5",
+      "source_pens": [
+        "Pentel EnerGel-X Gel Pen"
+      ],
+      "format": "euro",
       "ink_type": "gel",
-      "tip_size_mm": 0.5,
       "tip_shape": "needle",
-      "notes": "Pentel identifies the matching 0.5 mm needle refill as LRN5.",
-      "links": [
+      "tip_size_mm": 0.5,
+      "colors": [
+        "black",
+        "pink",
+        "red",
+        "burgundy",
+        "brown",
+        "dark brown",
+        "orange",
+        "light blue",
+        "blue",
+        "dark blue",
+        "purple"
+      ],
+      "measurement_status": "measured",
+      "measurement_notes": "Dimensions supplied by Josh. JetPens lists the LRN5 at 112 mm long with a 6.2 mm maximum diameter, matching the supplied overall length and rear diameter.",
+      "ink_notes": "JetPens describes this as fast-drying, smear-resistant, dye-based water-based gel ink.",
+      "notes": "Previously listed as Pentel EnerGel liquid gel ink 0.5 needle tip and Pentel EnerGel-X Gel Pen. The EnerGel needle-point family also comes in 0.3, 0.4, and 0.7 mm; those use different refill model numbers. Light green and turquoise were noted for 0.7 mm only. Color availability varies by tip size.",
+      "segments": [
         {
-          "label": "Pentel EnerGel LRN5 refill",
-          "url": "https://www.pentel.com/products/energel-gel-pen-refill-lrn5"
+          "kind": "taper",
+          "diameter_start_mm": 0.8,
+          "diameter_end_mm": 1.0,
+          "end_distance_mm": 0.3
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 1.0,
+          "end_distance_mm": 2.9
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 2.2,
+          "end_distance_mm": 8.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 3.2,
+          "end_distance_mm": 19.5
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 4.4,
+          "end_distance_mm": 19.8
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 5.9,
+          "end_distance_mm": 22.4
+        },
+        {
+          "kind": "cylinder",
+          "diameter_mm": 6.2,
+          "end_distance_mm": 112.0
         }
       ],
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
-    },
-    {
-      "id": "pentel-energel-x-gel",
-      "brand": "Pentel",
-      "model": "EnerGel-X Gel Pen",
-      "format": "unknown",
-      "ink_type": "gel",
-      "tip_size_mm": 0.5,
-      "tip_shape": "needle",
       "variants": [
         {
-          "color": "black",
+          "color": "Black EnerGel-X source pen",
           "url": "https://www.jetpens.com/Pentel-EnerGel-X-Gel-Pen-Needle-Point-0.5-mm-Black/pd/7535"
         }
       ],
-      "measurement_status": "incomplete",
-      "segments": [],
-      "overall_length_mm": null,
-      "geometry_ready": false
+      "links": [
+        {
+          "label": "JetPens LRN5 refill",
+          "url": "https://www.jetpens.com/Pentel-EnerGel-LRN5-Needle-Point-Gel-Pen-Refill-0.5-mm-Black/pd/5345"
+        },
+        {
+          "label": "JetPens colors and sizes",
+          "url": "https://www.jetpens.com/Pentel-EnerGel-LRN5-Needle-Point-Gel-Pen-Refill-0.5-mm-Black/pd/5345/related"
+        },
+        {
+          "label": "Pentel LRN5 refill",
+          "url": "https://www.pentel.com/products/energel-gel-pen-refill-lrn5"
+        },
+        {
+          "label": "Pentel EnerGel-X compatibility",
+          "url": "https://www.pentel.com/products/energel-x-rollergel-pen-medium-line-metal-tip-bln105bp2"
+        }
+      ],
+      "overall_length_mm": 112.0,
+      "geometry_ready": true
     },
     {
       "id": "pilot-bxs-v5rt",
