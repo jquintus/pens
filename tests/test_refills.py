@@ -200,6 +200,16 @@ class RefillTests(unittest.TestCase):
         self.assertEqual(refill["segments"][4]["diameter_mm"], 6.2)
         self.assertEqual(refill["segments"][5]["diameter_mm"], 4.3)
 
+    def test_ohto_pg105np_measured_parker_profile(self):
+        refill = next(record for record in load_refills() if record["id"] == "ohto-rays-flash-dry-gel")
+        self.assertTrue(refill["geometry_ready"])
+        self.assertEqual(refill["format"], "parker-g2")
+        self.assertEqual(refill["overall_length_mm"], 98)
+        self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
+                         [2.3, 23, 30, 98])
+        self.assertEqual(refill["segments"][2]["kind"], "taper")
+        self.assertEqual(refill["segments"][2]["diameter_end_mm"], 5.5)
+
     def test_source_pen_colors_are_distinct_from_refill_colors(self):
         record = self.record()
         record["colors"] = ["black"]
