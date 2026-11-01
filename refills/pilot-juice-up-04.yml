@@ -1,15 +1,29 @@
 id: pilot-juice-up-04
 brand: Pilot
-model: Juice up 04
-format: unknown
+model: LP3RF Juice Up 0.4
+source_pens:
+  - Pilot Juice Up Gel Pen 0.4 mm
+format: euro
 ink_type: gel
 tip_size_mm: 0.4
-tip_shape: other
-notes: Pilot calls this a Synergy tip and identifies the refill as LP3RF12S4.
+tip_shape: synergy
+colors:
+  - black
+  - red
+  - blue
+  - orange
+  - dark blue
+notes: 'Pilot identifies the 0.4 mm refill as LP3RF12S4. JetPens describes its tip as both Conical (Synergy) and Needle Point (Synergy); the 0.3 and 0.5 mm family members use different model numbers. JetPens calls the dark blue color Blue Black.'
+ink_notes: JetPens lists pigment-based, water-based gel ink that is fade-resistant and water-resistant.
+measurement_notes: Dimensions supplied by Josh. JetPens lists 112 mm overall length and 6.0 mm maximum diameter, matching the supplied measurements.
 links:
   - label: Pilot Juice Up 0.4 refill
     url: https://pilot-refill.jp/index.php/en/gel/lp3rf12s4
-measurement_status: incomplete
+  - label: JetPens Juice Up refill
+    url: https://www.jetpens.com/Pilot-LP3RF-Juice-Up-Gel-Pen-Refill-0.4-mm-Black/pd/18192
+  - label: JetPens Juice Up source pen
+    url: https://www.jetpens.com/Pilot-Juice-Up-Gel-Pen-0.4-mm-Black/pd/18163
+measurement_status: measured
 prices:
   - source: JetPens
     item: LP3RF 0.4 black refill
@@ -21,4 +35,22 @@ prices:
     amount_usd: 3.60
     checked_on: "2026-11-01"
     url: https://www.jetpens.com/Pilot-Juice-Up-Gel-Pen-0.4-mm-Black/pd/18163
-segments: []
+segments:
+  - kind: cylinder
+    diameter_mm: 0.7
+    end_distance_mm: 0.5
+  - kind: cylinder
+    diameter_mm: 1.1
+    end_distance_mm: 2.6
+  - kind: cylinder
+    diameter_mm: 1.5
+    end_distance_mm: 11.5
+  - kind: cylinder
+    diameter_mm: 3.3
+    end_distance_mm: 17.8
+  - kind: cylinder
+    diameter_mm: 4.4
+    end_distance_mm: 20.5
+  - kind: cylinder
+    diameter_mm: 6
+    end_distance_mm: 112

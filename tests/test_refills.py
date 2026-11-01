@@ -164,6 +164,16 @@ class RefillTests(unittest.TestCase):
                          [2.5, 7.8, 20.5, 111])
         self.assertEqual(refill["segments"][0]["kind"], "taper")
 
+    def test_juice_up_refill_matches_published_envelope(self):
+        refill = next(record for record in load_refills() if record["id"] == "pilot-juice-up-04")
+        self.assertTrue(refill["geometry_ready"])
+        self.assertEqual(refill["format"], "euro")
+        self.assertEqual(refill["tip_shape"], "synergy")
+        self.assertEqual(refill["overall_length_mm"], 112)
+        self.assertEqual(refill["segments"][-1]["diameter_mm"], 6)
+        self.assertEqual([part["end_distance_mm"] for part in refill["segments"]],
+                         [0.5, 2.6, 11.5, 17.8, 20.5, 112])
+
     def test_tg31880_uses_tip_referenced_measurements(self):
         record = next(r for r in load_refills() if r["id"] == "tian-zhuo-hoshi-tg31880")
         self.assertEqual(record["overall_length_mm"], 130)

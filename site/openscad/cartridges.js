@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 const choices = {
   format: ["unknown", "parker-g2", "pilot-g2", "d1", "euro", "proprietary", "other"],
   ink_type: ["unknown", "gel", "ballpoint", "rollerball", "hybrid", "fountain", "felt-tip", "other"],
-  tip_shape: ["unknown", "needle", "conical", "ballpoint", "fineliner", "felt", "other"]
+  tip_shape: ["unknown", "needle", "conical", "synergy", "ballpoint", "fineliner", "felt", "other"]
 };
 const colors = ["#ffbd66", "#72d9c7", "#d6a6f3", "#f092a4", "#a9c7ff"];
 const fields = ["id", "brand", "model", "source_pens", "format", "ink_type", "tip_shape", "tip_size_mm", "measurement_status", "rating", "colors", "notes", "ink_notes", "measurement_notes", "pen_photos", "ink_photos"];

@@ -189,7 +189,7 @@ content:
         type: select
         label: Tip type
         options:
-          values: [unknown, needle, conical, ballpoint, fineliner, felt, other]
+          values: [unknown, needle, conical, synergy, ballpoint, fineliner, felt, other]
       - name: measurement_status
         type: select
         required: true

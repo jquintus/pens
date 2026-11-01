@@ -11,7 +11,7 @@ REFILL_DIR = REPO_ROOT / "refills"
 STATUSES = {"measured", "approximate", "incomplete"}
 FORMATS = {"unknown", "parker-g2", "pilot-g2", "d1", "euro", "proprietary", "other"}
 INK_TYPES = {"unknown", "gel", "ballpoint", "rollerball", "hybrid", "fountain", "felt-tip", "other"}
-TIP_SHAPES = {"unknown", "needle", "conical", "ballpoint", "fineliner", "felt", "other"}
+TIP_SHAPES = {"unknown", "needle", "conical", "synergy", "ballpoint", "fineliner", "felt", "other"}
 KINDS = {
     "cylinder": ("diameter_mm",),
     "taper": ("diameter_start_mm", "diameter_end_mm"),
