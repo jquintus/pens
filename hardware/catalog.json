@@ -66,6 +66,42 @@
       "rear_od_mm": 12.446,
       "source_url": "https://www.pennstateind.com/store/PKPARK-BU.html",
       "book_page": 188
+    },
+    {
+      "id": "PKM-BUSH3",
+      "label": "PSI Slimline",
+      "tube_id": "7mm",
+      "front_od_mm": 8.4582,
+      "rear_od_mm": 8.4582,
+      "source_url": "https://www.pennstateind.com/store/PKM-BUSH3.html",
+      "book_page": 166
+    },
+    {
+      "id": "PKFPBU",
+      "label": "PSI Vertex Click",
+      "tube_id": "3-8in",
+      "front_od_mm": 10.9982,
+      "rear_od_mm": 10.9982,
+      "source_url": "https://www.pennstateind.com/store/PKFPBU.html",
+      "book_page": 105
+    },
+    {
+      "id": "PK-POLBU",
+      "label": "PSI Polaris",
+      "tube_id": "3-8in",
+      "front_od_mm": 11.43,
+      "rear_od_mm": 12.573,
+      "source_url": "https://www.pennstateind.com/store/PK-POLBU.html",
+      "book_page": 198
+    },
+    {
+      "id": "PK10-BUSH3",
+      "label": "PSI 10 mm",
+      "tube_id": "10mm",
+      "front_od_mm": 11.43,
+      "rear_od_mm": 11.43,
+      "source_url": "https://www.pennstateind.com/store/PK10-BUSH3.html",
+      "book_page": 20
     }
   ],
   "sources": [
