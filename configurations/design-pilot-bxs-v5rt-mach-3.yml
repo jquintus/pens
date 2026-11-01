@@ -1,0 +1,49 @@
+slicing_profiles:
+  - "0.2_fast"
+  - "0.2_quality"
+id: "design-pilot-bxs-v5rt-mach-3"
+title: "V5RT - Mach 3 (Nov 2026)"
+barrel:
+  tube_id: "8mm-measured"
+  tube_od_mm: 8
+  tube_id_mm: 7.4
+  bushing_id: "PK-PENXXBU"
+  front_od_mm: 10.795
+  rear_od_mm: 10.795
+  length_mm: 106.3
+nose_cone:
+  cylinder_height: 5.6
+  cylinder_outside_diameter: 7.4
+  frustum_height: 12
+  frustum_top_diameter: 4.3
+  frustum_bottom_diameter: 10.795
+  top_hole_diameter: 3
+  bottom_hole_diameter: 5.2
+  top_hole_height: 8.6
+refill: "pilot-bxs-v5rt"
+openscad:
+  nose_cone:
+    visible_length_mm: 12
+    insertion_length_mm: 5.6
+    insertion_diameter_mm: 7.4
+    base_diameter_mm: 10.795
+    tip_diameter_mm: 4.3
+    round_radius_mm: 0.3
+    bore_segments:
+      - kind: "cylinder"
+        diameter_mm: 3
+        end_distance_mm: 8.6
+      - kind: "cylinder"
+        diameter_mm: 5.2
+        end_distance_mm: 17.6
+  end_cap:
+    length_mm: 9.4
+    diameter_mm: 10.795
+    tip_diameter_mm: 9.2
+    insertion_length_mm: 11.1
+    insertion_diameter_mm: 7.4
+    round_radius_mm: 2
+  refill_tip_projection_mm: 2.9
+  refill_seat_shoulder_mm: 20.5
+  refill_tip_clearance_mm: 2.65
+  refill_passage_clearance_mm: 0.7
