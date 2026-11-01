@@ -9,5 +9,18 @@ notes: Ohto lists PG-105NP as the refill supplied with the Rays pen.
 links:
   - label: Ohto Rays product specifications
     url: https://ohto.co.jp/global/products/gs/rays/
+  - label: JetPens Ohto refill
+    url: https://www.jetpens.com/OHTO-Flash-Dry-Gel-Pen-Refill-0.5-mm-Black/pd/22302
 measurement_status: incomplete
+prices:
+  - source: JetPens
+    item: PG-105NP 0.5 black refill
+    amount_usd: 1.90
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/OHTO-Flash-Dry-Gel-Pen-Refill-0.5-mm-Black/pd/22302
+  - source: JetPens
+    item: Rays 0.5 black source pen
+    amount_usd: 6.00
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/OHTO-Rays-Flash-Dry-Gel-Pen-0.5-mm-Black-Body/pd/22296
 segments: []

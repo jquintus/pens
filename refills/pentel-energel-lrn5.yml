@@ -20,6 +20,17 @@ colors:
   - dark blue
   - purple
 measurement_status: measured
+prices:
+  - source: JetPens
+    item: LRN5 0.5 black refill
+    amount_usd: 1.35
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pentel-EnerGel-LRN5-Needle-Point-Gel-Pen-Refill-0.5-mm-Black/pd/5345
+  - source: JetPens
+    item: EnerGel-X 0.5 black source pen
+    amount_usd: 1.90
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pentel-EnerGel-X-Gel-Pen-Needle-Point-0.5-mm-Black/pd/7535
 measurement_notes: Dimensions supplied by Josh. JetPens lists the LRN5 at 112 mm long with a 6.2 mm maximum diameter, matching the supplied overall length and rear diameter.
 ink_notes: JetPens describes this as fast-drying, smear-resistant, dye-based water-based gel ink.
 notes: 'Previously listed as Pentel EnerGel liquid gel ink 0.5 needle tip and Pentel EnerGel-X Gel Pen. The EnerGel needle-point family also comes in 0.3, 0.4, and 0.7 mm; those use different refill model numbers. Light green and turquoise were noted for 0.7 mm only. Color availability varies by tip size.'

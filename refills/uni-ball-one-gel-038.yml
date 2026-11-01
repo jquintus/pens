@@ -5,8 +5,23 @@ format: unknown
 ink_type: gel
 tip_size_mm: 0.38
 tip_shape: conical
+notes: JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink.
 variants:
 - color: Bordeaux Black
   url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605
 measurement_status: incomplete
+prices:
+  - source: JetPens
+    item: UMR-38S 0.38 black replacement refill
+    amount_usd: 1.65
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739
+  - source: JetPens
+    item: Uni-ball One 0.38 Bordeaux Black source pen
+    amount_usd: 1.90
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605
+links:
+  - label: JetPens UMR-38S refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739
 segments: []

@@ -10,6 +10,17 @@ tip_size_mm: 0.5
 colors:
   - assorted
 measurement_status: measured
+prices:
+  - source: JetPens
+    item: JF 0.5 black refill
+    amount_usd: 1.50
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Zebra-JF-0.5-Sarasa-Gel-Pen-Refill-0.5-mm-Black/pd/3141
+  - source: JetPens
+    item: Sarasa Clip 0.5 Vintage Green Black source pen
+    amount_usd: 1.75
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Zebra-Sarasa-Clip-Gel-Pen-0.5-mm-Vintage-Color-Green-Black/pd/18120
 segments:
   - kind: taper
     diameter_start_mm: 0.6

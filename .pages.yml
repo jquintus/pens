@@ -241,6 +241,25 @@ content:
       - name: rating
         type: number
         label: Personal rating (1–5 stars)
+      - name: prices
+        type: object
+        list: true
+        label: Observed prices
+        fields:
+          - name: source
+            type: string
+          - name: item
+            type: string
+            label: Priced product
+          - name: amount_usd
+            type: number
+            label: Price (USD)
+          - name: checked_on
+            type: string
+            label: Date checked
+          - name: url
+            type: string
+            label: Product URL
       - name: notes
         type: text
         label: Personal notes

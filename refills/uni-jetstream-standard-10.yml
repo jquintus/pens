@@ -9,5 +9,18 @@ notes: JetPens lists SXR-10 as the refill for this Jetstream Standard pen.
 links:
   - label: JetPens Jetstream Standard 1.0
     url: https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643
+  - label: JetPens SXR-10 refill
+    url: https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816
 measurement_status: incomplete
+prices:
+  - source: JetPens
+    item: SXR-10 1.0 black refill
+    amount_usd: 1.95
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816
+  - source: JetPens
+    item: Jetstream Standard 1.0 black source pen
+    amount_usd: 2.50
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643
 segments: []

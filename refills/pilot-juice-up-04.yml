@@ -10,4 +10,15 @@ links:
   - label: Pilot Juice Up 0.4 refill
     url: https://pilot-refill.jp/index.php/en/gel/lp3rf12s4
 measurement_status: incomplete
+prices:
+  - source: JetPens
+    item: LP3RF 0.4 black refill
+    amount_usd: 2.25
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pilot-LP3RF-Juice-Up-Gel-Pen-Refill-0.4-mm-Black/pd/18192
+  - source: JetPens
+    item: Juice Up 0.4 black source pen
+    amount_usd: 3.60
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pilot-Juice-Up-Gel-Pen-0.4-mm-Black/pd/18163
 segments: []

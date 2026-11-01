@@ -5,8 +5,23 @@ format: unknown
 ink_type: gel
 tip_size_mm: 0.5
 tip_shape: conical
+notes: JetPens lists UMR-05S as a standard 0.5 mm replacement refill; the black refill price below does not represent Poppy Red ink.
 variants:
 - color: Poppy Red
   url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Poppy-Red/pd/35718
 measurement_status: incomplete
+prices:
+  - source: JetPens
+    item: UMR-05S 0.5 black replacement refill
+    amount_usd: 1.65
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742
+  - source: JetPens
+    item: Uni-ball One 0.5 Poppy Red source pen
+    amount_usd: 1.90
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Poppy-Red/pd/35718
+links:
+  - label: JetPens UMR-05S refill
+    url: https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742
 segments: []

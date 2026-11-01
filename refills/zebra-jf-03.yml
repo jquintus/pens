@@ -10,6 +10,12 @@ tip_size_mm: 0.3
 colors:
   - assorted
 measurement_status: measured
+prices:
+  - source: JetPens
+    item: JF 0.3 black refill
+    amount_usd: 1.50
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Zebra-JF-0.3-Sarasa-Gel-Pen-Refill-0.3-mm-Black/pd/6406
 segments:
   - kind: taper
     diameter_start_mm: 0.6

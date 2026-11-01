@@ -2,6 +2,7 @@
 
 import math
 import re
+from datetime import date
 from pathlib import Path
 
 from config_utils import REPO_ROOT, load_config
@@ -59,6 +60,22 @@ def validate_refill(refill):
     rating = result.get("rating")
     if rating is not None and (isinstance(rating, bool) or not isinstance(rating, int) or not 1 <= rating <= 5):
         raise ValueError("rating must be an integer from 1 to 5")
+    prices = result.get("prices", [])
+    if not isinstance(prices, list):
+        raise ValueError("prices must be a list")
+    for index, price in enumerate(prices, 1):
+        if not isinstance(price, dict):
+            raise ValueError(f"price {index} must be a mapping")
+        for field in ("source", "item", "url", "checked_on"):
+            if not isinstance(price.get(field), str) or not price[field].strip():
+                raise ValueError(f"price {index} {field} is required")
+        if not re.fullmatch(r"https://[^\s]+", price["url"]):
+            raise ValueError(f"price {index} url must use HTTPS")
+        try:
+            date.fromisoformat(price["checked_on"])
+        except ValueError as error:
+            raise ValueError(f"price {index} checked_on must be YYYY-MM-DD") from error
+        _positive(price.get("amount_usd"), f"price {index} amount_usd")
     segments = result.get("segments")
     if not isinstance(segments, list) or (not segments and status != "incomplete"):
         raise ValueError("segments must be nonempty unless the refill is incomplete")

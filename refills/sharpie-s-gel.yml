@@ -8,6 +8,17 @@ ink_type: gel
 tip_size_mm: 0.7
 tip_shape: conical
 rating: 2
+prices:
+  - source: JetPens
+    item: S-Gel 0.7 black source pen
+    amount_usd: 1.95
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Black/pd/30210
+  - source: JetPens
+    item: S-Gel 0.7 purple source pen
+    amount_usd: 1.95
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Purple/pd/35873
 colors:
   - black
   - red

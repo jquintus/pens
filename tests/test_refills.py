@@ -82,6 +82,15 @@ class RefillTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "ink_photos"):
             validate_refill(record)
 
+    def test_observed_price_requires_provenance(self):
+        record = self.record()
+        record["prices"] = [{"source": "JetPens", "item": "Test refill", "amount_usd": 1.35,
+                             "checked_on": "2026-11-01", "url": "https://example.com/refill"}]
+        self.assertEqual(validate_refill(record)["prices"], record["prices"])
+        record["prices"][0]["url"] = "not-a-product-page"
+        with self.assertRaisesRegex(ValueError, "url"):
+            validate_refill(record)
+
     def test_source_pens_are_optional_names(self):
         record = self.record()
         record["source_pens"] = ["Pilot Precise V5 RT", "Pilot Hi-Techpoint V5 RT"]

@@ -12,6 +12,12 @@ colors:
   - green
   - black
 measurement_status: measured
+prices:
+  - source: JetPens
+    item: G2 0.7 green source pen
+    amount_usd: 2.25
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pilot-G2-Gel-Pen-0.7-mm-Green/pd/7239
 measurement_notes: The Japanese LG2RF-8F specification lists a 6.2 mm maximum diameter, while JetPens lists 6.0 mm for a US Pilot G2 green refill. These may be different regional models, so the supplied 6.0 mm measurement is retained.
 notes: 'Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).'
 segments:

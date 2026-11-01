@@ -313,6 +313,25 @@ function renderDetail() {
     linkList.append(anchor);
   }
   $("detail-links-section").hidden = !linkList.childElementCount;
+  const priceList = $("detail-prices");
+  priceList.replaceChildren();
+  for (const price of draft.prices || []) {
+    if (!/^https:\/\//i.test(price?.url || "") || !(price.amount_usd > 0)) continue;
+    const row = document.createElement("div");
+    row.className = "detail-price";
+    const amount = document.createElement("strong");
+    amount.textContent = `$${Number(price.amount_usd).toFixed(2)}`;
+    const link = document.createElement("a");
+    link.href = price.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = `${price.source} · ${price.item}`;
+    const checked = document.createElement("small");
+    checked.textContent = `Checked ${price.checked_on}`;
+    row.append(amount, link, checked);
+    priceList.append(row);
+  }
+  $("detail-prices-section").hidden = !priceList.childElementCount;
   for (const [key, id] of [["notes", "detail-notes"], ["ink_notes", "detail-ink-notes"], ["measurement_notes", "detail-measurement-notes"]]) {
     $(id).textContent = draft[key]?.trim() || "No notes yet.";
     $(id).classList.toggle("is-empty", !draft[key]?.trim());

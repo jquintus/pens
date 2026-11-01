@@ -289,9 +289,29 @@
         {
           "label": "Ohto Rays product specifications",
           "url": "https://ohto.co.jp/global/products/gs/rays/"
+        },
+        {
+          "label": "JetPens Ohto refill",
+          "url": "https://www.jetpens.com/OHTO-Flash-Dry-Gel-Pen-Refill-0.5-mm-Black/pd/22302"
         }
       ],
       "measurement_status": "incomplete",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "PG-105NP 0.5 black refill",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/OHTO-Flash-Dry-Gel-Pen-Refill-0.5-mm-Black/pd/22302"
+        },
+        {
+          "source": "JetPens",
+          "item": "Rays 0.5 black source pen",
+          "amount_usd": 6.0,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/OHTO-Rays-Flash-Dry-Gel-Pen-0.5-mm-Black-Body/pd/22296"
+        }
+      ],
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
@@ -321,6 +341,22 @@
         "purple"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "LRN5 0.5 black refill",
+          "amount_usd": 1.35,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pentel-EnerGel-LRN5-Needle-Point-Gel-Pen-Refill-0.5-mm-Black/pd/5345"
+        },
+        {
+          "source": "JetPens",
+          "item": "EnerGel-X 0.5 black source pen",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pentel-EnerGel-X-Gel-Pen-Needle-Point-0.5-mm-Black/pd/7535"
+        }
+      ],
       "measurement_notes": "Dimensions supplied by Josh. JetPens lists the LRN5 at 112 mm long with a 6.2 mm maximum diameter, matching the supplied overall length and rear diameter.",
       "ink_notes": "JetPens describes this as fast-drying, smear-resistant, dye-based water-based gel ink.",
       "notes": "Previously listed as Pentel EnerGel liquid gel ink 0.5 needle tip and Pentel EnerGel-X Gel Pen. The EnerGel needle-point family also comes in 0.3, 0.4, and 0.7 mm; those use different refill model numbers. Light green and turquoise were noted for 0.7 mm only. Color availability varies by tip size.",
@@ -405,6 +441,15 @@
         "assorted"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "Precise V5 RT 0.5 black source pens, pack of 2",
+          "amount_usd": 5.5,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pilot-Precise-V5-RT-Retractable-Rollerball-Pen-0.5-mm-Black-Pack-of-2/pd/17976"
+        }
+      ],
       "measurement_notes": "Pilot identifies the BXS-V5-RT as a liquid ink rollerball refill. Its supplied 110 mm length is retained; the 111 mm JetPens listing is for the different US Precise V5 RT refill model PV5RRBLK.",
       "segments": [
         {
@@ -464,6 +509,15 @@
         "blue"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "G-Tec-C 0.4 blue source pen",
+          "amount_usd": 2.65,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pilot-G-Tec-C-Gel-Pen-0.4-mm-Blue/pd/4559"
+        }
+      ],
       "segments": [
         {
           "kind": "cylinder",
@@ -532,6 +586,22 @@
         }
       ],
       "measurement_status": "incomplete",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "LP3RF 0.4 black refill",
+          "amount_usd": 2.25,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pilot-LP3RF-Juice-Up-Gel-Pen-Refill-0.4-mm-Black/pd/18192"
+        },
+        {
+          "source": "JetPens",
+          "item": "Juice Up 0.4 black source pen",
+          "amount_usd": 3.6,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pilot-Juice-Up-Gel-Pen-0.4-mm-Black/pd/18163"
+        }
+      ],
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
@@ -553,6 +623,15 @@
         "black"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "G2 0.7 green source pen",
+          "amount_usd": 2.25,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Pilot-G2-Gel-Pen-0.7-mm-Green/pd/7239"
+        }
+      ],
       "measurement_notes": "The Japanese LG2RF-8F specification lists a 6.2 mm maximum diameter, while JetPens lists 6.0 mm for a US Pilot G2 green refill. These may be different regional models, so the supplied 6.0 mm measurement is retained.",
       "notes": "Source pen colors: Pilot G-2 07 (green); Pilot G-2 Stylus (black, previously listed as G-2 Penstylus).",
       "segments": [
@@ -608,6 +687,22 @@
       "tip_size_mm": 0.7,
       "tip_shape": "conical",
       "rating": 2,
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "S-Gel 0.7 black source pen",
+          "amount_usd": 1.95,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Black/pd/30210"
+        },
+        {
+          "source": "JetPens",
+          "item": "S-Gel 0.7 purple source pen",
+          "amount_usd": 1.95,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Sharpie-S-Gel-Gel-Pen-0.7-mm-Purple/pd/35873"
+        }
+      ],
       "colors": [
         "black",
         "red",
@@ -720,6 +815,7 @@
       "ink_type": "gel",
       "tip_size_mm": 0.38,
       "tip_shape": "conical",
+      "notes": "JetPens lists UMR-38S as a standard 0.38 mm replacement refill; the black refill price below does not represent Bordeaux Black ink.",
       "variants": [
         {
           "color": "Bordeaux Black",
@@ -727,6 +823,28 @@
         }
       ],
       "measurement_status": "incomplete",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "UMR-38S 0.38 black replacement refill",
+          "amount_usd": 1.65,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739"
+        },
+        {
+          "source": "JetPens",
+          "item": "Uni-ball One 0.38 Bordeaux Black source pen",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.38-mm-Bordeaux-Black/pd/29605"
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens UMR-38S refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-38S-Gel-Pen-Refill-0.38-mm-Black/pd/30739"
+        }
+      ],
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
@@ -739,6 +857,7 @@
       "ink_type": "gel",
       "tip_size_mm": 0.5,
       "tip_shape": "conical",
+      "notes": "JetPens lists UMR-05S as a standard 0.5 mm replacement refill; the black refill price below does not represent Poppy Red ink.",
       "variants": [
         {
           "color": "Poppy Red",
@@ -746,6 +865,28 @@
         }
       ],
       "measurement_status": "incomplete",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "UMR-05S 0.5 black replacement refill",
+          "amount_usd": 1.65,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742"
+        },
+        {
+          "source": "JetPens",
+          "item": "Uni-ball One 0.5 Poppy Red source pen",
+          "amount_usd": 1.9,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-ball-One-Gel-Pen-0.5-mm-Poppy-Red/pd/35718"
+        }
+      ],
+      "links": [
+        {
+          "label": "JetPens UMR-05S refill",
+          "url": "https://www.jetpens.com/Uni-ball-One-UMR-05S-Gel-Pen-Refill-0.5-mm-Black/pd/30742"
+        }
+      ],
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
@@ -763,9 +904,29 @@
         {
           "label": "JetPens Jetstream Standard 1.0",
           "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643"
+        },
+        {
+          "label": "JetPens SXR-10 refill",
+          "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816"
         }
       ],
       "measurement_status": "incomplete",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "SXR-10 1.0 black refill",
+          "amount_usd": 1.95,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-SXR-10-Jetstream-Ballpoint-Pen-Refill-1.0-mm-Black/pd/3816"
+        },
+        {
+          "source": "JetPens",
+          "item": "Jetstream Standard 1.0 black source pen",
+          "amount_usd": 2.5,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Uni-Jetstream-Standard-Ballpoint-Pen-1.0-mm-Black-Ink-Black-Body/pd/18643"
+        }
+      ],
       "segments": [],
       "overall_length_mm": null,
       "geometry_ready": false
@@ -785,6 +946,15 @@
         "assorted"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "JF 0.3 black refill",
+          "amount_usd": 1.5,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Zebra-JF-0.3-Sarasa-Gel-Pen-Refill-0.3-mm-Black/pd/6406"
+        }
+      ],
       "segments": [
         {
           "kind": "taper",
@@ -846,6 +1016,22 @@
         "assorted"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "JF 0.5 black refill",
+          "amount_usd": 1.5,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Zebra-JF-0.5-Sarasa-Gel-Pen-Refill-0.5-mm-Black/pd/3141"
+        },
+        {
+          "source": "JetPens",
+          "item": "Sarasa Clip 0.5 Vintage Green Black source pen",
+          "amount_usd": 1.75,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Zebra-Sarasa-Clip-Gel-Pen-0.5-mm-Vintage-Color-Green-Black/pd/18120"
+        }
+      ],
       "segments": [
         {
           "kind": "taper",
@@ -913,6 +1099,15 @@
         "assorted"
       ],
       "measurement_status": "measured",
+      "prices": [
+        {
+          "source": "JetPens",
+          "item": "JF 0.7 black refill",
+          "amount_usd": 1.5,
+          "checked_on": "2026-11-01",
+          "url": "https://www.jetpens.com/Zebra-JF-0.7-Sarasa-Gel-Pen-Refill-0.7-mm-Black/pd/5971"
+        }
+      ],
       "segments": [
         {
           "kind": "taper",

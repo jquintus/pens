@@ -11,6 +11,12 @@ tip_size_mm: 0.5
 colors:
   - assorted
 measurement_status: measured
+prices:
+  - source: JetPens
+    item: Precise V5 RT 0.5 black source pens, pack of 2
+    amount_usd: 5.50
+    checked_on: "2026-11-01"
+    url: https://www.jetpens.com/Pilot-Precise-V5-RT-Retractable-Rollerball-Pen-0.5-mm-Black-Pack-of-2/pd/17976
 measurement_notes: Pilot identifies the BXS-V5-RT as a liquid ink rollerball refill. Its supplied 110 mm length is retained; the 111 mm JetPens listing is for the different US Precise V5 RT refill model PV5RRBLK.
 segments:
   - kind: cylinder
