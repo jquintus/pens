@@ -123,6 +123,7 @@
 .designer__derived-field.is-overridden input[type="number"] {border-color:#f9cf80;color:#f9cf80}
 .designer__derived-field.is-overridden .designer__derived-toolbar {color:#f9cf80}
 .designer input[readonly] {color:#72d9c7;background:rgba(114,217,199,.07);cursor:default}
+@media (min-width:1200px) {body {zoom:1.25}}
 .designer__sweep-toggle {display:flex!important;align-items:center;gap:.4rem;cursor:pointer}
 .designer__sweep-toggle input {width:auto;margin:0}
 .designer__sweep-navigation {display:flex;align-items:center;justify-content:space-between;gap:.35rem;font-size:.7rem}
