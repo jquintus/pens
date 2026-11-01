@@ -77,6 +77,7 @@ function validate(s){const issues=[];for(const [label,obj] of [["Nose",s.nose],[
  return [...new Set(issues)]}
 function renderValidation(s,issues){
  document.querySelectorAll(".designer__field-error").forEach(node=>node.remove());
+ document.querySelectorAll(".designer__field-warning").forEach(node=>node.remove());
  document.querySelectorAll('[aria-invalid="true"]').forEach(node=>node.removeAttribute("aria-invalid"));
  const summary=$("validation");
  summary.textContent=issues.length?`${issues.length} design ${issues.length===1?"issue":"issues"} to fix. See the highlighted controls below.`:"Geometry is ready to export.";
@@ -171,6 +172,9 @@ function renderValidation(s,issues){
   }
   mark(summary,issue);
  }
+ const overhangs=[];
+ for(const [part,diameter] of [["Nose base",s.nose.base_diameter_mm],["Cap outside",s.cap.diameter_mm]])if(Number.isFinite(diameter)&&diameter>s.bodyDiameter+0.001)overhangs.push(`${part} Ø${diameter} mm overhangs body outside Ø${s.bodyDiameter} mm by ${Number(((diameter-s.bodyDiameter)/2).toFixed(2))} mm per side. Increase body outside diameter to at least ${diameter} mm for a flush joint, or keep the overhang intentionally.`);
+ if(overhangs.length){const holder=$("body-diameter").closest("label");for(const message of overhangs){const note=document.createElement("div");note.className="designer__field-warning";note.textContent=message;holder.append(note)}summary.textContent+=` Outer diameter overhangs the body; see the body outside diameter note.`}
 }
 function xml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&apos;"})[c])}
 function cutaway(s){
@@ -209,10 +213,12 @@ function cutaway(s){
    const labelY=35+(index%3)*17;
    shapes+=`<line x1="${x(b)}" y1="${labelY+4}" x2="${x(b)}" y2="${top-9}" stroke="${color}"/><text x="${x(b)}" y="${labelY}" fill="${color}" font-size="11" text-anchor="middle">${xml(seg.end_distance_mm)} mm</text>`;
  }
+ for(const sign of [-1,1])shapes+=`<line x1="${x(noseEnd)}" y1="${mid+sign*rad(tube)}" x2="${x(Math.min(noseRear,bodyEnd))}" y2="${mid+sign*rad(tube)}" stroke="#72d9c7" stroke-width="1.5" stroke-dasharray="4 3"/>`;
  svg.innerHTML=shapes;applySelection();
  const overall=s.projection+noseEnd+s.bodyLength+cap.length_mm;
  const lengths=[["Projection",s.projection],["Nose",noseEnd],["Body",s.bodyLength],["Cap",cap.length_mm],["Overall",overall]];
  $("cutaway-dimensions").replaceChildren(...lengths.map(([label,value])=>{const item=document.createElement("span");item.className="designer__length";item.textContent=`${label} ${Number(value.toFixed(2))} mm`;return item}));
+ $("cutaway-fit-note").textContent=`Nose insert Ø${nose.insertion_diameter_mm} mm fits inside the hollow body opening Ø${Number(tube.toFixed(2))} mm (${Number((tube-nose.insertion_diameter_mm).toFixed(2))} mm diameter clearance). Dashed lines mark the opening.`;
 }
 function overview(s){
  const svg=$("overview");if(!svg)return;

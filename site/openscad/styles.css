@@ -109,3 +109,5 @@
 .designer__dimensions-grid .designer__actions {margin-top:.3rem}
 .designer__dimensions-grid .designer__actions button {padding:.25rem .4rem;font-size:.69rem}
 @media(max-width:650px){.designer__dimensions-grid{grid-template-columns:1fr}}
+.designer__fit-note {margin:.35rem 0 0;color:#72d9c7;font-size:.69rem;line-height:1.35}
+.designer__field-warning {display:block;margin:.3rem 0;color:#f9cf80;font-size:.72rem;line-height:1.4}
