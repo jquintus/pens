@@ -1,0 +1,74 @@
+{
+  "tubes": [
+    {
+      "id": "8mm-measured",
+      "label": "8 mm brass tube",
+      "nominal_size": "8 mm",
+      "tube_od_mm": 8.0,
+      "tube_id_mm": 7.4,
+      "measurement_source": "Josh's measured tube"
+    },
+    {
+      "id": "7mm",
+      "label": "7 mm brass tube — dimensions needed",
+      "nominal_size": "7 mm",
+      "tube_od_mm": null,
+      "tube_id_mm": null
+    },
+    {
+      "id": "3-8in",
+      "label": "3/8 in brass tube — dimensions needed",
+      "nominal_size": "3/8 in",
+      "tube_od_mm": null,
+      "tube_id_mm": null
+    },
+    {
+      "id": "10mm",
+      "label": "10 mm brass tube — dimensions needed",
+      "nominal_size": "10 mm",
+      "tube_od_mm": null,
+      "tube_id_mm": null
+    }
+  ],
+  "bushings": [
+    {
+      "id": "PK-PENXXBU",
+      "label": "PSI Slimline Pro",
+      "tube_id": "8mm-measured",
+      "front_od_mm": 10.795,
+      "rear_od_mm": 10.795,
+      "source_url": "https://www.pennstateind.com/store/PK-PENXXBU.html",
+      "book_page": 192
+    },
+    {
+      "id": "PKCP2400BU",
+      "label": "PSI Bullet Cartridge Click",
+      "tube_id": "8mm-measured",
+      "front_od_mm": 11.8364,
+      "rear_od_mm": 11.8364,
+      "source_url": "https://www.pennstateind.com/store/PKCP2400BU.html",
+      "book_page": 64
+    },
+    {
+      "id": "PKSC-BU",
+      "label": "PSI Sculpted",
+      "tube_id": "8mm-measured",
+      "front_od_mm": 9.9822,
+      "rear_od_mm": 12.192,
+      "source_url": "https://www.pennstateind.com/store/PKSC-BU.html",
+      "book_page": 216
+    },
+    {
+      "id": "PKPARK-BU",
+      "label": "PSI Classic",
+      "tube_id": "8mm-measured",
+      "front_od_mm": 10.16,
+      "rear_od_mm": 12.446,
+      "source_url": "https://www.pennstateind.com/store/PKPARK-BU.html",
+      "book_page": 188
+    }
+  ],
+  "sources": [
+    "https://www.pennstateind.com/library/bushing_book.pdf"
+  ]
+}
