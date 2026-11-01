@@ -22,19 +22,25 @@ function maxDiameter(seg){return seg.kind==="taper"?Math.max(seg.diameter_start_
 function deriveBore(refill,projection,tipClearance,passageClearance,noseTotal){
  const parts=profile(refill);if(!parts.length)return null;
  const maxBetween=(from,to)=>{let largest=0;for(const part of parts){const start=Math.max(from,part.start_distance_mm),end=Math.min(to,part.end_distance_mm);if(end<=start)continue;largest=Math.max(largest,diameterAt(part,start),diameterAt(part,end))}return largest};
+ const firstInside=parts.find(part=>part.end_distance_mm>projection+0.001);
+ if(!firstInside)return null;
+ const guideLength=Math.min(noseTotal-0.2,Math.max(0.8,Math.min(1.5,firstInside.end_distance_mm-projection)));
+ if(guideLength<=0)return null;
+ const guide=maxBetween(projection,projection+guideLength)+tipClearance;
  const candidates=[];
  for(let i=1;i<parts.length;i++){
   const distance=parts[i].start_distance_mm-projection;
-  if(distance<=0.01||distance>=noseTotal-0.01)continue;
+  if(distance<=guideLength+0.1||distance>=noseTotal-0.01)continue;
   const before=diameterAt(parts[i-1],parts[i-1].end_distance_mm),after=diameterAt(parts[i],parts[i].start_distance_mm);
   if(after-before>0.05)candidates.push({distance,jump:after-before});
  }
  candidates.sort((a,b)=>b.jump-a.jump||b.distance-a.distance);
  const shoulder=candidates[0]?.distance;
- if(shoulder===undefined){const diameter=maxBetween(projection,projection+noseTotal)+passageClearance;return [{kind:"cylinder",diameter_mm:Number(diameter.toFixed(3)),end_distance_mm:Number(noseTotal.toFixed(3))}]}
- const front=maxBetween(projection,projection+shoulder)+tipClearance;
+ const guideRow={kind:"cylinder",diameter_mm:Number(guide.toFixed(3)),end_distance_mm:Number(guideLength.toFixed(3))};
+ if(shoulder===undefined){const diameter=Math.max(maxBetween(projection+guideLength,projection+noseTotal)+passageClearance,guide+0.1);return [guideRow,{kind:"cylinder",diameter_mm:Number(diameter.toFixed(3)),end_distance_mm:Number(noseTotal.toFixed(3))}]}
+ const front=Math.max(maxBetween(projection+guideLength,projection+shoulder)+tipClearance,guide+0.1);
  const rear=Math.max(maxBetween(projection+shoulder,projection+noseTotal)+passageClearance,front+0.1);
- return [{kind:"cylinder",diameter_mm:Number(front.toFixed(3)),end_distance_mm:Number(shoulder.toFixed(3))},{kind:"cylinder",diameter_mm:Number(rear.toFixed(3)),end_distance_mm:Number(noseTotal.toFixed(3))}];
+ return [guideRow,{kind:"cylinder",diameter_mm:Number(front.toFixed(3)),end_distance_mm:Number(shoulder.toFixed(3))},{kind:"cylinder",diameter_mm:Number(rear.toFixed(3)),end_distance_mm:Number(noseTotal.toFixed(3))}];
 }
 function legacyBore(nose){return [{kind:"cylinder",diameter_mm:nose.stop_diameter_mm,end_distance_mm:nose.stop_depth_mm},{kind:"cylinder",diameter_mm:nose.passage_diameter_mm,end_distance_mm:nose.visible_length_mm+nose.insertion_length_mm}]}
 function segmentValues(seg){return seg.kind==="taper"?[seg.diameter_start_mm,seg.diameter_end_mm,seg.end_distance_mm]:[seg.diameter_mm,"",seg.end_distance_mm]}
