@@ -115,6 +115,9 @@ content:
           - name: refill_tip_projection_mm
             type: number
             label: Refill tip projection beyond nose (assembly view)
+          - name: refill_seat_shoulder_mm
+            type: number
+            label: Refill shoulder seated against nose, distance from writing tip (mm)
           - name: refill_tip_clearance_mm
             type: number
             label: Added diameter clearance at tip bore
