@@ -1,5 +1,10 @@
 id: pilot_precise_v5rt
 title: Pilot Precise V5RT
+fit_sweep:
+  target: nose_insertion_diameter_mm
+  start_mm: 7.4
+  end_mm: 7.5
+  step_mm: 0.01
 nose_cone:
   cylinder_height: 5.9
   cylinder_outside_diameter: 7.57
