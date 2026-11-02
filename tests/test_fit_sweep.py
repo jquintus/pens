@@ -20,7 +20,7 @@ from generate_site_data import process_config
 
 class FitSweepTests(unittest.TestCase):
     def setUp(self):
-        self.path = ROOT / "configurations" / "pilot_precise_v5rt_7_60.yml"
+        self.path = ROOT / "archive" / "pilot-precise-v5rt-print-fit" / "pilot_precise_v5rt_7_60.yml"
         self.config = load_config(self.path)
         self.config["fit_sweep"] = {
             "target": "nose_insertion_diameter_mm",
