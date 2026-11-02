@@ -166,6 +166,8 @@
 #nose-part-profile [data-section-kind].is-selected,#cap-part-profile [data-section-kind].is-selected {stroke:#fff;stroke-width:3}
 #connector-part-profile [data-section-kind].is-selected {stroke:#fff;stroke-width:3}
 #panel-connector .designer__fields {grid-template-columns:repeat(3,minmax(0,1fr))}
+.designer__body-sections {grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 .4rem;border-top:1px solid var(--stroke);margin-top:.4rem;padding-top:.3rem}
+.designer__body-sections .designer__sweep-toggle {align-self:end;padding-bottom:.45rem}
 @media(max-width:650px){#panel-connector .designer__fields {grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1050px){.designer__setup>.designer__sweep-toggle{grid-column:auto;grid-row:auto}.designer__setup>#fit-sweep-controls{grid-row:auto;grid-template-columns:1fr}}
 @media(max-width:650px){.designer__setup>.designer__sweep-toggle{grid-column:1}.designer__setup>#fit-sweep-controls .designer__fields{grid-template-columns:1fr}.designer__parts-grid{grid-template-columns:1fr}}

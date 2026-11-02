@@ -184,7 +184,7 @@ class OpenSCADBuildTests(unittest.TestCase):
             self.skipTest('OpenSCAD is not installed')
         config = load_config(ROOT / 'configurations' / 'design-pilot-bxs-v5rt-mach-3.yml')
         config['openscad']['center_connector'] = {
-            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 11.5,
+            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 10.795,
             'insertion_length_mm': 3, 'insertion_diameter_mm': 7.4,
             'bore_diameter_mm': 6.2,
         }
@@ -205,13 +205,13 @@ class OpenSCADBuildTests(unittest.TestCase):
     def test_center_connector_rejects_unprintable_or_overlapping_dimensions(self):
         config = load_config(ROOT / 'configurations' / 'design-pilot-bxs-v5rt-mach-3.yml')
         config['openscad']['center_connector'] = {
-            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 11.5,
+            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 10.795,
             'insertion_length_mm': 3, 'insertion_diameter_mm': 7.4,
             'bore_diameter_mm': 6.2,
         }
         self.assertIn('center_connector_enabled = true;', source_text(config, 'pen'))
         for key, value in [('position_mm', 5), ('width_mm', 100),
-                           ('diameter_mm', 7), ('insertion_diameter_mm', 8),
+                           ('diameter_mm', 7), ('diameter_mm', 10.8), ('insertion_diameter_mm', 8),
                            ('bore_diameter_mm', 7), ('width_mm', float('nan'))]:
             bad = copy.deepcopy(config)
             bad['openscad']['center_connector'][key] = value

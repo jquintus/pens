@@ -218,6 +218,8 @@ def designer_parameters(config):
             bushing = next((item for item in bushings if item.get('id') == bushing_id), None)
             if not bushing or bushing.get('pieces_in_set') != 3:
                 raise ValueError('Center connector needs a three-piece bushing set')
+            if not isinstance(bushing.get('center_od_mm'), (int, float)) or abs(normalized['diameter_mm'] - bushing['center_od_mm']) > 0.001:
+                raise ValueError('Center connector outside diameter must match the selected center bushing')
             tube_od = barrel.get('tube_od_mm')
             tube_id = barrel.get('tube_id_mm')
             body_length = barrel.get('length_mm')
