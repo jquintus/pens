@@ -7,7 +7,7 @@ const defaults = {nose_cone:{visible_length_mm:11,insertion_length_mm:5.9,insert
 const $ = id => document.getElementById(id);
 const data = await fetch(`designer-data.json?v=${Date.now()}`).then(r => {if (!r.ok) throw Error("Catalog failed to load");return r.json()});
 const hardware=data.hardware||{tubes:[],bushings:[]};
-document.querySelector(".designer__setup").append(document.querySelector(".designer__sweep-toggle"),$("fit-sweep-controls"));
+document.querySelector(".designer__setup").append($("fit-sweep-enabled").closest(".designer__sweep-toggle"),$("fit-sweep-controls"));
 const REFILL_COLORS=["#ffbd66","#72d9c7","#d6a6f3","#f092a4","#a9c7ff"];
 const BORE_COLORS=["#8da9cd","#78b7b1","#a9a0d5","#8da9cd"];
 let initialRefill = new URLSearchParams(location.search).get("refill");
