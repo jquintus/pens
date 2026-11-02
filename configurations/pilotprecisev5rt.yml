@@ -1,5 +1,6 @@
 id: pilot_precise_v5rt
 title: Pilot Precise V5RT
+refill: pilot-bxs-v5rt
 fit_sweep:
   target: nose_insertion_diameter_mm
   start_mm: 7.4
