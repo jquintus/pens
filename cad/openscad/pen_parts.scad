@@ -62,7 +62,7 @@ module pen_parts(cylinder_height=5.9, cylinder_outside_diameter=7.57,
 }
 
 // OpenSCAD-only designer geometry. The writing end of the nose is z=0;
-// z increases toward the body. Both parts are separated for printing.
+// z increases toward the body. Printable parts are separated on the build plate.
 // Fillets are explicit arcs in the axial profile, independent of mesh edges.
 module designer_parts(
     nose_cone_visible_length_mm=11,
@@ -81,7 +81,14 @@ module designer_parts(
     end_cap_tip_diameter_mm=7.57,
     end_cap_insertion_length_mm=5.9,
     end_cap_insertion_diameter_mm=7.57,
-    end_cap_round_radius_mm=0.4
+    end_cap_round_radius_mm=0.4,
+    center_connector_enabled=false,
+    center_connector_position_mm=50,
+    center_connector_width_mm=3,
+    center_connector_diameter_mm=11,
+    center_connector_insertion_length_mm=3,
+    center_connector_insertion_diameter_mm=7.4,
+    center_connector_bore_diameter_mm=0
 ) {
     nose_height=nose_cone_visible_length_mm+nose_cone_insertion_length_mm;
     nose_profile=[
@@ -126,4 +133,27 @@ module designer_parts(
         polygon(end_cap_round_radius_mm>0
             ? _pen_round_profile(cap_profile,[1,4],end_cap_round_radius_mm)
             : cap_profile);
+    if(center_connector_enabled) {
+        // The two inserts enter separate brass tubes. The exposed band sits
+        // between their wood faces; position controls assembly, not print shape.
+        connector_height=2*center_connector_insertion_length_mm
+            + center_connector_width_mm;
+        translate([40,0,0]) difference() {
+            union() {
+                cylinder(d=center_connector_insertion_diameter_mm,
+                         h=center_connector_insertion_length_mm);
+                translate([0,0,center_connector_insertion_length_mm])
+                    cylinder(d=center_connector_diameter_mm,
+                             h=center_connector_width_mm);
+                translate([0,0,center_connector_insertion_length_mm
+                           +center_connector_width_mm])
+                    cylinder(d=center_connector_insertion_diameter_mm,
+                             h=center_connector_insertion_length_mm);
+            }
+            if(center_connector_bore_diameter_mm>0)
+                translate([0,0,-0.01])
+                    cylinder(d=center_connector_bore_diameter_mm,
+                             h=connector_height+0.02);
+        }
+    }
 }

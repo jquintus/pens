@@ -12,7 +12,8 @@ const REFILL_COLORS=["#ffbd66","#72d9c7","#d6a6f3","#f092a4","#a9c7ff"];
 const BORE_COLORS=["#8da9cd","#78b7b1","#a9a0d5","#8da9cd"];
 let initialRefill = new URLSearchParams(location.search).get("refill");
 const initialDesign = new URLSearchParams(location.search).get("design");
-let currentPen, currentRefill, currentBarrel, three, baseNose, currentBore=[], manualBore=false, boreHash="", refillDraftError=false, boreDraftError=false, selectedSection=null, projectionCustomized=false, capDiameterOverridden=false, noseSeatOverridden=false, seatShoulderTipDistance=null, lastNoseTotal=0, guideDiameterOverride=null, guideEndOverride=null;
+let currentPen, currentRefill, currentBarrel, three, baseNose, currentBore=[], manualBore=false, boreHash="", refillDraftError=false, boreDraftError=false, selectedSection=null, projectionCustomized=false, capDiameterOverridden=false, noseSeatOverridden=false, seatShoulderTipDistance=null, guideTargetTipDistance=null, lastNoseTotal=0, guideDiameterOverride=null, guideEndOverride=null;
+let connectorBoreOverridden=false;
 function option(select,value,label){const el=document.createElement("option");el.value=value;el.textContent=label;select.append(el)}
 function numericFields(container,keys,values,locked=[],onChange=()=>{}){
  container.replaceChildren();
@@ -27,6 +28,11 @@ function numericFields(container,keys,values,locked=[],onChange=()=>{}){
   }
   if(key==="round_radius_mm"){input.addEventListener("focus",update);input.addEventListener("blur",update)}
   label.append(input,slider);
+  if(!locked.includes(key)&&!(container.id==="nose-fields"&&key==="insertion_length_mm")&&!(container.id==="cap-fields"&&key==="diameter_mm")){
+   const reset=document.createElement("button");reset.type="button";reset.className="designer__reset-value";reset.textContent="Reset";reset.title="Reset from refill and selected hardware";
+   reset.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();const fresh=newDesignGeometry(currentRefill,currentBarrel),value=fresh[container.id==="nose-fields"?"nose":"cap"][key];if(!Number.isFinite(value))return;input.value=value;slider.value=value;input.dispatchEvent(new Event("input",{bubbles:true}))});
+   label.classList.add("has-reset");label.append(reset);
+  }
   if(container.id==="nose-fields"&&key==="insertion_length_mm"){
    const wrapper=document.createElement("div");wrapper.className="designer__derived-field";
    const toolbar=document.createElement("div");toolbar.className="designer__derived-toolbar";
@@ -61,13 +67,28 @@ function updateFitActions(s){
  note.classList.toggle("is-overlap",gap<-.001);
  note.textContent=gap>.001?`${gap} mm gap between refill and cap insert.`:gap<-.001?`${Math.abs(gap)} mm overlap between refill and cap insert.`:"Refill meets the cap insert.";
 }
-function attachSlider(id,max,step){const input=$(id),slider=document.createElement("input");slider.type="range";slider.min="0";slider.max=String(max);slider.step=String(step);slider.value=input.value;input.after(slider);input.addEventListener("input",()=>{if(id==="tip-projection")projectionCustomized=true;slider.value=input.value;update()});slider.addEventListener("input",()=>{if(id==="tip-projection")projectionCustomized=true;input.value=slider.value;update()})}
+function attachSlider(id,max,step){const input=$(id),slider=document.createElement("input");slider.type="range";slider.min="0";slider.max=String(max);slider.step=String(step);slider.value=input.value;input.after(slider);const changed=()=>{if(id==="tip-projection")projectionCustomized=true;if(["tip-clearance","passage-clearance","guide-gap"].includes(id)){manualBore=false;guideDiameterOverride=null;guideEndOverride=null;boreHash=""}update()};input.addEventListener("input",()=>{slider.value=input.value;changed()});slider.addEventListener("input",()=>{input.value=slider.value;changed()})}
+function addResetButton(id,defaultValue){
+ const input=$(id),label=input.closest("label"),button=document.createElement("button");
+ button.type="button";button.className="designer__reset-value";button.textContent="Reset";button.title="Reset to the derived default";
+ button.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();const value=defaultValue();if(!Number.isFinite(value))return;input.value=Number(value.toFixed(3));if(input.nextElementSibling?.type==="range")input.nextElementSibling.value=input.value;input.dispatchEvent(new Event("input",{bubbles:true}))});
+ label.classList.add("has-reset");label.append(button);
+}
 function setProjectionDefault(refill,explicit){const first=refill?.segments?.[0]?.end_distance_mm;const value=explicit??(Number.isFinite(first)?first:0);$("tip-projection").value=value;$("tip-projection").nextElementSibling.value=value}
 function readFields(container){return Object.fromEntries([...container.querySelectorAll('input[type="number"]')].map(i=>[i.dataset.key,Number(i.value)]))}
 function withStarts(segments){let start=0;return (segments||[]).map(seg=>{const item={...seg,start_distance_mm:start};start=seg.end_distance_mm;return item})}
 function profile(refill){return refill?.geometry_ready?withStarts(refill.segments):[]}
 function diameterAt(seg,distance){if(seg.kind!=="taper")return seg.diameter_mm;const t=(distance-seg.start_distance_mm)/(seg.end_distance_mm-seg.start_distance_mm);return seg.diameter_start_mm+(seg.diameter_end_mm-seg.diameter_start_mm)*t}
 function maxDiameter(seg){return seg.kind==="taper"?Math.max(seg.diameter_start_mm,seg.diameter_end_mm):seg.diameter_mm}
+function connectorRefillDiameter(refill,projection,noseVisible,position,width,insertLength){
+ const first=noseVisible+position-insertLength,last=noseVisible+position+width+insertLength;
+ let maximum=0;
+ for(const segment of profile(refill)){
+  const start=Math.max(first,segment.start_distance_mm-projection),end=Math.min(last,segment.end_distance_mm-projection);
+  if(end>start)maximum=Math.max(maximum,diameterAt(segment,start+projection),diameterAt(segment,end+projection));
+ }
+ return maximum;
+}
 function shoulderCandidates(refill,projection){
  const parts=profile(refill),candidates=[];
  for(let i=1;i<parts.length;i++){
@@ -85,14 +106,17 @@ function rearShoulder(refill,projection){
  candidates.sort((a,b)=>b.jump-a.jump||b.distance-a.distance);
  return candidates[0]||null;
 }
-function syncShoulderChoices(){
- const select=$("seat-shoulder-select"),projection=Number($("tip-projection").value),candidates=shoulderCandidates(currentRefill,projection),selected=rearShoulder(currentRefill,projection);
+function syncGuideTargetChoices(){
+ const select=$("guide-target-select"),projection=Number($("tip-projection").value),candidates=shoulderCandidates(currentRefill,projection);
  const signature=candidates.map(candidate=>`${candidate.tipDistance}:${candidate.before}:${candidate.after}`).join("|");
- if(select.dataset.signature!==signature){select.replaceChildren();for(const candidate of candidates)option(select,String(candidate.tipDistance),`${candidate.tipDistance} mm from writing tip: Ø${candidate.before} → Ø${candidate.after}`);select.dataset.signature=signature}
+ if(select.dataset.signature!==signature){select.replaceChildren();for(const candidate of candidates)option(select,String(candidate.tipDistance),`Ø${candidate.after} mm section at ${candidate.tipDistance} mm from writing tip`);select.dataset.signature=signature}
  select.disabled=!candidates.length;
- if(selected){seatShoulderTipDistance=selected.tipDistance;select.value=String(selected.tipDistance)}
+ const selected=candidates.find(candidate=>Math.abs(candidate.tipDistance-guideTargetTipDistance)<0.001)||candidates.find(candidate=>candidate.jump>=0.4-1e-6)||candidates[0];
+ if(selected){guideTargetTipDistance=selected.tipDistance;select.value=String(selected.tipDistance)}
 }
 function frontShoulder(refill,projection){
+ const selected=shoulderCandidates(refill,projection).find(candidate=>Math.abs(candidate.tipDistance-guideTargetTipDistance)<0.001);
+ if(selected)return selected.distance;
  const parts=profile(refill);
  for(let i=1;i<parts.length;i++){
   const distance=parts[i].start_distance_mm;
@@ -121,7 +145,7 @@ function deriveBore(refill,projection,tipClearance,passageClearance,noseTotal,gu
  const firstInside=parts.find(part=>part.end_distance_mm>projection+0.001);
  if(!firstInside)return null;
  const firstShoulder=frontShoulder(refill,projection)??firstInside.end_distance_mm-projection;
- const guideLength=guideOverride?.end??Math.min(noseTotal-0.2,Math.max(0.8,firstShoulder-0.5));
+ const guideLength=guideOverride?.end??Math.min(noseTotal-0.2,Math.max(0.8,firstShoulder-(guideOverride?.gap??0.5)));
  if(guideLength<=0)return null;
  const guide=guideOverride?.diameter??maxBetween(projection,projection+guideLength)+tipClearance;
  const guideRow={kind:"cylinder",diameter_mm:Number(guide.toFixed(3)),end_distance_mm:Number(guideLength.toFixed(3))};
@@ -135,29 +159,44 @@ function addTableRow(container,values,editable,onChange,kind=null,index=null){co
 function renderTable(id,segments,editable,onChange){const container=$(id);container.replaceChildren();const header=document.createElement("div");header.className="designer__table-head";for(const label of ["Start Ø","End Ø","End from tip"]){const cell=document.createElement("span");cell.textContent=label;header.append(cell)}container.append(header);for(const [index,seg] of segments.entries())addTableRow(container,segmentValues(seg),editable,onChange,id==="segments"?"refill":"bore",index);if(editable)addTableRow(container,["","",""],editable,onChange);applySelection()}
 function renderRefillDimensions(segments){const container=$("segments");container.replaceChildren();const header=document.createElement("div");header.className="designer__table-head";for(const label of ["Start Ø","End Ø","End from tip"]){const cell=document.createElement("span");cell.textContent=label;header.append(cell)}container.append(header);for(const [index,seg] of segments.entries()){const row=document.createElement("div");row.className="designer__table-row designer__table-row--read-only";row.dataset.sectionKind="refill";row.dataset.sectionIndex=String(index);for(const value of segmentValues(seg)){const cell=document.createElement("span");cell.textContent=value===""?"—":`${value} mm`;row.append(cell)}container.append(row)}applySelection()}
 function refreshRowIndices(id){let index=0;for(const row of $(id).querySelectorAll(".designer__table-row")){if([...row.querySelectorAll("input")].some(input=>input.value.trim())){row.dataset.sectionKind=id==="segments"?"refill":"bore";row.dataset.sectionIndex=String(index++)}else{delete row.dataset.sectionKind;delete row.dataset.sectionIndex}}}
-function applySelection(){document.querySelectorAll(".is-selected").forEach(el=>el.classList.remove("is-selected"));if(!selectedSection)return;const {kind,index}=selectedSection;const selector=index===undefined?`[data-section-kind="${kind}"]`:`[data-section-kind="${kind}"][data-section-index="${index}"]`;for(const el of document.querySelectorAll(selector))el.classList.add("is-selected");const card={nose:"panel-nose",bore:"panel-nose",body:"panel-body",cap:"panel-cap"}[kind];if(card)$(card).classList.add("is-selected")}
-function selectSection(kind,index,scroll=false){selectedSection={kind,index};applySelection();if(scroll&&(kind==="refill"||kind==="bore"||innerWidth<1050)){const card={nose:"panel-nose",body:"panel-body",cap:"panel-cap"}[kind];const target=card?$(card):$(kind==="refill"?"segments":"bore-segments").querySelector(`.designer__table-row[data-section-index="${index}"]`);target?.scrollIntoView({behavior:"smooth",block:"center"})}}
+function applySelection(){document.querySelectorAll(".is-selected").forEach(el=>el.classList.remove("is-selected"));if(!selectedSection)return;const {kind,index}=selectedSection;const selector=index===undefined?`[data-section-kind="${kind}"]`:`[data-section-kind="${kind}"][data-section-index="${index}"]`;for(const el of document.querySelectorAll(selector))el.classList.add("is-selected");const card={nose:"panel-nose",bore:"panel-nose",body:"panel-body",cap:"panel-cap",connector:"panel-connector"}[kind];if(card)$(card).classList.add("is-selected")}
+function selectSection(kind,index,scroll=false){selectedSection={kind,index};applySelection();if(scroll&&(kind==="refill"||kind==="bore"||kind==="connector"||innerWidth<1050)){const card={nose:"panel-nose",body:"panel-body",cap:"panel-cap",connector:"panel-connector"}[kind];const target=card?$(card):$(kind==="refill"?"segments":"bore-segments").querySelector(`.designer__table-row[data-section-index="${index}"]`);target?.scrollIntoView({behavior:"smooth",block:"center"})}}
 function refillIssues(r){if(!r)return ["Choose or create a refill"];const out=[];if(refillDraftError)out.push("Finish the partially entered refill row");if(!/^[a-z0-9_-]+$/.test(r.id||""))out.push("Refill ID must be a lowercase slug");for(const key of ["brand","model","format"])if(!r[key]?.trim())out.push(`${key} is required`);if(!r.segments?.length&&r.measurement_status!=="incomplete")out.push("Enter at least one segment");let last=0;for(const [index,seg] of (r.segments||[]).entries()){const fields=seg.kind==="taper"?["diameter_start_mm","diameter_end_mm","end_distance_mm"]:["diameter_mm","end_distance_mm"];for(const key of fields)if(!(seg[key]>0)&&r.measurement_status!=="incomplete")out.push(`Segment ${index+1}: ${key} must be positive`);if(!(seg.end_distance_mm>last))out.push(`Segment ${index+1}: end distance must increase`);last=seg.end_distance_mm}return out}
 function syncRefillRows(){if(!currentRefill)currentRefill={id:"",brand:"",model:"",format:"",measurement_status:"incomplete",segments:[]};const parsed=readTable("segments");currentRefill.segments=parsed.segments;refillDraftError=parsed.partial;refreshRowIndices("segments");if(!projectionCustomized)setProjectionDefault(currentRefill);currentRefill.geometry_ready=currentRefill.measurement_status!=="incomplete"&&!refillIssues(currentRefill).length;update()}
 function renderBore(){renderTable("bore-segments",currentBore,manualBore,syncBoreRows);$("customize-bore").hidden=manualBore;$("reset-bore").hidden=!manualBore}
 function syncBoreRows(){const parsed=readTable("bore-segments");currentBore=parsed.segments;boreDraftError=parsed.partial;refreshRowIndices("bore-segments");update()}
 function updateGuideControls(s){
- const first=s.nose.bore_segments[0],automatic=deriveBore(s.refill,s.projection,s.tipClearance,s.passageClearance,s.nose.visible_length_mm+s.nose.insertion_length_mm)?.[0];
+ const first=s.nose.bore_segments[0],automatic=deriveBore(s.refill,s.projection,s.tipClearance,s.passageClearance,s.nose.visible_length_mm+s.nose.insertion_length_mm,{gap:Number($("guide-gap").value)})?.[0];
  for(const [id,value] of [["guide-diameter",first?.diameter_mm],["guide-end",first?.end_distance_mm]]){const input=$(id);if(document.activeElement!==input&&Number.isFinite(value)){input.value=value;input.nextElementSibling.value=value}}
  const shoulder=rearShoulder(s.refill,s.projection);
  $("fit-shoulders").hidden=!shoulder||!manualBore&&guideDiameterOverride===null&&guideEndOverride===null;
  const firstInside=profile(s.refill).find(part=>part.end_distance_mm>s.projection+0.001),front=frontShoulder(s.refill,s.projection)??(firstInside?.end_distance_mm-s.projection);
- $("guide-note").textContent=Number.isFinite(front)?`First refill shoulder: ${Number(front.toFixed(1))} mm from nose tip. Default bore stops 0.5 mm before it.`:"Choose a measured refill to size the first bore.";
+ $("guide-note").textContent=Number.isFinite(front)?`First bore ends ${$("guide-gap").value} mm before the selected section at ${Number(front.toFixed(1))} mm from the nose tip.`:"Choose a measured refill section to size the first bore.";
  $("reset-guide").hidden=!automatic||!first||Math.abs(first.diameter_mm-automatic.diameter_mm)<0.001&&Math.abs(first.end_distance_mm-automatic.end_distance_mm)<0.001;
 }
-function getState(){const nose=readFields($("nose-fields")),cap=readFields($("cap-fields")),projection=Number($("tip-projection").value),tipClearance=Number($("tip-clearance").value),passageClearance=Number($("passage-clearance").value),noseTotal=nose.visible_length_mm+nose.insertion_length_mm;if(!manualBore){const derived=deriveBore(currentRefill,projection,tipClearance,passageClearance,noseTotal,{diameter:guideDiameterOverride,end:guideEndOverride});const next=derived||legacyBore({...baseNose,...nose});const hash=JSON.stringify(next);if(hash!==boreHash){currentBore=next;boreHash=hash;renderBore()}}else if(currentBore.length&&Math.abs(currentBore.at(-1).end_distance_mm-lastNoseTotal)<0.001&&Math.abs(noseTotal-lastNoseTotal)>0.001){currentBore.at(-1).end_distance_mm=Number(noseTotal.toFixed(3));renderBore()}lastNoseTotal=noseTotal;nose.bore_segments=structuredClone(currentBore);return {nose,cap,bodyDiameter:Number($("body-diameter").value),bodyRearDiameter:currentBarrel?.rear_od_mm,bodyLength:Number($("body-length").value),barrel:currentBarrel?{...currentBarrel,length_mm:Number($("body-length").value)}:null,fitSweep:$("fit-sweep-enabled").checked?{target:"nose_insertion_diameter_mm",start_mm:Number($("fit-sweep-start").value),end_mm:Number($("fit-sweep-end").value),step_mm:Number($("fit-sweep-step").value)}:null,projection,tipClearance,passageClearance,refill:currentRefill,seatShoulderTipDistance,designTitle:$("design-title").value.trim(),designId:currentPen.config.id||currentPen.id}}
+function getState(){const nose=readFields($("nose-fields")),cap=readFields($("cap-fields")),projection=Number($("tip-projection").value),tipClearance=Number($("tip-clearance").value),passageClearance=Number($("passage-clearance").value),noseTotal=nose.visible_length_mm+nose.insertion_length_mm;if(!manualBore){const derived=deriveBore(currentRefill,projection,tipClearance,passageClearance,noseTotal,{diameter:guideDiameterOverride,end:guideEndOverride,gap:Number($("guide-gap").value)});const next=derived||legacyBore({...baseNose,...nose});const hash=JSON.stringify(next);if(hash!==boreHash){currentBore=next;boreHash=hash;renderBore()}}else if(currentBore.length&&Math.abs(currentBore.at(-1).end_distance_mm-lastNoseTotal)<0.001&&Math.abs(noseTotal-lastNoseTotal)>0.001){currentBore.at(-1).end_distance_mm=Number(noseTotal.toFixed(3));renderBore()}lastNoseTotal=noseTotal;nose.bore_segments=structuredClone(currentBore);
+ const centerConnector=$("connector-enabled").checked?{position_mm:Number($("connector-position").value),width_mm:Number($("connector-width").value),diameter_mm:Number($("connector-diameter").value),insertion_length_mm:Number($("connector-insertion-length").value),insertion_diameter_mm:Number($("connector-insertion-diameter").value),bore_diameter_mm:Number($("connector-bore").value)}:null;
+ if(centerConnector&&!connectorBoreOverridden){const refillDiameter=connectorRefillDiameter(currentRefill,projection,nose.visible_length_mm,centerConnector.position_mm,centerConnector.width_mm,centerConnector.insertion_length_mm);centerConnector.bore_diameter_mm=refillDiameter?Number((refillDiameter+0.1).toFixed(2)):0;$("connector-bore").value=centerConnector.bore_diameter_mm;if($("connector-bore").nextElementSibling?.type==="range")$("connector-bore").nextElementSibling.value=centerConnector.bore_diameter_mm}
+ return {nose,cap,centerConnector,bodyDiameter:Number($("body-diameter").value),bodyRearDiameter:currentBarrel?.rear_od_mm,bodyLength:Number($("body-length").value),barrel:currentBarrel?{...currentBarrel,length_mm:Number($("body-length").value)}:null,fitSweep:$("fit-sweep-enabled").checked?{target:"nose_insertion_diameter_mm",start_mm:Number($("fit-sweep-start").value),end_mm:Number($("fit-sweep-end").value),step_mm:Number($("fit-sweep-step").value)}:null,projection,tipClearance,passageClearance,guideGap:Number($("guide-gap").value),refill:currentRefill,seatShoulderTipDistance,guideTargetTipDistance,designTitle:$("design-title").value.trim(),designId:currentPen.config.id||currentPen.id}}
 function validate(s){const issues=[];for(const [label,obj] of [["Nose",s.nose],["Cap",s.cap]])for(const [key,value] of Object.entries(obj))if(key!=="bore_segments"&&(!Number.isFinite(value)||value<0||(value===0&&!key.includes("round_radius"))))issues.push(`${label}: ${names[key]||key} must be positive`);
  if(!s.designTitle)issues.push("Design name is required");
  if(!s.barrel||!s.barrel.tube_id||!s.barrel.bushing_id)issues.push("Choose a measured tube and matching bushing set");
  if(s.barrel&&(!(s.barrel.tube_od_mm>s.barrel.tube_id_mm)||Math.min(s.barrel.front_od_mm,s.barrel.rear_od_mm)<=s.barrel.tube_od_mm))issues.push("Selected hardware dimensions do not leave a body wall");
  if(s.fitSweep&&(!(s.fitSweep.start_mm>0)||!(s.fitSweep.end_mm>=s.fitSweep.start_mm)||!(s.fitSweep.step_mm>0)||(s.fitSweep.end_mm-s.fitSweep.start_mm)/s.fitSweep.step_mm>100+1e-6||Math.abs((s.fitSweep.end_mm-s.fitSweep.start_mm)/s.fitSweep.step_mm-Math.round((s.fitSweep.end_mm-s.fitSweep.start_mm)/s.fitSweep.step_mm))>1e-6))issues.push("Fit sweep needs a positive start and step, an end aligned to the step, and at most 101 steps");
  if(!Number.isFinite(s.projection)||s.projection<0||!Number.isFinite(s.tipClearance)||s.tipClearance<0||!Number.isFinite(s.passageClearance)||s.passageClearance<0)issues.push("Projection and clearances must be nonnegative");
+ if(!Number.isFinite(s.guideGap)||s.guideGap<0.2)issues.push("First bore shoulder gap must be at least 0.2 mm");
  if(s.bodyDiameter<=0||s.bodyLength<=0)issues.push("Wood body dimensions must be positive");
+ if(s.centerConnector){
+  const c=s.centerConnector,bushing=measuredBushings.find(item=>item.id===s.barrel?.bushing_id);
+  if(bushing?.pieces_in_set!==3)issues.push("Center connector needs a three-piece bushing set");
+  if(![c.position_mm,c.width_mm,c.diameter_mm,c.insertion_length_mm,c.insertion_diameter_mm,c.bore_diameter_mm].every(Number.isFinite)||c.width_mm<=0||c.insertion_length_mm<=0||c.insertion_diameter_mm<=0||c.bore_diameter_mm<0)issues.push("Center connector dimensions must be valid positive numbers");
+  if(c.position_mm<s.nose.insertion_length_mm+c.insertion_length_mm||s.bodyLength-c.position_mm-c.width_mm<s.cap.insertion_length_mm+c.insertion_length_mm)issues.push("Leave room for both connector inserts and the nose and cap inserts");
+  if(c.diameter_mm<=(s.barrel?.tube_od_mm??0))issues.push("Center connector outside diameter must exceed the brass tube OD");
+  if(c.insertion_diameter_mm>(s.barrel?.tube_id_mm??0)+0.15)issues.push("Center connector insert is too wide for the brass tube");
+  const crossing=connectorRefillDiameter(s.refill,s.projection,s.nose.visible_length_mm,c.position_mm,c.width_mm,c.insertion_length_mm);
+  if(crossing>0&&c.bore_diameter_mm<=crossing)issues.push("Center connector bore must clear the refill");
+  if(c.bore_diameter_mm>0&&c.insertion_diameter_mm-c.bore_diameter_mm<1.2)issues.push("Center connector bore needs at least 0.6 mm wall");
+ }
  if(s.nose.insertion_diameter_mm>=s.nose.base_diameter_mm)issues.push("Nose insertion must be narrower than its base");
  if(s.cap.insertion_diameter_mm>=s.cap.diameter_mm)issues.push("Cap insertion must be narrower than its outside");
  if(s.nose.round_radius_mm>=Math.min(s.nose.tip_diameter_mm/4,s.nose.insertion_length_mm/2,s.nose.visible_length_mm/2)||s.cap.round_radius_mm>=Math.min(s.cap.tip_diameter_mm/4,s.cap.insertion_length_mm/2,s.cap.length_mm/2))issues.push("Rounded edge radius exceeds the profile limit");
@@ -170,7 +209,7 @@ function validate(s){const issues=[];for(const [label,obj] of [["Nose",s.nose],[
  const tubeDiameter=s.barrel?.tube_id_mm??0;
  if(s.refill){if(!s.refill.geometry_ready)issues.push("Refill measurements are incomplete");const parts=profile(s.refill),firstInside=parts.find(part=>part.end_distance_mm>s.projection+0.001),firstShoulder=frontShoulder(s.refill,s.projection)??(firstInside?.end_distance_mm-s.projection),rear=rearShoulder(s.refill,s.projection);
  if(rear&&!noseSeatOverridden&&Math.abs(noseTotal-rear.distance)>0.15)issues.push("Rear refill shoulder does not meet nose insert");
- if(firstShoulder>0.2&&bore[0]?.end_distance_mm>firstShoulder-0.2+1e-6)issues.push("First bore passes the first refill shoulder");
+ if(firstShoulder>0.2&&bore[0]?.end_distance_mm>firstShoulder-0.2+1e-6)issues.push("First bore passes the selected refill section");
  for(const fill of parts)for(const hole of bore){const start=Math.max(fill.start_distance_mm-s.projection,hole.start_distance_mm),end=Math.min(fill.end_distance_mm-s.projection,hole.end_distance_mm);if(end>start&&Math.max(diameterAt(fill,start+s.projection)-diameterAt(hole,start),diameterAt(fill,end+s.projection)-diameterAt(hole,end))>=0)issues.push("Refill intersects the nose bore")}
  if(parts.length&&parts.at(-1).end_distance_mm-s.projection>s.nose.visible_length_mm+s.bodyLength-s.cap.insertion_length_mm+1e-6){const minimum=parts.at(-1).end_distance_mm-s.projection-s.nose.visible_length_mm+s.cap.insertion_length_mm;issues.push(`Refill overlaps the cap insert; body length must be at least ${minimum.toFixed(1)} mm`)}
  for(const fill of parts){const start=Math.max(fill.start_distance_mm-s.projection,noseTotal),end=Math.min(fill.end_distance_mm-s.projection,s.nose.visible_length_mm+s.bodyLength-s.cap.insertion_length_mm);if(end>start&&Math.max(diameterAt(fill,start+s.projection),diameterAt(fill,end+s.projection))>=tubeDiameter)issues.push("Refill is wider than the tube opening")}}
@@ -180,7 +219,7 @@ function renderValidation(s,issues){
  document.querySelectorAll(".designer__field-warning").forEach(node=>node.remove());
  document.querySelectorAll('[aria-invalid="true"]').forEach(node=>node.removeAttribute("aria-invalid"));
  const summary=$("validation");
- summary.classList.toggle("is-ready",!issues.length);summary.textContent=issues.length?`${issues.length} design ${issues.length===1?"issue":"issues"} to fix. See the highlighted controls below.`:"Geometry is ready to export.";
+ summary.classList.toggle("is-ready",!issues.length);summary.textContent=issues.length?`${issues.length} design ${issues.length===1?"issue":"issues"} to fix. See the highlighted controls below.`:"";
  const shown=new Set();
  function mark(target,message){
   const element=typeof target==="string"?document.querySelector(target):target;
@@ -201,12 +240,17 @@ function renderValidation(s,issues){
   if(issue==="Choose a measured tube and matching bushing set"){mark("#tube-select",issue);mark("#bushing-filter",issue);continue}
   if(issue==="Selected hardware dimensions do not leave a body wall"){mark("#bushing-filter","Choose a bushing with outside diameters larger than the tube outside diameter.");continue}
   if(issue.startsWith("Fit sweep needs")){mark("#fit-sweep-controls",issue);continue}
+  if(issue.startsWith("Center connector")||issue.startsWith("Leave room for both connector")){
+   const target=issue.includes("bushing")?"#bushing-filter":issue.includes("bore")?"#connector-bore":issue.includes("insert is")?"#connector-insertion-diameter":issue.includes("outside")?"#connector-diameter":issue.includes("room")?"#connector-position":"#connector-controls";
+   mark(target,issue);continue;
+  }
   let match=issue.match(/^(Nose|Cap): (.+) must be positive$/);
   if(match){const keys=match[1]==="Nose"?noseKeys:capKeys,key=keys.find(item=>(names[item]||item)===match[2]);if(key)mark(match[1]==="Nose"?noseField(key):capField(key),issue);continue}
   if(issue==="Projection and clearances must be nonnegative"){
    for(const [id,value] of [["tip-projection",s.projection],["tip-clearance",s.tipClearance],["passage-clearance",s.passageClearance]])if(!Number.isFinite(value)||value<0)mark(`#${id}`,"Enter zero or a positive value.");
    continue;
   }
+  if(issue==="First bore shoulder gap must be at least 0.2 mm"){mark("#guide-gap",issue);continue}
   if(issue==="Wood body dimensions must be positive"){
    if(!(s.bodyDiameter>0))mark("#bushing-filter","Choose a measured bushing set.");
    if(!(s.bodyLength>0))mark("#body-length","Enter a positive body length.");
@@ -229,12 +273,12 @@ function renderValidation(s,issues){
   }
   if(issue==="Rear refill shoulder does not meet nose insert"){
    const shoulder=rearShoulder(s.refill,s.projection),target=shoulder.distance-s.nose.visible_length_mm;
-   mark(noseField("insertion_length_mm"),target>0?`Set insertion length to ${target.toFixed(1)} mm so the refill shoulder rests against the nose insert. Or click Fit refill shoulders (2 bores).`:`The nose extends past the refill shoulder. Shorten its visible length to less than ${shoulder.distance.toFixed(1)} mm.`);
+   mark(noseField("insertion_length_mm"),target>0?`Set insertion length to ${target.toFixed(1)} mm so the refill shoulder rests against the nose insert. Or click Seat rear shoulder (2 bores).`:`The nose extends past the refill shoulder. Shorten its visible length to less than ${shoulder.distance.toFixed(1)} mm.`);
    continue;
   }
-  if(issue==="First bore passes the first refill shoulder"){
+  if(issue==="First bore passes the selected refill section"){
    const first=profile(s.refill).find(part=>part.end_distance_mm>s.projection+0.001),shoulder=frontShoulder(s.refill,s.projection)??first.end_distance_mm-s.projection;
-   mark("#guide-end",`End this bore by ${(shoulder-0.2).toFixed(1)} mm from the nose tip. The default leaves 0.5 mm before the shoulder.`);
+   mark("#guide-end",`End this bore by ${(shoulder-0.2).toFixed(1)} mm from the nose tip. Increase the gap before this section.`);
    continue;
   }
   if(issue==="Finish the partially entered bore row"||issue==="Nose bore needs at least one segment") {mark("#bore-segments",issue==="Finish the partially entered bore row"?"Finish the partially entered nose opening.":"Add at least one nose opening.");continue}
@@ -322,9 +366,14 @@ function cutaway(s){
  const profilePath=(points,corners,radius)=>`${roundedProfile(points,corners,radius).map(([a,r],index)=>`${index?"L":"M"}${x(a)},${mid-r*scale}`).join(" ")} Z`;
  let shapes=`<line x1="25" y1="${mid}" x2="780" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
  const tubeOD=s.barrel?.tube_od_mm??8,tubeID=s.barrel?.tube_id_mm??7.4;
- for(const sign of [-1,1]){
-   shapes+=polygon([[noseEnd,sign*rad(s.bodyDiameter)],[bodyEnd,sign*rad(s.bodyRearDiameter||s.bodyDiameter)],[bodyEnd,sign*rad(tubeOD)],[noseEnd,sign*rad(tubeOD)]],"#8a5a36","#bd8a5d",.85,'data-section-kind="body" role="button" tabindex="0" aria-label="Body settings"');
-   shapes+=polygon([[noseEnd,sign*rad(tubeOD)],[bodyEnd,sign*rad(tubeOD)],[bodyEnd,sign*rad(tubeID)],[noseEnd,sign*rad(tubeID)]],"#d9b268","#f8d591",.9,'data-section-kind="body" role="button" tabindex="0" aria-label="Brass tube and body settings"');
+ const bodyODAt=at=>s.bodyDiameter+((s.bodyRearDiameter||s.bodyDiameter)-s.bodyDiameter)*(at-noseEnd)/s.bodyLength;
+ const connectorStart=s.centerConnector?noseEnd+s.centerConnector.position_mm:null,connectorEnd=s.centerConnector?connectorStart+s.centerConnector.width_mm:null;
+ for(const [start,end] of s.centerConnector?[[noseEnd,connectorStart],[connectorEnd,bodyEnd]]:[[noseEnd,bodyEnd]])for(const sign of [-1,1]){
+   shapes+=polygon([[start,sign*rad(bodyODAt(start))],[end,sign*rad(bodyODAt(end))],[end,sign*rad(tubeOD)],[start,sign*rad(tubeOD)]],"#8a5a36","#bd8a5d",.85,'data-section-kind="body" role="button" tabindex="0" aria-label="Body settings"');
+   shapes+=polygon([[start,sign*rad(tubeOD)],[end,sign*rad(tubeOD)],[end,sign*rad(tubeID)],[start,sign*rad(tubeID)]],"#d9b268","#f8d591",.9,'data-section-kind="body" role="button" tabindex="0" aria-label="Brass tube and body settings"');
+ }
+ if(s.centerConnector){const c=s.centerConnector,a=connectorStart-c.insertion_length_mm,b=connectorEnd+c.insertion_length_mm;
+  for(const sign of [-1,1])shapes+=polygon([[a,sign*rad(c.insertion_diameter_mm)],[connectorStart,sign*rad(c.insertion_diameter_mm)],[connectorStart,sign*rad(c.diameter_mm)],[connectorEnd,sign*rad(c.diameter_mm)],[connectorEnd,sign*rad(c.insertion_diameter_mm)],[b,sign*rad(c.insertion_diameter_mm)],[b,sign*(c.bore_diameter_mm?rad(c.bore_diameter_mm):0)],[a,sign*(c.bore_diameter_mm?rad(c.bore_diameter_mm):0)]],"#f2b66e","#ffdbac",.95,'data-section-kind="connector" role="button" tabindex="0" aria-label="Center connector settings"');
  }
  const noseOuterAt=distance=>distance<noseEnd?nose.tip_diameter_mm+(nose.base_diameter_mm-nose.tip_diameter_mm)*distance/noseEnd:nose.insertion_diameter_mm;
  const nosePath=profilePath([[0,0],[0,nose.tip_diameter_mm/2],[noseEnd,nose.base_diameter_mm/2],[noseEnd,nose.insertion_diameter_mm/2],[noseRear,nose.insertion_diameter_mm/2],[noseRear,0],[noseRear,-nose.insertion_diameter_mm/2],[noseEnd,-nose.insertion_diameter_mm/2],[noseEnd,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,4,6,9],nose.round_radius_mm);
@@ -368,7 +417,7 @@ function cutaway(s){
  }
  svg.innerHTML=shapes;applySelection();
  const overall=s.projection+noseEnd+s.bodyLength+cap.length_mm;
- const lengths=[["Projection",s.projection],["Nose",noseEnd],["Body",s.bodyLength],["Cap",cap.length_mm],["Overall",overall]];
+ const lengths=s.centerConnector?[["Projection",s.projection],["Nose",noseEnd],["Front body",s.centerConnector.position_mm],["Connector",s.centerConnector.width_mm],["Rear body",s.bodyLength-s.centerConnector.position_mm-s.centerConnector.width_mm],["Cap",cap.length_mm],["Overall",overall]]:[["Projection",s.projection],["Nose",noseEnd],["Body",s.bodyLength],["Cap",cap.length_mm],["Overall",overall]];
  $("cutaway-dimensions").replaceChildren(...lengths.map(([label,value])=>{const item=document.createElement("span");item.className="designer__length";item.textContent=`${label} ${Number(value.toFixed(2))} mm`;return item}));
  const fit=Number((nose.insertion_diameter_mm-tubeID).toFixed(2)),fitText=fit>0?`${fit} mm diameter interference for a press fit`:fit<0?`${-fit} mm diameter clearance`:"nominal line-to-line fit";
  $("cutaway-fit-note").textContent=`Nose insert: ${nose.insertion_diameter_mm} mm OD (${fitText}). Dashed lines mark the tube opening.`;
@@ -394,8 +443,14 @@ function partsView(s){
  $("nose-part-profile").innerHTML=noseShapes;
  $("nose-part-note").textContent=`The outside front rim and back of the tube insert are rounded with a ${nose.round_radius_mm} mm radius. The black area is the bore.`;
  const capOutline=roundedPath([[0,0],[0,cap.tip_diameter_mm/2],[cap.length_mm,cap.diameter_mm/2],[cap.length_mm,cap.insertion_diameter_mm/2],[capTotal,cap.insertion_diameter_mm/2],[capTotal,0],[capTotal,-cap.insertion_diameter_mm/2],[cap.length_mm,-cap.insertion_diameter_mm/2],[cap.length_mm,-cap.diameter_mm/2],[0,-cap.tip_diameter_mm/2]],[1,4,6,9],cap.round_radius_mm);
- $("cap-part-profile").innerHTML=`${axis}<defs><clipPath id="cap-part-clip"><path d="${capOutline}"/></clipPath></defs><path d="${capOutline}" fill="#8da9cd" stroke="#c6d8ed" stroke-width="2" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/><g clip-path="url(#cap-part-clip)"><rect x="${x(cap.length_mm)}" y="35" width="${Math.max(0,cap.insertion_length_mm*scale)}" height="220" fill="#a9a0d5" pointer-events="none"/></g><text x="${x(cap.length_mm/2)}" y="266" fill="#bccde4" font-size="13" text-anchor="middle">Exposed ${xml(cap.length_mm)} mm</text><text x="${x(cap.length_mm+cap.insertion_length_mm/2)}" y="266" fill="#d6a6f3" font-size="13" text-anchor="middle">Insert ${xml(cap.insertion_length_mm)} mm</text>`;
+ $("cap-part-profile").innerHTML=`${axis}<defs><clipPath id="cap-part-clip"><path d="${capOutline}"/></clipPath></defs><g transform="translate(420 0) scale(-1 1)"><path d="${capOutline}" fill="#8da9cd" stroke="#c6d8ed" stroke-width="2" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/><g clip-path="url(#cap-part-clip)"><rect x="${x(cap.length_mm)}" y="35" width="${Math.max(0,cap.insertion_length_mm*scale)}" height="220" fill="#a9a0d5" pointer-events="none"/></g></g><text x="105" y="266" fill="#d6a6f3" font-size="13" text-anchor="middle">Insert ${xml(cap.insertion_length_mm)} mm</text><text x="315" y="266" fill="#bccde4" font-size="13" text-anchor="middle">Exposed ${xml(cap.length_mm)} mm</text>`;
  $("cap-part-note").textContent=`The exposed end and back of the tube insert are rounded with a ${cap.round_radius_mm} mm radius.`;
+ if(s.centerConnector){
+  const c=s.centerConnector,total=c.width_mm+2*c.insertion_length_mm,k=Math.min(25,330/Math.max(total,1),170/Math.max(c.diameter_mm,1)),cx=d=>45+d*k,cy=d=>145-d*k/2;
+  const outline=`${cx(0)},${cy(c.insertion_diameter_mm)} ${cx(c.insertion_length_mm)},${cy(c.insertion_diameter_mm)} ${cx(c.insertion_length_mm)},${cy(c.diameter_mm)} ${cx(c.insertion_length_mm+c.width_mm)},${cy(c.diameter_mm)} ${cx(c.insertion_length_mm+c.width_mm)},${cy(c.insertion_diameter_mm)} ${cx(total)},${cy(c.insertion_diameter_mm)} ${cx(total)},${cy(-c.insertion_diameter_mm)} ${cx(c.insertion_length_mm+c.width_mm)},${cy(-c.insertion_diameter_mm)} ${cx(c.insertion_length_mm+c.width_mm)},${cy(-c.diameter_mm)} ${cx(c.insertion_length_mm)},${cy(-c.diameter_mm)} ${cx(c.insertion_length_mm)},${cy(-c.insertion_diameter_mm)} ${cx(0)},${cy(-c.insertion_diameter_mm)}`;
+  $("connector-part-profile").innerHTML=`<line x1="25" y1="145" x2="395" y2="145" stroke="#587391" stroke-dasharray="5 4"/><polygon points="${outline}" fill="#f2b66e" stroke="#ffdbac" stroke-width="2" data-section-kind="connector" role="button" tabindex="0" aria-label="Center connector settings"/>${c.bore_diameter_mm>0?`<rect x="${cx(0)}" y="${cy(c.bore_diameter_mm)}" width="${total*k}" height="${c.bore_diameter_mm*k}" fill="#07090f" stroke="#ffdbac" stroke-width="1" data-section-kind="connector" role="button" tabindex="0" aria-label="Center connector bore settings"/>`:""}<text x="210" y="265" fill="#f2b66e" font-size="13" text-anchor="middle">Band ${xml(c.width_mm)} mm · insert ${xml(c.insertion_length_mm)} mm each side</text>`;
+  $("connector-part-note").textContent=c.bore_diameter_mm>0?`Through bore: ${c.bore_diameter_mm} mm diameter. The inserts fit inside the two brass tubes.`:"Solid center. The inserts fit inside the two brass tubes.";
+ }
 }
 function overview(s){
  const svg=$("overview");if(!svg)return;
@@ -408,7 +463,10 @@ function overview(s){
  const p=(distance,diameter,sign)=>`${x(distance)},${mid+sign*r(diameter)}`;
  const outline=(points,corners,radius)=>`${roundedProfile(points,corners,radius).map(([distance,radial],index)=>`${index?"L":"M"}${x(distance)},${mid-radial*scale}`).join(" ")} Z`;
  let shapes=`<line x1="24" y1="${mid}" x2="776" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
- shapes+=`<polygon points="${p(noseEnd,s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyRearDiameter||s.bodyDiameter,-1)} ${p(bodyEnd,s.bodyRearDiameter||s.bodyDiameter,1)} ${p(noseEnd,s.bodyDiameter,1)}" fill="#8a5a36" stroke="#bd8a5d" data-section-kind="body" role="button" tabindex="0" aria-label="Body settings"/>`;
+ const bodyODAt=at=>s.bodyDiameter+((s.bodyRearDiameter||s.bodyDiameter)-s.bodyDiameter)*(at-noseEnd)/s.bodyLength;
+ const connectorStart=s.centerConnector?noseEnd+s.centerConnector.position_mm:null,connectorEnd=s.centerConnector?connectorStart+s.centerConnector.width_mm:null;
+ for(const [start,end] of s.centerConnector?[[noseEnd,connectorStart],[connectorEnd,bodyEnd]]:[[noseEnd,bodyEnd]])shapes+=`<polygon points="${p(start,bodyODAt(start),-1)} ${p(end,bodyODAt(end),-1)} ${p(end,bodyODAt(end),1)} ${p(start,bodyODAt(start),1)}" fill="#8a5a36" stroke="#bd8a5d" data-section-kind="body" role="button" tabindex="0" aria-label="Body settings"/>`;
+ if(s.centerConnector)shapes+=`<rect x="${x(connectorStart)}" y="${mid-r(s.centerConnector.diameter_mm)}" width="${s.centerConnector.width_mm*scale}" height="${s.centerConnector.diameter_mm*scale}" fill="#f2b66e" stroke="#ffdbac" data-section-kind="connector" role="button" tabindex="0" aria-label="Center connector settings"/>`;
  const noseOutline=outline([[0,0],[0,nose.tip_diameter_mm/2],[noseEnd,nose.base_diameter_mm/2],[noseEnd,0],[noseEnd,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,5],nose.round_radius_mm);
  shapes+=`<path d="${noseOutline}" fill="#8da9cd" stroke="#c6d8ed" data-section-kind="nose" role="button" tabindex="0" aria-label="Nose cone settings"/>`;
  const capOutline=outline([[bodyEnd,0],[bodyEnd,cap.diameter_mm/2],[capEnd,cap.tip_diameter_mm/2],[capEnd,0],[capEnd,-cap.tip_diameter_mm/2],[bodyEnd,-cap.diameter_mm/2]],[2,4],cap.round_radius_mm);
@@ -429,11 +487,22 @@ async function initThree(){try{const {THREE:T,OrbitControls}=await ensureViewerM
 function yaml(value,depth=0){const pad="  ".repeat(depth);if(Array.isArray(value))return value.map(item=>`${pad}- ${typeof item==="object"&&item!==null?"\n"+yaml(item,depth+1):JSON.stringify(item)}`).join("\n");if(value&&typeof value==="object")return Object.entries(value).map(([k,v])=>`${pad}${k}:${v&&typeof v==="object"?"\n"+yaml(v,depth+1):` ${JSON.stringify(v)}`}`).join("\n");return `${pad}${JSON.stringify(value)}`}
 function download(filename,contents){const link=document.createElement("a"),url=URL.createObjectURL(new Blob([contents],{type:"text/yaml"}));link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function githubLink(anchor,path,contents){const url=`https://github.com/jquintus/pens/new/main?filename=${encodeURIComponent(path)}&value=${encodeURIComponent(contents)}`;if(url.length<7000){anchor.href=url;anchor.removeAttribute("aria-disabled");anchor.title=""}else{anchor.removeAttribute("href");anchor.setAttribute("aria-disabled","true");anchor.title="File is too large for a prefilled URL; use Download"}}
-function configYaml(s){const copy=structuredClone(currentPen.config),first=s.nose.bore_segments[0],last=s.nose.bore_segments.at(-1);copy.id=s.designId;copy.title=s.designTitle;if(s.barrel?.tube_id&&s.barrel?.bushing_id)copy.barrel=s.barrel;else delete copy.barrel;if(s.fitSweep)copy.fit_sweep=s.fitSweep;else delete copy.fit_sweep;copy.nose_cone={cylinder_height:s.nose.insertion_length_mm,cylinder_outside_diameter:s.nose.insertion_diameter_mm,frustum_height:s.nose.visible_length_mm,frustum_top_diameter:s.nose.tip_diameter_mm,frustum_bottom_diameter:s.nose.base_diameter_mm,top_hole_diameter:first?.kind==="taper"?first.diameter_start_mm:first?.diameter_mm??s.nose.stop_diameter_mm,bottom_hole_diameter:last?.kind==="taper"?last.diameter_end_mm:last?.diameter_mm??s.nose.passage_diameter_mm,top_hole_height:first?.end_distance_mm??s.nose.stop_depth_mm};if(s.refill)copy.refill=s.refill.id;else delete copy.refill;copy.openscad={nose_cone:s.nose,end_cap:s.cap,refill_tip_projection_mm:s.projection,...(Number.isFinite(s.seatShoulderTipDistance)?{refill_seat_shoulder_mm:s.seatShoulderTipDistance}:{}),refill_tip_clearance_mm:s.tipClearance,refill_passage_clearance_mm:s.passageClearance};return yaml(copy)+"\n"}
-function scadSource(s){const fields={nose_cone:s.nose,end_cap:s.cap}, assignments=Object.entries(fields).flatMap(([section,values])=>Object.entries(values).map(([key,value])=>`${section}_${key} = ${key==="bore_segments"?JSON.stringify(value.map(seg=>seg.kind==="taper"?[seg.diameter_start_mm,seg.diameter_end_mm,seg.end_distance_mm]:[seg.diameter_mm,seg.diameter_mm,seg.end_distance_mm])):value};`));const args=Object.entries(fields).flatMap(([section,values])=>Object.keys(values).map(key=>`${section}_${key}=${section}_${key}`));return `// Self-contained OpenSCAD source. Dimensions in millimeters.\n${assignments.join("\n")}\n$fn = 128;\n\n${data.scad_module}\ndesigner_parts(${args.join(", ")});\n`}
+function configYaml(s){const copy=structuredClone(currentPen.config),first=s.nose.bore_segments[0],last=s.nose.bore_segments.at(-1);copy.id=s.designId;copy.title=s.designTitle;if(s.barrel?.tube_id&&s.barrel?.bushing_id)copy.barrel=s.barrel;else delete copy.barrel;if(s.fitSweep)copy.fit_sweep=s.fitSweep;else delete copy.fit_sweep;copy.nose_cone={cylinder_height:s.nose.insertion_length_mm,cylinder_outside_diameter:s.nose.insertion_diameter_mm,frustum_height:s.nose.visible_length_mm,frustum_top_diameter:s.nose.tip_diameter_mm,frustum_bottom_diameter:s.nose.base_diameter_mm,top_hole_diameter:first?.kind==="taper"?first.diameter_start_mm:first?.diameter_mm??s.nose.stop_diameter_mm,bottom_hole_diameter:last?.kind==="taper"?last.diameter_end_mm:last?.diameter_mm??s.nose.passage_diameter_mm,top_hole_height:first?.end_distance_mm??s.nose.stop_depth_mm};if(s.refill)copy.refill=s.refill.id;else delete copy.refill;copy.openscad={nose_cone:s.nose,end_cap:s.cap,...(s.centerConnector?{center_connector:s.centerConnector}:{}),refill_tip_projection_mm:s.projection,...(Number.isFinite(s.seatShoulderTipDistance)?{refill_seat_shoulder_mm:s.seatShoulderTipDistance}:{}),refill_tip_clearance_mm:s.tipClearance,...(Number.isFinite(s.guideTargetTipDistance)?{refill_first_bore_target_mm:s.guideTargetTipDistance}:{}),refill_first_bore_gap_mm:s.guideGap,refill_passage_clearance_mm:s.passageClearance};return yaml(copy)+"\n"}
+function scadSource(s){const fields={nose_cone:s.nose,end_cap:s.cap,...(s.centerConnector?{center_connector:s.centerConnector}:{})}, assignments=Object.entries(fields).flatMap(([section,values])=>Object.entries(values).map(([key,value])=>`${section}_${key} = ${key==="bore_segments"?JSON.stringify(value.map(seg=>seg.kind==="taper"?[seg.diameter_start_mm,seg.diameter_end_mm,seg.end_distance_mm]:[seg.diameter_mm,seg.diameter_mm,seg.end_distance_mm])):value};`)),args=Object.entries(fields).flatMap(([section,values])=>Object.keys(values).map(key=>`${section}_${key}=${section}_${key}`));if(s.centerConnector){assignments.unshift("center_connector_enabled = true;");args.unshift("center_connector_enabled=center_connector_enabled")}return `// Self-contained OpenSCAD source. Dimensions in millimeters.\n${assignments.join("\n")}\n$fn = 128;\n\n${data.scad_module}\ndesigner_parts(${args.join(", ")});\n`}
 function refillForExport(){if(!currentRefill)return null;const copy=structuredClone(currentRefill);delete copy.geometry_ready;delete copy.overall_length_mm;return copy}
-function showRefill(){const r=currentRefill;selectedSection=null;for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).value=r?.[key]||"";refillDraftError=false;renderRefillDimensions(r?.segments||[]);$("view-cartridge").href=r?`cartridges.html?id=${encodeURIComponent(r.id)}`:"cartridges.html";$("refill-info").textContent=r?`${r.format} · ${r.measurement_status} · ${r.segments?.at(-1)?.end_distance_mm??"unknown"} mm total`:"Select a refill to check its clearance and display its measured shape.";update()}
-function update(){if(!currentPen)return;syncShoulderChoices();syncShoulderSeat();const s=getState(),issues=validate(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);partsView(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
+function showRefill(){const r=currentRefill;selectedSection=null;for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).value=r?.[key]||"";refillDraftError=false;renderRefillDimensions(r?.segments||[]);$("view-cartridge").href=r?`cartridges.html?id=${encodeURIComponent(r.id)}`:"cartridges.html";update()}
+function updateConnectorUi(s){
+ $("connector-controls").hidden=!s.centerConnector;
+ $("connector-part-section").hidden=!s.centerConnector;
+ $("tube-assumption-note").textContent=s.barrel?.tube_wall_assumption_mm?`Tube ID assumes a ${s.barrel.tube_wall_assumption_mm} mm brass wall. Use the insertion fit sweep to dial in the printed parts.`:`Tube dimensions are measured. The nose, ${s.centerConnector?"center connector, and ":"and "}cap are printable.`;
+ if(!s.centerConnector)return;
+ const c=s.centerConnector,crossing=connectorRefillDiameter(s.refill,s.projection,s.nose.visible_length_mm,c.position_mm,c.width_mm,c.insertion_length_mm);
+ $("connector-bore").readOnly=!connectorBoreOverridden;
+ $("connector-bore").nextElementSibling.hidden=!connectorBoreOverridden;
+ $("connector-bore-override").textContent=connectorBoreOverridden?"Reset automatic bore":"Override automatic bore";
+ $("connector-note").textContent=crossing?`The refill crosses this connector (up to ${Number(crossing.toFixed(2))} mm diameter). The automatic bore adds 0.1 mm clearance.`:"The refill ends before this connector, so it can be solid.";
+}
+function update(){if(!currentPen)return;syncGuideTargetChoices();syncShoulderSeat();const s=getState(),issues=validate(s);updateConnectorUi(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);partsView(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
  const refill=refillForExport(),refillErrors=refillIssues(refill);$("download-refill").disabled=!!refillErrors.length;if(!refillErrors.length)githubLink($("github-refill"),`refills/${refill.id}.yml`,yaml(refill)+"\n");else{$("github-refill").removeAttribute("href");$("github-refill").setAttribute("aria-disabled","true");$("github-refill").title=refillErrors.join(" · ")}}
 const penTitleCounts=new Map();for(const pen of data.pens){const title=pen.config.title||pen.id;penTitleCounts.set(title,(penTitleCounts.get(title)||0)+1)}
 const penChoices=[{value:"new",label:"New design"},...data.pens.map(p=>{const title=p.config.title||p.id,diameter=p.config.nose_cone?.cylinder_outside_diameter;return {value:p.id,label:penTitleCounts.get(title)>1&&Number.isFinite(diameter)?`${title} · ${diameter.toFixed(2)} mm insertion`:title}})];
@@ -468,7 +537,7 @@ bindCombobox("bushing-filter","bushing-select","bushing-options",bushingChoices)
 const measuredTubes=(hardware.tubes||[]).filter(tube=>tube.id&&Number.isFinite(tube.tube_od_mm)&&Number.isFinite(tube.tube_id_mm));
 const measuredBushings=(hardware.bushings||[]).filter(bushing=>bushing.id&&Number.isFinite(bushing.front_od_mm)&&Number.isFinite(bushing.rear_od_mm));
 const displayDiameter=value=>Number(value).toFixed(1);
-function bushingLabel(bushing){const front=displayDiameter(bushing.front_od_mm),rear=displayDiameter(bushing.rear_od_mm),diameter=bushing.front_od_mm===bushing.rear_od_mm?`${front} mm OD`:`${front} mm tip OD, ${rear} mm cap OD`;return `${bushing.id} — ${bushing.label} (${diameter})`}
+function bushingLabel(bushing){const front=displayDiameter(bushing.front_od_mm),rear=displayDiameter(bushing.rear_od_mm),diameter=bushing.front_od_mm===bushing.rear_od_mm?`${front} mm OD`:`${front} mm tip OD, ${rear} mm cap OD`;return `${bushing.id} — ${bushing.label} (${diameter}${bushing.pieces_in_set?`, ${bushing.pieces_in_set}-piece`:""})`}
 function fillTubeChoices(saved){const select=$("tube-select");select.replaceChildren();for(const tube of hardware.tubes||[]){const el=document.createElement("option");el.value=tube.id||"";const usable=measuredTubes.some(item=>item.id===tube.id);el.textContent=usable?`${tube.label} (${tube.tube_od_mm} mm OD, ${tube.tube_id_mm} mm ID${tube.assumed_wall_mm?", assumed":""})`:`${tube.label} (dimensions needed)`;el.disabled=!usable;select.append(el)}if(saved&&(!saved.tube_id||!measuredTubes.some(tube=>tube.id===saved.tube_id)))option(select,"saved-tube","Legacy tube size (assumed, unverified)");if(!select.options.length)option(select,"","Hardware catalog unavailable");select.value=saved?(measuredTubes.some(tube=>tube.id===saved.tube_id)?saved.tube_id:"saved-tube"):(measuredTubes.find(tube=>tube.id==="8mm-measured")||measuredTubes[0])?.id||""}
 function fillBushingChoices(saved){const select=$("bushing-select"),tubeId=$("tube-select").value;select.replaceChildren();bushingChoices.length=0;for(const bushing of measuredBushings.filter(item=>item.tube_id===tubeId)){const label=bushingLabel(bushing);option(select,bushing.id,label);bushingChoices.push({value:bushing.id,label})}if(saved&&(!saved.bushing_id||!measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId))){const label="Legacy bushing size (assumed, unverified)";option(select,"saved-bushing",label);bushingChoices.push({value:"saved-bushing",label})}if(!select.options.length){const label="No measured bushing for this tube";option(select,"",label);bushingChoices.push({value:"",label})}select.value=saved?(measuredBushings.some(item=>item.id===saved.bushing_id&&item.tube_id===tubeId)?saved.bushing_id:"saved-bushing"):(measuredBushings.find(item=>item.id==="PK-PENXXBU"&&item.tube_id===tubeId)||measuredBushings.find(item=>item.tube_id===tubeId))?.id||"";syncCombo("bushing-filter","bushing-select",bushingChoices)}
 function barrelFromSelection(){const tube=measuredTubes.find(item=>item.id===$("tube-select").value),bushing=measuredBushings.find(item=>item.id===$("bushing-select").value);if(!tube||!bushing)return currentBarrel||null;return {tube_id:tube.id,tube_od_mm:tube.tube_od_mm,tube_id_mm:tube.tube_id_mm,...(tube.assumed_wall_mm?{tube_wall_assumption_mm:tube.assumed_wall_mm}:{}),bushing_id:bushing.id,front_od_mm:bushing.front_od_mm,rear_od_mm:bushing.rear_od_mm,length_mm:Number($("body-length").value)}}
@@ -508,8 +577,10 @@ function moveSweep(direction){const start=Number($("fit-sweep-start").value),end
 function choosePen(){
  const isNew=$("pen-select").value==="new";
  currentPen=isNew?{id:`design-${currentRefill?.id||"refill"}-${designNonce}`,config:{slicing_profiles:["0.2_fast","0.2_quality"]}}:data.pens.find(p=>p.id===$("pen-select").value);
+ if(!isNew&&currentPen?.config.refill){const savedRefill=data.refills.find(refill=>refill.id===currentPen.config.refill);if(savedRefill){currentRefill=savedRefill;$("refill-select").value=savedRefill.id;syncCombo("refill-filter","refill-select",refillChoices)}}
  const legacy=currentPen.config.nose_cone||{},override=currentPen.config.openscad||{};
  seatShoulderTipDistance=isNew?null:(Number(override.refill_seat_shoulder_mm)||null);
+ guideTargetTipDistance=isNew?null:(Number(override.refill_first_bore_target_mm)||null);
  if(isNew&&(!currentBarrel||!$("tube-select").options.length||$("tube-select").value==="saved-tube"))loadHardware(null);
  let nose,cap,fresh;
  if(isNew){fresh=newDesignGeometry(currentRefill,currentBarrel);nose=fresh.nose;cap=fresh.cap;capDiameterOverridden=false}
@@ -530,6 +601,7 @@ function choosePen(){
  projectionCustomized=!isNew&&override.refill_tip_projection_mm!==undefined;
  setNumber("tip-clearance",isNew?0.3:override.refill_tip_clearance_mm??0.3);
  setNumber("passage-clearance",isNew?0.4:override.refill_passage_clearance_mm??0.4);
+ setNumber("guide-gap",isNew?0.5:override.refill_first_bore_gap_mm??0.5);
  numericFields($("nose-fields"),noseKeys,nose,["base_diameter_mm"]);
  numericFields($("cap-fields"),capKeys,cap,[],(key,value)=>{if(key==="diameter_mm"){capDiameterOverridden=!!currentBarrel&&Math.abs(value-currentBarrel.rear_od_mm)>1e-6;updateCapOverrideUi()}});
  updateCapOverrideUi();
@@ -538,6 +610,19 @@ function choosePen(){
  if(isNew)setNumber("body-length",fresh.length);
  else if(currentPen.config.barrel?.length_mm)setNumber("body-length",currentPen.config.barrel.length_mm);
  else if(currentRefill?.overall_length_mm){const minimum=Math.ceil((currentRefill.overall_length_mm-Number($("tip-projection").value)-nose.visible_length_mm+cap.insertion_length_mm+0.1)*10)/10;if(minimum>Number($("body-length").value))setNumber("body-length",minimum)}
+ const connector=override.center_connector,bushing=measuredBushings.find(item=>item.id===currentBarrel?.bushing_id),bodyLength=Number($("body-length").value);
+ $("connector-enabled").checked=!!connector;
+ $("connector-controls").hidden=!connector;
+ $("connector-position").value=connector?.position_mm??Number((bodyLength/2-1.5).toFixed(1));
+ $("connector-width").value=connector?.width_mm??3;
+ $("connector-diameter").value=connector?.diameter_mm??Number(((bushing?.center_od_mm??Math.max(currentBarrel?.front_od_mm||0,currentBarrel?.rear_od_mm||0))+0.8).toFixed(2));
+ $("connector-insertion-length").value=connector?.insertion_length_mm??3;
+ $("connector-insertion-diameter").value=connector?.insertion_diameter_mm??currentBarrel?.tube_id_mm??7.4;
+ $("connector-bore").value=connector?.bore_diameter_mm??0;
+ for(const id of ["connector-position","connector-width","connector-diameter","connector-insertion-length","connector-insertion-diameter","connector-bore"]){const slider=$(id).nextElementSibling;if(slider?.type==="range")slider.value=$(id).value}
+ const naturalBore=connectorRefillDiameter(currentRefill,Number($("tip-projection").value),nose.visible_length_mm,Number($("connector-position").value),Number($("connector-width").value),Number($("connector-insertion-length").value));
+ connectorBoreOverridden=!!connector&&Math.abs(Number($("connector-bore").value)-(naturalBore?Number((naturalBore+0.1).toFixed(2)):0))>0.01;
+ $("connector-bore").readOnly=!connectorBoreOverridden;
  if(isNew){$("fit-sweep-start").value=currentBarrel?.tube_id_mm??7.4;$("fit-sweep-end").value=Number(((currentBarrel?.tube_id_mm??7.4)+0.05).toFixed(2));$("fit-sweep-step").value=0.01}$("fit-sweep-enabled").checked=!!currentPen.config.fit_sweep;$("fit-sweep-controls").hidden=!currentPen.config.fit_sweep;
  for(const [id,key] of [["fit-sweep-start","start_mm"],["fit-sweep-end","end_mm"],["fit-sweep-step","step_mm"]])if(currentPen.config.fit_sweep?.[key]!==undefined)$(id).value=currentPen.config.fit_sweep[key];
  showHardware();showRefill();updateSweepNavigation();
@@ -549,21 +634,39 @@ $("show-parts").addEventListener("click",()=>showDiagram("parts"));
 function focusRadius(kind){selectSection(kind,undefined,true);document.querySelector(`#${kind==="nose"?"nose":"cap"}-fields [data-key="round_radius_mm"]`)?.focus();for(const element of $("cutaway").querySelectorAll(`[data-radius-for="${kind}"]`))element.classList.add("is-active")}
 $("cutaway").addEventListener("click",event=>{const marker=event.target.closest?.("[data-radius-for]");if(!marker)return;event.stopImmediatePropagation();focusRadius(marker.dataset.radiusFor)});
 $("cutaway").addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const marker=event.target.closest?.("[data-radius-for]");if(!marker)return;event.preventDefault();event.stopImmediatePropagation();focusRadius(marker.dataset.radiusFor)});
-for(const id of ["cutaway","overview","nose-part-profile","cap-part-profile"]){$(id).addEventListener("click",event=>{const section=event.target.closest?.("[data-section-kind]");if(section)selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)});$(id).addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const section=event.target.closest?.("[data-section-kind]");if(section){event.preventDefault();selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)}})}
+for(const id of ["cutaway","overview","nose-part-profile","cap-part-profile","connector-part-profile"]){$(id).addEventListener("click",event=>{const section=event.target.closest?.("[data-section-kind]");if(section)selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)});$(id).addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const section=event.target.closest?.("[data-section-kind]");if(section){event.preventDefault();selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)}})}
 for(const id of ["segments","bore-segments"])$(id).addEventListener("click",event=>{const row=event.target.closest?.(".designer__table-row[data-section-index]");if(row)selectSection(row.dataset.sectionKind,Number(row.dataset.sectionIndex))});
 $("tube-select").addEventListener("change",()=>{fillBushingChoices(null);currentBarrel=null;applyHardware(true);if(!$("fit-sweep-enabled").checked&&currentBarrel){$("fit-sweep-start").value=currentBarrel.tube_id_mm;$("fit-sweep-end").value=Number((currentBarrel.tube_id_mm+0.05).toFixed(3));updateSweepNavigation()}});
 $("bushing-select").addEventListener("change",()=>{currentBarrel=null;applyHardware(false)});
 $("fit-body-length").addEventListener("click",()=>{const target=Number($("fit-body-length").dataset.target);if(!(target>0))return;setNumber("body-length",target);update()});
 $("cap-fields").addEventListener("click",event=>{if(event.target.id!=="fit-cap-insertion")return;const target=Number(event.target.dataset.target),input=document.querySelector('#cap-fields [data-key="insertion_length_mm"]');if(!(target>0)||!input)return;input.value=target;input.nextElementSibling.value=target;update()});
-$("seat-shoulder-select").addEventListener("change",()=>{seatShoulderTipDistance=Number($("seat-shoulder-select").value);const shoulder=rearShoulder(currentRefill,Number($("tip-projection").value)),visible=document.querySelector('#nose-fields [data-key="visible_length_mm"]');if(!noseSeatOverridden&&shoulder&&visible&&shoulder.distance<=Number(visible.value)){visible.value=Number(Math.max(0.5,shoulder.distance-2).toFixed(3));visible.nextElementSibling.value=visible.value}update()});
+$("guide-target-select").addEventListener("change",()=>{guideTargetTipDistance=Number($("guide-target-select").value);manualBore=false;guideDiameterOverride=null;guideEndOverride=null;boreHash="";update()});
 $("fit-shoulders").addEventListener("click",()=>{const s=getState(),shoulder=rearShoulder(s.refill,s.projection),target=shoulder?.distance-s.nose.visible_length_mm,input=document.querySelector('#nose-fields [data-key="insertion_length_mm"]');if(!(target>0)||!input)return;input.value=Number(target.toFixed(3));input.nextElementSibling.value=input.value;manualBore=false;boreDraftError=false;boreHash="";guideDiameterOverride=null;guideEndOverride=null;update()});
 for(const [id,max,overrideName] of [["guide-diameter",12,"diameter"],["guide-end",30,"end"]]){
  const input=$(id),slider=document.createElement("input");slider.type="range";slider.min="0.1";slider.max=String(max);slider.step="0.1";input.after(slider);
  const change=()=>{const value=Number(input.value);if(manualBore&&currentBore.length){if(overrideName==="diameter")currentBore[0]={kind:"cylinder",diameter_mm:value,end_distance_mm:currentBore[0].end_distance_mm};else currentBore[0].end_distance_mm=value;renderBore()}else if(overrideName==="diameter")guideDiameterOverride=value;else guideEndOverride=value;update()};
  input.addEventListener("input",()=>{slider.value=input.value;change()});slider.addEventListener("input",()=>{input.value=slider.value;change()});
 }
-$("reset-guide").addEventListener("click",()=>{const s=getState(),automatic=deriveBore(s.refill,s.projection,s.tipClearance,s.passageClearance,s.nose.visible_length_mm+s.nose.insertion_length_mm)?.[0];if(!automatic)return;if(manualBore&&currentBore.length){currentBore[0]=automatic;renderBore()}else{guideDiameterOverride=null;guideEndOverride=null}update()});
+$("reset-guide").addEventListener("click",()=>{manualBore=false;guideDiameterOverride=null;guideEndOverride=null;boreHash="";update()});
 $("fit-sweep-enabled").addEventListener("change",()=>update());
 for(const id of ["fit-sweep-start","fit-sweep-end","fit-sweep-step"])$(id).addEventListener("input",update);
 $("fit-sweep-prev").addEventListener("click",()=>moveSweep(-1));$("fit-sweep-next").addEventListener("click",()=>moveSweep(1));
-$("cutaway-zoom").addEventListener("input",()=>{$("cutaway-zoom-value").textContent=`${$("cutaway-zoom").value}×`;update()});$("pen-select").addEventListener("change",choosePen);$("refill-select").addEventListener("change",()=>{currentRefill=$("refill-select").value==="new"?{id:"",brand:"",model:"",format:"",measurement_status:"incomplete",segments:[],geometry_ready:false}:data.refills.find(r=>r.id===$("refill-select").value);projectionCustomized=false;if($("pen-select").value==="new")choosePen();else{setProjectionDefault(currentRefill);showRefill()}});for(const [id,max,step] of [["body-length",200,.5],["tip-projection",15,.1],["tip-clearance",3,.05],["passage-clearance",3,.05]])attachSlider(id,max,step);for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).addEventListener("input",()=>{if(!currentRefill)currentRefill={id:"",brand:"",model:"",format:"",measurement_status:"incomplete",segments:[]};currentRefill[key]=$(id).value;currentRefill.geometry_ready=currentRefill.measurement_status!=="incomplete"&&!refillIssues(currentRefill).length;update()});$("customize-bore").addEventListener("click",()=>{manualBore=true;renderBore();update()});$("reset-bore").addEventListener("click",()=>{manualBore=false;boreDraftError=false;boreHash="";guideDiameterOverride=null;guideEndOverride=null;update()});$("download-config").addEventListener("click",()=>download(`configurations-${getState().designId}.yml`,configYaml(getState())));$("download-scad").addEventListener("click",()=>download(`${getState().designId}.scad`,scadSource(getState())));$("download-refill").addEventListener("click",()=>{const r=refillForExport();if(r)download(`refills-${r.id}.yml`,yaml(r)+"\n")});$("refill-select").value=(data.refills.some(r=>r.id===initialRefill)?initialRefill:data.refills.find(r=>r.geometry_ready)?.id)||"";currentRefill=data.refills.find(r=>r.id===$("refill-select").value);syncCombo("refill-filter","refill-select",refillChoices);$("design-title").addEventListener("input",update);choosePen();
+$("connector-enabled").addEventListener("change",update);
+for(const [id,max,step] of [["connector-position",200,.5],["connector-width",20,.1],["connector-diameter",30,.1],["connector-insertion-length",20,.1],["connector-insertion-diameter",20,.01],["connector-bore",20,.1]])attachSlider(id,max,step);
+$("connector-bore").nextElementSibling.hidden=true;
+$("connector-bore-override").addEventListener("click",()=>{connectorBoreOverridden=!connectorBoreOverridden;update();if(connectorBoreOverridden)$("connector-bore").focus()});
+$("cutaway-zoom").addEventListener("input",()=>{$("cutaway-zoom-value").textContent=`${$("cutaway-zoom").value}×`;update()});$("pen-select").addEventListener("change",choosePen);$("refill-select").addEventListener("change",()=>{currentRefill=$("refill-select").value==="new"?{id:"",brand:"",model:"",format:"",measurement_status:"incomplete",segments:[],geometry_ready:false}:data.refills.find(r=>r.id===$("refill-select").value);projectionCustomized=false;if($("pen-select").value==="new")choosePen();else{setProjectionDefault(currentRefill);showRefill()}});for(const [id,max,step] of [["body-length",200,.5],["tip-projection",15,.1],["tip-clearance",3,.05],["guide-gap",3,.1],["passage-clearance",3,.05]])attachSlider(id,max,step);for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).addEventListener("input",()=>{if(!currentRefill)currentRefill={id:"",brand:"",model:"",format:"",measurement_status:"incomplete",segments:[]};currentRefill[key]=$(id).value;currentRefill.geometry_ready=currentRefill.measurement_status!=="incomplete"&&!refillIssues(currentRefill).length;update()});$("customize-bore").addEventListener("click",()=>{manualBore=true;renderBore();update()});$("reset-bore").addEventListener("click",()=>{manualBore=false;boreDraftError=false;boreHash="";guideDiameterOverride=null;guideEndOverride=null;update()});$("download-config").addEventListener("click",()=>download(`configurations-${getState().designId}.yml`,configYaml(getState())));$("download-scad").addEventListener("click",()=>download(`${getState().designId}.scad`,scadSource(getState())));$("download-refill").addEventListener("click",()=>{const r=refillForExport();if(r)download(`refills-${r.id}.yml`,yaml(r)+"\n")});$("refill-select").value=(data.refills.some(r=>r.id===initialRefill)?initialRefill:data.refills.find(r=>r.geometry_ready)?.id)||"";currentRefill=data.refills.find(r=>r.id===$("refill-select").value);syncCombo("refill-filter","refill-select",refillChoices);$("design-title").addEventListener("input",update);choosePen();
+for(const [id,getDefault] of [
+ ["tip-projection",()=>currentRefill?.segments?.[0]?.end_distance_mm??0],
+ ["tip-clearance",()=>0.3],
+ ["guide-gap",()=>0.5],
+ ["passage-clearance",()=>0.4],
+ ["fit-sweep-start",()=>currentBarrel?.tube_id_mm??7.4],
+ ["fit-sweep-end",()=>Number(((currentBarrel?.tube_id_mm??7.4)+0.05).toFixed(2))],
+ ["fit-sweep-step",()=>0.01],
+ ["connector-position",()=>Number(((Number($("body-length").value)-Number($("connector-width").value))/2).toFixed(1))],
+ ["connector-width",()=>3],
+ ["connector-diameter",()=>Number(((measuredBushings.find(item=>item.id===currentBarrel?.bushing_id)?.center_od_mm??Math.max(currentBarrel?.front_od_mm||0,currentBarrel?.rear_od_mm||0))+0.8).toFixed(2))],
+ ["connector-insertion-length",()=>3],
+ ["connector-insertion-diameter",()=>currentBarrel?.tube_id_mm??7.4]
+])addResetButton(id,getDefault);

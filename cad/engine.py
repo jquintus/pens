@@ -91,4 +91,24 @@ def build(config):
 
     result = nose_cone.union(end_cap)
 
+    # A center connector joins two separate brass tubes. Keep it spatially
+    # separated from the nose and cap so STEP and STL retain three parts.
+    connector = (config.get("openscad") or {}).get("center_connector")
+    if connector is not None:
+        insert_length = float(connector["insertion_length_mm"])
+        insert_radius = float(connector["insertion_diameter_mm"]) / 2
+        width = float(connector["width_mm"])
+        band_radius = float(connector["diameter_mm"]) / 2
+        bore_radius = float(connector["bore_diameter_mm"]) / 2
+        center = (
+            origin()
+            .circle(insert_radius).extrude(insert_length)
+            .faces(">Z").workplane().circle(band_radius).extrude(width)
+            .faces(">Z").workplane().circle(insert_radius).extrude(insert_length)
+        )
+        if bore_radius > 0:
+            cut = origin().circle(bore_radius).extrude(2 * insert_length + width)
+            center = center.cut(cut)
+        result = result.union(center.translate((40, 0, 0)))
+
     return result

@@ -17,6 +17,7 @@ from config_utils import (
     load_config,
     output_stem,
 )
+from build_openscad import designer_parameters
 
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -76,6 +77,8 @@ def build_pen(config_path: Path):
     config = load_config(config_path)
     # Validate pen config
     get_nose_cone(config)
+    if (config.get("openscad") or {}).get("center_connector") is not None:
+        designer_parameters(config)
     result = build_model(config)
     return result, config
 
@@ -127,6 +130,8 @@ def build_all_in_dir(directory: Path, build_func, pattern="*.yml"):
                     if is_base_fit_variant(config, diameter):
                         continue
                     variant = fit_variant_config(config, diameter)
+                    if (variant.get("openscad") or {}).get("center_connector") is not None:
+                        designer_parameters(variant)
                     variant_result = build_model(variant)
                     variant_stem = fit_variant_stem(path, config, diameter)
                     variant_step = OUTPUT_DIR / f"{variant_stem}.step"

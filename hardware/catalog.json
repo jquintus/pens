@@ -40,6 +40,8 @@
       "tube_id": "8mm-measured",
       "front_od_mm": 10.795,
       "rear_od_mm": 10.795,
+      "center_od_mm": 10.795,
+      "pieces_in_set": 3,
       "source_url": "https://www.pennstateind.com/store/PK-PENXXBU.html",
       "book_page": 192
     },
@@ -76,6 +78,7 @@
       "tube_id": "7mm",
       "front_od_mm": 8.4582,
       "rear_od_mm": 8.4582,
+      "pieces_in_set": 3,
       "source_url": "https://www.pennstateind.com/store/PKM-BUSH3.html",
       "book_page": 166
     },
@@ -103,6 +106,7 @@
       "tube_id": "10mm",
       "front_od_mm": 11.43,
       "rear_od_mm": 11.43,
+      "pieces_in_set": 3,
       "source_url": "https://www.pennstateind.com/store/PK10-BUSH3.html",
       "book_page": 20
     }

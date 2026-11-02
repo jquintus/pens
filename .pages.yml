@@ -120,7 +120,13 @@ content:
             label: Refill shoulder seated against nose, distance from writing tip (mm)
           - name: refill_tip_clearance_mm
             type: number
-            label: Added diameter clearance at tip bore
+            label: Added diameter clearance in first bore
+          - name: refill_first_bore_target_mm
+            type: number
+            label: Refill section where first bore stops (mm from writing tip)
+          - name: refill_first_bore_gap_mm
+            type: number
+            label: First bore gap before selected section (mm)
           - name: refill_passage_clearance_mm
             type: number
             label: Added diameter clearance in passage
@@ -173,6 +179,28 @@ content:
                 type: number
               - name: round_radius_mm
                 type: number
+          - name: center_connector
+            type: object
+            label: Optional center connector
+            fields:
+              - name: position_mm
+                type: number
+                label: Front face from body front (mm)
+              - name: width_mm
+                type: number
+                label: Visible width (mm)
+              - name: diameter_mm
+                type: number
+                label: Outside diameter (mm)
+              - name: insertion_length_mm
+                type: number
+                label: Insert length on each side (mm)
+              - name: insertion_diameter_mm
+                type: number
+                label: Insert outside diameter (mm)
+              - name: bore_diameter_mm
+                type: number
+                label: Through bore diameter (mm; zero means solid)
       - name: slicing_profiles
         label: Slicing Profiles
         type: select

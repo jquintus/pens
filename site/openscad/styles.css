@@ -49,7 +49,7 @@
 .designer input[aria-invalid="true"],.designer select[aria-invalid="true"] {border-color:#f7ad88;box-shadow:0 0 0 1px rgba(247,173,136,.3)}
 .designer__table-row .designer__field-error {grid-column:1/-1;margin:.15rem 0 .4rem}
 
-#nose-fields.is-selected,#body-fields.is-selected,#cap-fields.is-selected {outline:2px solid var(--accent);outline-offset:5px;border-radius:6px;background:rgba(255,189,102,.08)}
+#nose-fields.is-selected,#body-fields.is-selected,#cap-fields.is-selected,#panel-connector.is-selected {outline:2px solid var(--accent);outline-offset:5px;border-radius:6px;background:rgba(255,189,102,.08)}
 
 /* Compact designer workspace */
 .designer {max-width:1500px;padding:1rem clamp(1rem,3vw,2.5rem) 3rem}
@@ -74,9 +74,9 @@
 #overview {min-height:0}
 .designer__lengths {gap:.25rem;margin:.4rem 0 0}
 .designer__length {padding:.2rem .35rem;font-size:.69rem}
-.designer__controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"nose cap" "fit body";gap:.5rem;background:transparent;border:0;padding:0}
+.designer__controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"nose cap" "fit body" "connector connector";gap:.5rem;background:transparent;border:0;padding:0}
 .designer__control-card {min-width:0;border:1px solid var(--stroke);border-radius:12px;background:var(--bg1);padding:.65rem .75rem}
-#panel-nose {grid-area:nose}#panel-cap {grid-area:cap}#panel-fit {grid-area:fit}#panel-body {grid-area:body}
+#panel-nose {grid-area:nose}#panel-cap {grid-area:cap}#panel-fit {grid-area:fit}#panel-body {grid-area:body}#panel-connector {grid-area:connector}
 .designer__control-card .designer__fields {gap:0 .4rem}
 .designer__control-card label {margin:.3rem 0;font-size:.72rem}
 .designer__control-card input[type="number"] {padding:.35rem .45rem;margin-top:.18rem}
@@ -91,7 +91,7 @@
 .designer__results {flex:0 0 35%}.designer__output {flex:1}
 .designer__output .designer__actions {margin-top:.55rem}
 @media(max-width:1050px){.designer__setup{grid-template-columns:repeat(2,minmax(0,1fr))}.designer__setup-meta,.designer__setup .designer__validation{grid-column:auto}.designer__workspace{grid-template-columns:1fr}.designer__controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.designer__setup{grid-template-columns:1fr}.designer__setup-meta,.designer__setup .designer__validation{grid-column:1}.designer__controls{grid-template-columns:1fr;grid-template-areas:"nose" "fit" "body" "cap"}.designer__footer{display:block}.designer__results{margin-bottom:.8rem}}
+@media(max-width:650px){.designer__setup{grid-template-columns:1fr}.designer__setup-meta,.designer__setup .designer__validation{grid-column:1}.designer__controls{grid-template-columns:1fr;grid-template-areas:"nose" "fit" "body" "cap" "connector"}.designer__footer{display:block}.designer__results{margin-bottom:.8rem}}
 .designer__controls,.designer__output {grid-area:auto}
 .designer__inline-dimensions {margin-top:.6rem;border-top:1px solid var(--stroke);padding-top:.45rem}
 .designer__inline-dimensions h3 {font-size:.85rem;margin:0;color:var(--accent)}
@@ -141,6 +141,12 @@
 @media(max-width:1050px){.designer__setup{grid-template-columns:repeat(2,minmax(0,1fr))}.designer__setup-meta,.designer__setup .designer__validation{grid-column:auto;grid-row:auto}}
 @media(max-width:650px){.designer__setup{grid-template-columns:1fr}.designer__setup-meta,.designer__setup .designer__validation{grid-column:1;grid-row:auto}}
 .designer__validation.is-ready {color:#72d9c7;border-color:rgba(114,217,199,.45);background:rgba(114,217,199,.08)}
+.designer__validation:empty {display:none}
+.designer label.has-reset {position:relative}
+.designer .designer__reset-value {position:absolute;top:0;right:0;border:0;background:var(--bg1);color:var(--accent);font:inherit;font-size:.68rem;line-height:1.2;padding:0 0 0 .2rem;cursor:pointer;opacity:0}
+.designer label.has-reset:hover .designer__reset-value,.designer label.has-reset:focus-within .designer__reset-value {opacity:1}
+.designer .designer__reset-value:hover,.designer .designer__reset-value:focus-visible {text-decoration:underline;opacity:1}
+@media(hover:none){.designer .designer__reset-value{opacity:1}}
 .designer__select-heading {display:flex;align-items:baseline;justify-content:space-between;gap:.5rem}
 .designer__setup .designer__select-group select {margin-top:.25rem}
 #bushing-source {font-size:.7rem;white-space:nowrap}
@@ -156,6 +162,10 @@
 .designer__parts-grid svg {display:block;width:100%;height:auto;background:#07090f;border:1px solid var(--stroke);border-radius:10px}
 .designer__parts-grid p {margin:.35rem 0;color:var(--muted);font-size:.7rem;line-height:1.35}
 #nose-part-profile [data-section-kind],#cap-part-profile [data-section-kind] {cursor:pointer}
+#connector-part-profile [data-section-kind] {cursor:pointer}
 #nose-part-profile [data-section-kind].is-selected,#cap-part-profile [data-section-kind].is-selected {stroke:#fff;stroke-width:3}
+#connector-part-profile [data-section-kind].is-selected {stroke:#fff;stroke-width:3}
+#panel-connector .designer__fields {grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:650px){#panel-connector .designer__fields {grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1050px){.designer__setup>.designer__sweep-toggle{grid-column:auto;grid-row:auto}.designer__setup>#fit-sweep-controls{grid-row:auto;grid-template-columns:1fr}}
 @media(max-width:650px){.designer__setup>.designer__sweep-toggle{grid-column:1}.designer__setup>#fit-sweep-controls .designer__fields{grid-template-columns:1fr}.designer__parts-grid{grid-template-columns:1fr}}

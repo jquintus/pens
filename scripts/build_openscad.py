@@ -24,6 +24,9 @@ DESIGNER_NOSE_KEYS = ('visible_length_mm', 'insertion_length_mm', 'insertion_dia
                       'stop_diameter_mm', 'stop_depth_mm', 'round_radius_mm')
 DESIGNER_CAP_KEYS = ('length_mm', 'diameter_mm', 'tip_diameter_mm',
                      'insertion_length_mm', 'insertion_diameter_mm', 'round_radius_mm')
+DESIGNER_CONNECTOR_KEYS = ('position_mm', 'width_mm', 'diameter_mm',
+                           'insertion_length_mm', 'insertion_diameter_mm',
+                           'bore_diameter_mm')
 
 
 def configurations():
@@ -189,6 +192,47 @@ def designer_parameters(config):
             dimensions['visible_length_mm' if section == 'nose_cone' else 'length_mm'] / 2,
         ):
             raise ValueError(f'{section} round radius is too large for the profile')
+    connector = raw.get('center_connector')
+    if connector is not None:
+        if not isinstance(connector, dict) or set(connector) != set(DESIGNER_CONNECTOR_KEYS):
+            raise ValueError('openscad.center_connector must provide position, width, '
+                             'diameter, insertion length, insertion diameter, and bore diameter')
+        normalized = {}
+        for key in DESIGNER_CONNECTOR_KEYS:
+            value = connector[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f'openscad.center_connector.{key} must be numeric')
+            value = float(value)
+            if not math.isfinite(value) or value < 0 or (value == 0 and key != 'bore_diameter_mm'):
+                raise ValueError(f'openscad.center_connector.{key} must be positive and finite')
+            normalized[key] = value
+        if normalized['diameter_mm'] <= normalized['insertion_diameter_mm']:
+            raise ValueError('Center connector band must be wider than its tube inserts')
+        if normalized['bore_diameter_mm'] > normalized['insertion_diameter_mm'] - 1.2 + 1e-6:
+            raise ValueError('Center connector bore needs at least 0.6 mm of wall')
+        barrel = config.get('barrel') or {}
+        if isinstance(barrel, dict):
+            bushing_id = barrel.get('bushing_id')
+            catalog_path = REPO_ROOT / 'hardware' / 'catalog.json'
+            bushings = json.loads(catalog_path.read_text())['bushings']
+            bushing = next((item for item in bushings if item.get('id') == bushing_id), None)
+            if not bushing or bushing.get('pieces_in_set') != 3:
+                raise ValueError('Center connector needs a three-piece bushing set')
+            tube_od = barrel.get('tube_od_mm')
+            tube_id = barrel.get('tube_id_mm')
+            body_length = barrel.get('length_mm')
+            if tube_od is not None and normalized['diameter_mm'] <= float(tube_od):
+                raise ValueError('Center connector band must be wider than the brass tube')
+            if tube_id is not None and normalized['insertion_diameter_mm'] > float(tube_id) + 0.15:
+                raise ValueError('Center connector tube inserts exceed the brass tube opening')
+            if body_length is not None:
+                front = normalized['position_mm']
+                rear = float(body_length) - front - normalized['width_mm']
+                if front < nose['insertion_length_mm'] + normalized['insertion_length_mm']:
+                    raise ValueError('Front barrel is too short for the nose and connector inserts')
+                if rear < cap['insertion_length_mm'] + normalized['insertion_length_mm']:
+                    raise ValueError('Rear barrel is too short for the cap and connector inserts')
+        result['center_connector'] = {'enabled': True, **normalized}
     return result
 
 

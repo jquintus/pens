@@ -155,6 +155,7 @@ class OpenSCADBuildTests(unittest.TestCase):
             self.skipTest('OpenSCAD is not installed')
         path, _ = next(configurations())
         config = load_config(path)
+        total = 15 + config['nose_cone']['cylinder_height']
         config['openscad'] = {'nose_cone': {'visible_length_mm': 15,
                                            'bore_segments': [
                                                {'kind': 'cylinder', 'diameter_mm': 2.5,
@@ -162,7 +163,7 @@ class OpenSCADBuildTests(unittest.TestCase):
                                                {'kind': 'taper', 'diameter_start_mm': 2.5,
                                                 'diameter_end_mm': 4.2, 'end_distance_mm': 9},
                                                {'kind': 'cylinder', 'diameter_mm': 4.2,
-                                                'end_distance_mm': 20.9},
+                                               'end_distance_mm': total},
                                            ]},
                               'end_cap': {'length_mm': 4}}
         with tempfile.TemporaryDirectory() as folder:
@@ -175,19 +176,64 @@ class OpenSCADBuildTests(unittest.TestCase):
             mesh = trimesh.load(stl, force='mesh')
             self.assertTrue(mesh.is_watertight)
             self.assertEqual(len(mesh.split(only_watertight=False)), 2)
-            self.assertAlmostEqual(mesh.extents[2], 20.9, delta=0.02)
+            self.assertAlmostEqual(mesh.extents[2], total, delta=0.02)
+
+    def test_optional_center_connector_prints_as_third_part(self):
+        executable = shutil.which('openscad')
+        if not executable:
+            self.skipTest('OpenSCAD is not installed')
+        config = load_config(ROOT / 'configurations' / 'design-pilot-bxs-v5rt-mach-3.yml')
+        config['openscad']['center_connector'] = {
+            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 11.5,
+            'insertion_length_mm': 3, 'insertion_diameter_mm': 7.4,
+            'bore_diameter_mm': 6.2,
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'connector.scad'
+            stl = Path(folder) / 'connector.stl'
+            for bore in (6.2, 0):
+                with self.subTest(bore=bore):
+                    config['openscad']['center_connector']['bore_diameter_mm'] = bore
+                    source.write_text(source_text(config, 'pen'))
+                    process = subprocess.run([executable, '-o', str(stl), str(source)],
+                                             capture_output=True, text=True)
+                    self.assertEqual(process.returncode, 0, process.stderr)
+                    mesh = trimesh.load(stl, force='mesh')
+                    self.assertTrue(mesh.is_watertight)
+                    self.assertEqual(len(mesh.split(only_watertight=False)), 3)
+
+    def test_center_connector_rejects_unprintable_or_overlapping_dimensions(self):
+        config = load_config(ROOT / 'configurations' / 'design-pilot-bxs-v5rt-mach-3.yml')
+        config['openscad']['center_connector'] = {
+            'position_mm': 50, 'width_mm': 3, 'diameter_mm': 11.5,
+            'insertion_length_mm': 3, 'insertion_diameter_mm': 7.4,
+            'bore_diameter_mm': 6.2,
+        }
+        self.assertIn('center_connector_enabled = true;', source_text(config, 'pen'))
+        for key, value in [('position_mm', 5), ('width_mm', 100),
+                           ('diameter_mm', 7), ('insertion_diameter_mm', 8),
+                           ('bore_diameter_mm', 7), ('width_mm', float('nan'))]:
+            bad = copy.deepcopy(config)
+            bad['openscad']['center_connector'][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                designer_parameters(bad)
+        bad = copy.deepcopy(config)
+        bad['barrel']['bushing_id'] = 'PKCP2400BU'
+        with self.assertRaisesRegex(ValueError, 'three-piece bushing'):
+            designer_parameters(bad)
 
     def test_segmented_bore_uses_tip_referenced_ends(self):
         path, _ = next(configurations())
         config = load_config(path)
+        total = config['nose_cone']['frustum_height'] + config['nose_cone']['cylinder_height']
         config['openscad'] = {'nose_cone': {'bore_segments': [
             {'kind': 'cylinder', 'diameter_mm': 2.5, 'end_distance_mm': 4},
             {'kind': 'taper', 'diameter_start_mm': 2.5,
              'diameter_end_mm': 4.2, 'end_distance_mm': 9},
-            {'kind': 'cylinder', 'diameter_mm': 4.2, 'end_distance_mm': 16.9},
+            {'kind': 'cylinder', 'diameter_mm': 4.2, 'end_distance_mm': total},
         ]}}
         normalized = designer_parameters(config)['nose_cone']['bore_segments']
-        self.assertEqual(normalized, [[2.5, 2.5, 4], [2.5, 4.2, 9], [4.2, 4.2, 16.9]])
+        self.assertEqual(normalized, [[2.5, 2.5, 4], [2.5, 4.2, 9], [4.2, 4.2, total]])
         self.assertIn('nose_cone_bore_segments = [[2.5, 2.5, 4.0],', source_text(config, 'pen'))
         for edit in (
             lambda parts: parts[1].update(end_distance_mm=3),
