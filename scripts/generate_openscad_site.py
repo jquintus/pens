@@ -219,7 +219,7 @@ def main():
     for path, is_pen in configurations():
         if is_pen:
             config = load_config(path)
-            pens.append({"id": config.get("id", path.stem), "config": config})
+            pens.append({"id": config.get("id", path.stem), "slug": path.stem, "config": config})
     hardware_path = REPO_ROOT / "hardware" / "catalog.json"
     hardware = json.loads(hardware_path.read_text(encoding="utf-8")) if hardware_path.is_file() else {"tubes": [], "bushings": []}
     (GALLERY_DIR / "designer-data.json").write_text(

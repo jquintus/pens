@@ -283,6 +283,19 @@ function drawProfile(segments, target = "profile") {
 function renderDetail() {
   $("detail-title").textContent = catalogLabel(draft);
   $("detail-status").textContent = `${draft.measurement_status} · ${draft.format}`;
+  const savedDesigns = $("saved-designs");
+  savedDesigns.replaceChildren();
+  for (const pen of data.pens.filter(pen => pen.config?.refill === draft.id)) {
+    const name = pen.config.title || pen.id;
+    const edit = document.createElement("a");
+    edit.href = `designer.html?refill=${encodeURIComponent(draft.id)}&design=${encodeURIComponent(pen.id)}`;
+    edit.textContent = `Open ${name} in designer`;
+    const gallery = document.createElement("a");
+    gallery.href = `pens/${encodeURIComponent(pen.slug || pen.id)}.html`;
+    gallery.textContent = `${name} files and photos`;
+    savedDesigns.append(edit, gallery);
+  }
+  $("saved-designs-section").hidden = !savedDesigns.childElementCount;
   const metadata = $("detail-metadata");
   metadata.replaceChildren();
   const facts = [

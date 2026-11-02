@@ -1,207 +1,150 @@
 {
   "pens": [
     {
-      "id": "pilot_precise_v5rt_60",
+      "id": "design-pilot-bxs-v5rt-mach-3",
+      "slug": "design-pilot-bxs-v5rt-mach-3",
       "config": {
-        "id": "pilot_precise_v5rt_60",
-        "title": "Pilot Precise V5RT",
+        "id": "design-pilot-bxs-v5rt-mach-3",
+        "title": "V5RT - Mach 3 (Nov 2026)",
         "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.6,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
+          "cylinder_height": 5.6,
+          "cylinder_outside_diameter": 7.4,
+          "frustum_height": 12,
+          "frustum_top_diameter": 4.3,
+          "frustum_bottom_diameter": 10.795,
           "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
+          "bottom_hole_diameter": 5.2,
+          "top_hole_height": 8.6
+        },
+        "fit_sweep": {
+          "target": "nose_insertion_diameter_mm",
+          "start_mm": 7.4,
+          "end_mm": 7.5,
+          "step_mm": 0.01
+        },
+        "barrel": {
+          "tube_id": "8mm-measured",
+          "tube_od_mm": 8,
+          "tube_id_mm": 7.4,
+          "bushing_id": "PK-PENXXBU",
+          "front_od_mm": 10.795,
+          "rear_od_mm": 10.795,
+          "length_mm": 106.3
+        },
+        "refill": "pilot-bxs-v5rt",
+        "openscad": {
+          "refill_tip_projection_mm": 2.9,
+          "refill_seat_shoulder_mm": 20.5,
+          "refill_tip_clearance_mm": 2.65,
+          "refill_passage_clearance_mm": 0.7,
+          "nose_cone": {
+            "visible_length_mm": 12,
+            "insertion_length_mm": 5.6,
+            "insertion_diameter_mm": 7.4,
+            "base_diameter_mm": 10.795,
+            "tip_diameter_mm": 4.3,
+            "round_radius_mm": 0.3,
+            "bore_segments": [
+              {
+                "kind": "cylinder",
+                "diameter_mm": 3,
+                "end_distance_mm": 8.6
+              },
+              {
+                "kind": "cylinder",
+                "diameter_mm": 5.2,
+                "end_distance_mm": 17.6
+              }
+            ]
+          },
+          "end_cap": {
+            "length_mm": 9.4,
+            "diameter_mm": 10.795,
+            "tip_diameter_mm": 9.2,
+            "insertion_length_mm": 11.1,
+            "insertion_diameter_mm": 7.4,
+            "round_radius_mm": 2
+          }
         },
         "slicing_profiles": [
           "0.2_fast",
           "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
         ]
       }
     },
     {
-      "id": "pilot_precise_v5rt_63",
+      "id": "design-pilot-bxs-v5rt-mvyb6ikr",
+      "slug": "design-pilot-bxs-v5rt-mvyb6ikr",
       "config": {
-        "id": "pilot_precise_v5rt_63",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.63,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
-        },
         "slicing_profiles": [
           "0.2_fast",
           "0.2_quality"
         ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt_65",
-      "config": {
-        "id": "pilot_precise_v5rt_65",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.65,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
+        "id": "design-pilot-bxs-v5rt-mvyb6ikr",
+        "title": "V5RT - Mach 2 (Nov 2026)",
+        "barrel": {
+          "tube_id": "8mm-measured",
+          "tube_od_mm": 8,
+          "tube_id_mm": 7.4,
+          "bushing_id": "PK-PENXXBU",
+          "front_od_mm": 10.795,
+          "rear_od_mm": 10.795,
+          "length_mm": 101
         },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt_68",
-      "config": {
-        "id": "pilot_precise_v5rt_68",
-        "title": "Pilot Precise V5RT",
         "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.68,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
+          "cylinder_height": 4.9,
+          "cylinder_outside_diameter": 7.4,
+          "frustum_height": 12,
+          "frustum_top_diameter": 4.2,
+          "frustum_bottom_diameter": 10.795,
+          "top_hole_diameter": 2.7,
           "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
+          "top_hole_height": 8.9
         },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt_70",
-      "config": {
-        "id": "pilot_precise_v5rt_70",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.7,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
-        },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt_73",
-      "config": {
-        "id": "pilot_precise_v5rt_73",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.73,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
-        },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt_78",
-      "config": {
-        "id": "pilot_precise_v5rt_78",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.78,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
-        },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
-      }
-    },
-    {
-      "id": "pilot_precise_v5rt",
-      "config": {
-        "id": "pilot_precise_v5rt",
-        "title": "Pilot Precise V5RT",
-        "nose_cone": {
-          "cylinder_height": 5.9,
-          "cylinder_outside_diameter": 7.57,
-          "frustum_height": 11,
-          "frustum_top_diameter": 5,
-          "frustum_bottom_diameter": 10.2,
-          "top_hole_diameter": 3,
-          "bottom_hole_diameter": 4.9,
-          "top_hole_height": 7
-        },
-        "slicing_profiles": [
-          "0.2_fast",
-          "0.2_quality"
-        ],
-        "gallery": [
-          "/assets/1000012828.jpg",
-          "/assets/1000012850.jpg"
-        ]
+        "refill": "pilot-bxs-v5rt",
+        "openscad": {
+          "nose_cone": {
+            "visible_length_mm": 12,
+            "insertion_length_mm": 4.9,
+            "insertion_diameter_mm": 7.4,
+            "base_diameter_mm": 10.795,
+            "tip_diameter_mm": 4.2,
+            "round_radius_mm": 0.3,
+            "bore_segments": [
+              {
+                "kind": "cylinder",
+                "diameter_mm": 2.7,
+                "end_distance_mm": 8.9
+              },
+              {
+                "kind": "cylinder",
+                "diameter_mm": 3.7,
+                "end_distance_mm": 12.7
+              },
+              {
+                "kind": "cylinder",
+                "diameter_mm": 4.9,
+                "end_distance_mm": 16.9
+              }
+            ]
+          },
+          "end_cap": {
+            "length_mm": 9.1,
+            "diameter_mm": 10.795,
+            "tip_diameter_mm": 9.2,
+            "insertion_length_mm": 5.9,
+            "insertion_diameter_mm": 7.4,
+            "round_radius_mm": 1.3
+          },
+          "refill_tip_projection_mm": 2.9,
+          "refill_tip_clearance_mm": 0.3,
+          "refill_passage_clearance_mm": 0.4
+        }
       }
     },
     {
       "id": "schmidt-888",
+      "slug": "schmidt-888",
       "config": {
         "id": "schmidt-888",
         "title": "Schmidt 888",

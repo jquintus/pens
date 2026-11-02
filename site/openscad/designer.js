@@ -7,15 +7,17 @@ const defaults = {nose_cone:{visible_length_mm:11,insertion_length_mm:5.9,insert
 const $ = id => document.getElementById(id);
 const data = await fetch(`designer-data.json?v=${Date.now()}`).then(r => {if (!r.ok) throw Error("Catalog failed to load");return r.json()});
 const hardware=data.hardware||{tubes:[],bushings:[]};
+document.querySelector(".designer__setup").append(document.querySelector(".designer__sweep-toggle"),$("fit-sweep-controls"));
 const REFILL_COLORS=["#ffbd66","#72d9c7","#d6a6f3","#f092a4","#a9c7ff"];
 const BORE_COLORS=["#8da9cd","#78b7b1","#a9a0d5","#8da9cd"];
 let initialRefill = new URLSearchParams(location.search).get("refill");
+const initialDesign = new URLSearchParams(location.search).get("design");
 let currentPen, currentRefill, currentBarrel, three, baseNose, currentBore=[], manualBore=false, boreHash="", refillDraftError=false, boreDraftError=false, selectedSection=null, projectionCustomized=false, capDiameterOverridden=false, noseSeatOverridden=false, seatShoulderTipDistance=null, lastNoseTotal=0, guideDiameterOverride=null, guideEndOverride=null;
 function option(select,value,label){const el=document.createElement("option");el.value=value;el.textContent=label;select.append(el)}
 function numericFields(container,keys,values,locked=[],onChange=()=>{}){
  container.replaceChildren();
  for(const key of keys){
-  const label=document.createElement("label");const caption=key==="round_radius_mm"?(container.id==="nose-fields"?"Tip + insert end radius":"Outer end + insert end radius"):(names[key]||key);label.textContent=`${caption} (mm)`;
+  const label=document.createElement("label");const caption=key==="round_radius_mm"?(container.id==="nose-fields"?"Front rim and insert end corner radius":"Exposed end and insert end corner radius"):(names[key]||key);label.textContent=`${caption} (mm)`;
   const input=document.createElement("input");input.type="number";input.step=container.id==="cap-fields"&&key==="diameter_mm"?"0.01":"0.1";input.min="0";input.dataset.key=key;input.value=values[key]??"";
   const slider=document.createElement("input");slider.type="range";slider.min="0";slider.max=key.includes("length")?"150":key.includes("radius")?"3":"30";slider.step="0.1";slider.value=input.value;
   if(locked.includes(key)){input.readOnly=true;slider.hidden=true;label.title="Set by selected hardware"}
@@ -357,11 +359,11 @@ function cutaway(s){
   shapes+=`<line x1="${center-35}" y1="${diagramBottom+5}" x2="${center+35}" y2="${diagramBottom+5}" stroke="${color}" stroke-width="2"/><text x="${center}" y="${diagramBottom+22}" fill="#9ca9c0" font-size="11" text-anchor="middle">${label}</text><text x="${center}" y="${diagramBottom+40}" fill="${color}" font-size="13" font-weight="600" text-anchor="middle">${xml(value)}</text>`;
  }
  const focusedRadius=document.activeElement?.dataset?.key==="round_radius_mm"?(document.activeElement.closest("#nose-fields")?"nose":"cap"):null;
- for(const [kind,radius,center,color,description] of [
-  ["nose",nose.round_radius_mm,205,"#f6c56a","writing tip and insert end"],
-  ["cap",cap.round_radius_mm,595,"#d6a6f3","outer tip and insert end"]
+ for(const [kind,radius,center,color] of [
+  ["nose",nose.round_radius_mm,205,"#f6c56a"],
+  ["cap",cap.round_radius_mm,595,"#d6a6f3"]
  ]){
-  const note=radius>0?`${kind==="nose"?"Nose":"Cap"} R${radius} mm: ${description}`:`${kind==="nose"?"Nose":"Cap"}: square edges`;
+  const note=radius>0?kind==="nose"?`Nose front rim and insert end: ${radius} mm corner radius`:`Cap exposed end and insert end: ${radius} mm corner radius`:`${kind==="nose"?"Nose":"Cap"}: square edges`;
   shapes+=`<text class="designer__radius-label${focusedRadius===kind?" is-active":""}" data-radius-for="${kind}" x="${center}" y="${diagramBottom+72}" fill="${color}" font-size="11" text-anchor="middle">${xml(note)}</text>`;
  }
  svg.innerHTML=shapes;applySelection();
@@ -370,6 +372,30 @@ function cutaway(s){
  $("cutaway-dimensions").replaceChildren(...lengths.map(([label,value])=>{const item=document.createElement("span");item.className="designer__length";item.textContent=`${label} ${Number(value.toFixed(2))} mm`;return item}));
  const fit=Number((nose.insertion_diameter_mm-tubeID).toFixed(2)),fitText=fit>0?`${fit} mm diameter interference for a press fit`:fit<0?`${-fit} mm diameter clearance`:"nominal line-to-line fit";
  $("cutaway-fit-note").textContent=`Nose insert: ${nose.insertion_diameter_mm} mm OD (${fitText}). Dashed lines mark the tube opening.`;
+}
+function partsView(s){
+ const nose=s.nose,cap=s.cap,noseTotal=nose.visible_length_mm+nose.insertion_length_mm,capTotal=cap.length_mm+cap.insertion_length_mm;
+ const largest=Math.max(nose.base_diameter_mm,nose.insertion_diameter_mm,cap.diameter_mm,cap.insertion_diameter_mm,1);
+ const scale=Math.min(18,330/Math.max(noseTotal,capTotal,1),170/largest),mid=145,x=distance=>45+distance*scale,y=radius=>mid-radius*scale;
+ const path=points=>`${points.map(([distance,radius],index)=>`${index?"L":"M"}${x(distance)},${y(radius)}`).join(" ")} Z`;
+ const roundedPath=(points,corners,radius)=>path(roundedProfile(points,corners,radius));
+ const axis=`<line x1="25" y1="${mid}" x2="395" y2="${mid}" stroke="#587391" stroke-dasharray="5 4"/>`;
+ const noseOutline=roundedPath([[0,0],[0,nose.tip_diameter_mm/2],[nose.visible_length_mm,nose.base_diameter_mm/2],[nose.visible_length_mm,nose.insertion_diameter_mm/2],[noseTotal,nose.insertion_diameter_mm/2],[noseTotal,0],[noseTotal,-nose.insertion_diameter_mm/2],[nose.visible_length_mm,-nose.insertion_diameter_mm/2],[nose.visible_length_mm,-nose.base_diameter_mm/2],[0,-nose.tip_diameter_mm/2]],[1,4,6,9],nose.round_radius_mm);
+ let noseShapes=`${axis}<defs><clipPath id="nose-part-clip"><path d="${noseOutline}"/></clipPath></defs><path d="${noseOutline}" fill="#8da9cd" stroke="#c6d8ed" stroke-width="2" data-section-kind="nose" role="button" tabindex="0" aria-label="Nose cone settings"/><g clip-path="url(#nose-part-clip)"><rect x="${x(nose.visible_length_mm)}" y="35" width="${Math.max(0,nose.insertion_length_mm*scale)}" height="220" fill="#78b7b1"/></g>`;
+ const bore=withStarts(nose.bore_segments);
+ if(bore.length){
+  const upper=[[0,0],[0,diameterAt(bore[0],0)/2]];
+  for(const [index,segment] of bore.entries()){upper.push([segment.end_distance_mm,diameterAt(segment,segment.end_distance_mm)/2]);if(bore[index+1])upper.push([segment.end_distance_mm,diameterAt(bore[index+1],segment.end_distance_mm)/2])}
+  const end=bore.at(-1).end_distance_mm;
+  const cavity=path([...upper,[end,0],...upper.slice(1).reverse().map(([distance,radius])=>[distance,-radius])]);
+  noseShapes+=`<path d="${cavity}" fill="#07090f" stroke="#c6d8ed" stroke-width="1.5" data-section-kind="bore" role="button" tabindex="0" aria-label="Nose bore settings"/>`;
+ }
+ noseShapes+=`<text x="${x(nose.visible_length_mm/2)}" y="266" fill="#bccde4" font-size="13" text-anchor="middle">Visible ${xml(nose.visible_length_mm)} mm</text><text x="${x(nose.visible_length_mm+nose.insertion_length_mm/2)}" y="266" fill="#72d9c7" font-size="13" text-anchor="middle">Insert ${xml(nose.insertion_length_mm)} mm</text>`;
+ $("nose-part-profile").innerHTML=noseShapes;
+ $("nose-part-note").textContent=`The outside front rim and back of the tube insert are rounded with a ${nose.round_radius_mm} mm radius. The black area is the bore.`;
+ const capOutline=roundedPath([[0,0],[0,cap.tip_diameter_mm/2],[cap.length_mm,cap.diameter_mm/2],[cap.length_mm,cap.insertion_diameter_mm/2],[capTotal,cap.insertion_diameter_mm/2],[capTotal,0],[capTotal,-cap.insertion_diameter_mm/2],[cap.length_mm,-cap.insertion_diameter_mm/2],[cap.length_mm,-cap.diameter_mm/2],[0,-cap.tip_diameter_mm/2]],[1,4,6,9],cap.round_radius_mm);
+ $("cap-part-profile").innerHTML=`${axis}<defs><clipPath id="cap-part-clip"><path d="${capOutline}"/></clipPath></defs><path d="${capOutline}" fill="#8da9cd" stroke="#c6d8ed" stroke-width="2" data-section-kind="cap" role="button" tabindex="0" aria-label="End cap settings"/><g clip-path="url(#cap-part-clip)"><rect x="${x(cap.length_mm)}" y="35" width="${Math.max(0,cap.insertion_length_mm*scale)}" height="220" fill="#a9a0d5" pointer-events="none"/></g><text x="${x(cap.length_mm/2)}" y="266" fill="#bccde4" font-size="13" text-anchor="middle">Exposed ${xml(cap.length_mm)} mm</text><text x="${x(cap.length_mm+cap.insertion_length_mm/2)}" y="266" fill="#d6a6f3" font-size="13" text-anchor="middle">Insert ${xml(cap.insertion_length_mm)} mm</text>`;
+ $("cap-part-note").textContent=`The exposed end and back of the tube insert are rounded with a ${cap.round_radius_mm} mm radius.`;
 }
 function overview(s){
  const svg=$("overview");if(!svg)return;
@@ -407,7 +433,7 @@ function configYaml(s){const copy=structuredClone(currentPen.config),first=s.nos
 function scadSource(s){const fields={nose_cone:s.nose,end_cap:s.cap}, assignments=Object.entries(fields).flatMap(([section,values])=>Object.entries(values).map(([key,value])=>`${section}_${key} = ${key==="bore_segments"?JSON.stringify(value.map(seg=>seg.kind==="taper"?[seg.diameter_start_mm,seg.diameter_end_mm,seg.end_distance_mm]:[seg.diameter_mm,seg.diameter_mm,seg.end_distance_mm])):value};`));const args=Object.entries(fields).flatMap(([section,values])=>Object.keys(values).map(key=>`${section}_${key}=${section}_${key}`));return `// Self-contained OpenSCAD source. Dimensions in millimeters.\n${assignments.join("\n")}\n$fn = 128;\n\n${data.scad_module}\ndesigner_parts(${args.join(", ")});\n`}
 function refillForExport(){if(!currentRefill)return null;const copy=structuredClone(currentRefill);delete copy.geometry_ready;delete copy.overall_length_mm;return copy}
 function showRefill(){const r=currentRefill;selectedSection=null;for(const [key,id] of [["id","refill-id"],["brand","refill-brand"],["model","refill-model"],["format","refill-format"],["measurement_status","refill-status"],["ink_type","refill-ink"]])$(id).value=r?.[key]||"";refillDraftError=false;renderRefillDimensions(r?.segments||[]);$("view-cartridge").href=r?`cartridges.html?id=${encodeURIComponent(r.id)}`:"cartridges.html";$("refill-info").textContent=r?`${r.format} · ${r.measurement_status} · ${r.segments?.at(-1)?.end_distance_mm??"unknown"} mm total`:"Select a refill to check its clearance and display its measured shape.";update()}
-function update(){if(!currentPen)return;syncShoulderChoices();syncShoulderSeat();const s=getState(),issues=validate(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
+function update(){if(!currentPen)return;syncShoulderChoices();syncShoulderSeat();const s=getState(),issues=validate(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);partsView(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
  const refill=refillForExport(),refillErrors=refillIssues(refill);$("download-refill").disabled=!!refillErrors.length;if(!refillErrors.length)githubLink($("github-refill"),`refills/${refill.id}.yml`,yaml(refill)+"\n");else{$("github-refill").removeAttribute("href");$("github-refill").setAttribute("aria-disabled","true");$("github-refill").title=refillErrors.join(" · ")}}
 const penTitleCounts=new Map();for(const pen of data.pens){const title=pen.config.title||pen.id;penTitleCounts.set(title,(penTitleCounts.get(title)||0)+1)}
 const penChoices=[{value:"new",label:"New design"},...data.pens.map(p=>{const title=p.config.title||p.id,diameter=p.config.nose_cone?.cylinder_outside_diameter;return {value:p.id,label:penTitleCounts.get(title)>1&&Number.isFinite(diameter)?`${title} · ${diameter.toFixed(2)} mm insertion`:title}})];
@@ -434,6 +460,7 @@ function bindCombobox(inputId,selectId,listId,choices){
 }
 for(const choice of penChoices)option($("pen-select"),choice.value,choice.label);
 for(const choice of refillChoices)option($("refill-select"),choice.value,choice.label);
+if (initialDesign && data.pens.some(pen => pen.id === initialDesign)) $("pen-select").value = initialDesign;
 bindCombobox("pen-filter","pen-select","pen-options",penChoices);
 bindCombobox("refill-filter","refill-select","refill-options",refillChoices);
 const bushingChoices=[];
@@ -515,13 +542,14 @@ function choosePen(){
  for(const [id,key] of [["fit-sweep-start","start_mm"],["fit-sweep-end","end_mm"],["fit-sweep-step","step_mm"]])if(currentPen.config.fit_sweep?.[key]!==undefined)$(id).value=currentPen.config.fit_sweep[key];
  showHardware();showRefill();updateSweepNavigation();
 }
-function showDiagram(view){for(const name of ["overview","cutaway"]){$(name+"-panel").hidden=name!==view;$("show-"+name).setAttribute("aria-selected",String(name===view))}}
+function showDiagram(view){for(const name of ["overview","cutaway","parts"]){$(name+"-panel").hidden=name!==view;$("show-"+name).setAttribute("aria-selected",String(name===view))}}
 $("show-overview").addEventListener("click",()=>showDiagram("overview"));
 $("show-cutaway").addEventListener("click",()=>showDiagram("cutaway"));
+$("show-parts").addEventListener("click",()=>showDiagram("parts"));
 function focusRadius(kind){selectSection(kind,undefined,true);document.querySelector(`#${kind==="nose"?"nose":"cap"}-fields [data-key="round_radius_mm"]`)?.focus();for(const element of $("cutaway").querySelectorAll(`[data-radius-for="${kind}"]`))element.classList.add("is-active")}
 $("cutaway").addEventListener("click",event=>{const marker=event.target.closest?.("[data-radius-for]");if(!marker)return;event.stopImmediatePropagation();focusRadius(marker.dataset.radiusFor)});
 $("cutaway").addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const marker=event.target.closest?.("[data-radius-for]");if(!marker)return;event.preventDefault();event.stopImmediatePropagation();focusRadius(marker.dataset.radiusFor)});
-for(const id of ["cutaway","overview"]){$(id).addEventListener("click",event=>{const section=event.target.closest?.("[data-section-kind]");if(section)selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)});$(id).addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const section=event.target.closest?.("[data-section-kind]");if(section){event.preventDefault();selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)}})}
+for(const id of ["cutaway","overview","nose-part-profile","cap-part-profile"]){$(id).addEventListener("click",event=>{const section=event.target.closest?.("[data-section-kind]");if(section)selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)});$(id).addEventListener("keydown",event=>{if(event.key!=="Enter"&&event.key!==" ")return;const section=event.target.closest?.("[data-section-kind]");if(section){event.preventDefault();selectSection(section.dataset.sectionKind,section.dataset.sectionIndex===undefined?undefined:Number(section.dataset.sectionIndex),true)}})}
 for(const id of ["segments","bore-segments"])$(id).addEventListener("click",event=>{const row=event.target.closest?.(".designer__table-row[data-section-index]");if(row)selectSection(row.dataset.sectionKind,Number(row.dataset.sectionIndex))});
 $("tube-select").addEventListener("change",()=>{fillBushingChoices(null);currentBarrel=null;applyHardware(true);if(!$("fit-sweep-enabled").checked&&currentBarrel){$("fit-sweep-start").value=currentBarrel.tube_id_mm;$("fit-sweep-end").value=Number((currentBarrel.tube_id_mm+0.05).toFixed(3));updateSweepNavigation()}});
 $("bushing-select").addEventListener("change",()=>{currentBarrel=null;applyHardware(false)});
