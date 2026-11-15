@@ -111,13 +111,14 @@ def fit_sweep_values(config: dict) -> list[Decimal]:
 
 
 def fit_variant_config(config: dict, diameter: Decimal) -> dict:
-    """Update both CAD backends on an isolated copy of one design."""
+    """Size both inserts in both CAD backends on an isolated copy."""
     variant = deepcopy(config)
     get_nose_cone(variant)["cylinder_outside_diameter"] = float(diameter)
     # Legacy OpenSCAD profiles derive insertion diameter from nose_cone. Adding
     # an openscad block would switch their entire shape to designer_parts.
     if "openscad" in variant:
         variant["openscad"].setdefault("nose_cone", {})["insertion_diameter_mm"] = float(diameter)
+        variant["openscad"].setdefault("end_cap", {})["insertion_diameter_mm"] = float(diameter)
     return variant
 
 
@@ -133,5 +134,9 @@ def fit_variant_stem(path: Path, config: dict, diameter: Decimal) -> str:
 
 def is_base_fit_variant(config: dict, diameter: Decimal) -> bool:
     legacy = _fit_decimal(get_nose_cone(config)["cylinder_outside_diameter"], "base_diameter")
-    openscad = config.get("openscad", {}).get("nose_cone", {}).get("insertion_diameter_mm", legacy)
-    return legacy == diameter and _fit_decimal(openscad, "base_diameter") == diameter
+    openscad = config.get("openscad", {})
+    nose = openscad.get("nose_cone", {}).get("insertion_diameter_mm", legacy)
+    cap = openscad.get("end_cap", {}).get("insertion_diameter_mm", legacy)
+    return (legacy == diameter
+            and _fit_decimal(nose, "base_diameter") == diameter
+            and _fit_decimal(cap, "base_diameter") == diameter)

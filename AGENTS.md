@@ -1,5 +1,9 @@
 # Pens project preferences
 
+- Keep pen goals, refill preferences, and product notes in `PENS.md`; consult it when evaluating designs or hardware.
+- Use the measured refill profiles in `refills/` and tube dimensions in `hardware/catalog.json` when evaluating fit; consult external refill dimensions only for gaps in the catalog.
+- Check tube diameter and connector geometry before recommending kit part swaps; a nose designed for an 8 mm tube does not fit a 7 mm kit.
+- Do not recommend Carbatec as a supplier; it is in New Zealand and does not ship to the United States. Verify US availability before recommending pen kits.
 - Keep both galleries driven by the same YAML configurations and Pages CMS fields. Do not duplicate configuration collections per CAD backend.
 - The original CadQuery gallery supplies STEP exports. The parallel OpenSCAD gallery supplies self-contained SCAD and printable STL files.
 - Rounded edges are essential. Construct rounded profiles explicitly instead of relying on fragile edge/face selection.

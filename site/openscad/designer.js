@@ -19,8 +19,8 @@ function numericFields(container,keys,values,locked=[],onChange=()=>{}){
  container.replaceChildren();
  for(const key of keys){
   const label=document.createElement("label");const caption=key==="round_radius_mm"?(container.id==="nose-fields"?"Front rim and insert end corner radius":"Exposed end and insert end corner radius"):(names[key]||key);label.textContent=`${caption} (mm)`;
-  const input=document.createElement("input");input.type="number";input.step=container.id==="cap-fields"&&key==="diameter_mm"?"0.01":"0.1";input.min="0";input.dataset.key=key;input.value=values[key]??"";
-  const slider=document.createElement("input");slider.type="range";slider.min="0";slider.max=key.includes("length")?"150":key.includes("radius")?"3":"30";slider.step="0.1";slider.value=input.value;
+  const input=document.createElement("input");input.type="number";input.step=key==="insertion_diameter_mm"||container.id==="cap-fields"&&key==="diameter_mm"?"0.01":"0.1";input.min="0";input.dataset.key=key;input.value=values[key]??"";
+  const slider=document.createElement("input");slider.type="range";slider.min="0";slider.max=key.includes("length")?"150":key.includes("radius")?"3":"30";slider.step=key==="insertion_diameter_mm"?"0.01":"0.1";slider.value=input.value;
   if(locked.includes(key)){input.readOnly=true;slider.hidden=true;label.title="Set by selected hardware"}
   else{
    input.addEventListener("input",()=>{slider.value=input.value;onChange(key,Number(input.value));update()});
@@ -519,7 +519,16 @@ function updateConnectorUi(s){
  $("connector-bore-override").textContent=connectorBoreOverridden?"Reset automatic bore":"Override automatic bore";
  $("connector-note").textContent=crossing?`The refill crosses this connector (up to ${Number(crossing.toFixed(2))} mm diameter). The automatic bore adds 0.1 mm clearance.`:"The refill ends before this connector, so it can be solid.";
 }
-function update(){if(!currentPen)return;syncGuideTargetChoices();syncShoulderSeat();const s=getState(),issues=validate(s);updateConnectorUi(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);partsView(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
+function syncSweepInserts(){
+ const nose=document.querySelector('#nose-fields [data-key="insertion_diameter_mm"]'),cap=document.querySelector('#cap-fields [data-key="insertion_diameter_mm"]');
+ if(!nose||!cap)return;
+ const enabled=$("fit-sweep-enabled").checked,slider=cap.nextElementSibling;
+ cap.readOnly=enabled;
+ if(slider?.type==="range")slider.hidden=enabled;
+ cap.closest("label").title=enabled?"Set by the insertion fit sweep":"";
+ if(enabled){cap.value=nose.value;if(slider?.type==="range")slider.value=nose.value}
+}
+function update(){if(!currentPen)return;syncSweepInserts();syncGuideTargetChoices();syncShoulderSeat();const s=getState(),issues=validate(s);updateConnectorUi(s);const halfAngle=Math.atan((s.nose.base_diameter_mm-s.nose.tip_diameter_mm)/(2*s.nose.visible_length_mm))*180/Math.PI;$("nose-angle").textContent=Number.isFinite(halfAngle)?`Outer taper: ${Math.abs(halfAngle).toFixed(1)}° from axis · ${(2*Math.abs(halfAngle)).toFixed(1)}° included`:"Outer taper angle unavailable";renderValidation(s,issues);overview(s);cutaway(s);partsView(s);updateFitActions(s);updateGuideControls(s);if(three)three(s);updateSweepNavigation();const valid=!issues.length;$("download-config").disabled=false;$("download-scad").disabled=!valid;const text=configYaml(s),path=`configurations/${s.designId}.yml`;githubLink($("github-config"),path,text)
  const refill=refillForExport(),refillErrors=refillIssues(refill);$("download-refill").disabled=!!refillErrors.length;if(!refillErrors.length)githubLink($("github-refill"),`refills/${refill.id}.yml`,yaml(refill)+"\n");else{$("github-refill").removeAttribute("href");$("github-refill").setAttribute("aria-disabled","true");$("github-refill").title=refillErrors.join(" · ")}}
 const penTitleCounts=new Map();for(const pen of data.pens){const title=pen.config.title||pen.id;penTitleCounts.set(title,(penTitleCounts.get(title)||0)+1)}
 const penChoices=[{value:"new",label:"New design"},...data.pens.map(p=>{const title=p.config.title||p.id,diameter=p.config.nose_cone?.cylinder_outside_diameter;return {value:p.id,label:penTitleCounts.get(title)>1&&Number.isFinite(diameter)?`${title} · ${diameter.toFixed(2)} mm insertion`:title}})];

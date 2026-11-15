@@ -46,15 +46,18 @@ class FitSweepTests(unittest.TestCase):
 
     def test_variant_copy_updates_both_backends_and_leaves_base_unchanged(self):
         original = load_config(self.path)
-        self.config["openscad"] = {"nose_cone": {"insertion_diameter_mm": 7.6}}
+        self.config["openscad"] = {"nose_cone": {"insertion_diameter_mm": 7.6},
+                                   "end_cap": {"insertion_diameter_mm": 7.4}}
         variant = fit_variant_config(self.config, Decimal("7.41"))
         self.assertEqual(variant["nose_cone"]["cylinder_outside_diameter"], 7.41)
         self.assertEqual(variant["openscad"]["nose_cone"]["insertion_diameter_mm"], 7.41)
+        self.assertEqual(variant["openscad"]["end_cap"]["insertion_diameter_mm"], 7.41)
         self.assertEqual(original["nose_cone"]["cylinder_outside_diameter"], 7.6)
         self.assertEqual(self.config["nose_cone"]["cylinder_outside_diameter"], 7.6)
         self.assertFalse(is_base_fit_variant(self.config, Decimal("7.41")))
         self.assertNotIn("openscad", fit_variant_config(original, Decimal("7.41")))
         self.assertIn("nose_cone_insertion_diameter_mm = 7.41;", source_text(variant, "pen"))
+        self.assertIn("end_cap_insertion_diameter_mm = 7.41;", source_text(variant, "pen"))
 
     def test_base_diameter_inside_range_reuses_base_artifact(self):
         self.config["nose_cone"]["cylinder_outside_diameter"] = 7.42
@@ -69,6 +72,12 @@ class FitSweepTests(unittest.TestCase):
         self.assertEqual(item["fit_variants"][2]["diameter_mm"], "7.42")
         self.assertEqual(item["fit_variants"][2]["downloads"]["step"], f"outputs/{artifact.name}")
         self.assertEqual(len(item["fit_variants"]), 6)
+
+    def test_base_artifact_is_not_reused_when_cap_insert_differs(self):
+        self.config["nose_cone"]["cylinder_outside_diameter"] = 7.42
+        self.config["openscad"] = {"nose_cone": {"insertion_diameter_mm": 7.42},
+                                   "end_cap": {"insertion_diameter_mm": 7.4}}
+        self.assertFalse(is_base_fit_variant(self.config, Decimal("7.42")))
 
     def test_openscad_build_keeps_base_and_adds_each_fit(self):
         with tempfile.TemporaryDirectory() as folder:
