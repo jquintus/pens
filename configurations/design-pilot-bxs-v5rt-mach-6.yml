@@ -1,6 +1,6 @@
 id: "design-pilot-bxs-v5rt-mach-6"
 title: "V5RT - Mach 6 (Nov 2026)"
-description: "As built: straight body, 7.46 mm nose and rear inserts; no removable cap."
+description: "First fully custom koa wood pen, made without a kit. Started June 20, 2026; completed November 15, 2026. Straight body with 7.46 mm nose and rear inserts; no removable cap."
 nose_cone:
   cylinder_height: 5.6
   cylinder_outside_diameter: 7.46
@@ -53,3 +53,6 @@ openscad:
 slicing_profiles:
   - "0.2_fast"
   - "0.2_quality"
+gallery:
+  - /assets/mach-6-koa-wood-writing-sample.png
+  - /assets/mach-6-koa-wood-pen.png
